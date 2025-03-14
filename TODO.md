@@ -1,0 +1,2 @@
+- 11/03/25
+  - [ ] logical device
