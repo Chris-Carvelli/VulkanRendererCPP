@@ -10,7 +10,13 @@
 
 namespace vkc {
 	class RenderContext {
-		RenderContext(VkPhysicalDevice physical_device, VkDevice device, VkSurfaceKHR surface, VkExtent2D extents);
+	public:
+		RenderContext(
+			VkPhysicalDevice physical_device,
+			VkDevice device,
+			VkSurfaceKHR surface,
+			VkExtent2D extents
+		);
 	private:
 		/// If swapchain exists, then this will be a present supported queue, else a graphics queue
 		VkQueue m_queue;

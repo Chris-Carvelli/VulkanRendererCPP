@@ -35,6 +35,10 @@ namespace vkc {
 			return m_requested_features;
 		}
 
+		bool is_extension_available(const char* extension_desired) const;
+
+		const char* get_device_name() const { return m_properties.deviceName; };
+
 	private:
 		const Instance& m_instance;
 

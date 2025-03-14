@@ -200,7 +200,7 @@ namespace vkc {
 
 		// Even for a headless surface a swapchain is still required
 		enable_extension(VK_KHR_SURFACE_EXTENSION_NAME, available_instance_extensions, m_enabled_extensions);
-
+		 
 		// VK_KHR_get_physical_device_properties2 is a prerequisite of VK_KHR_performance_query
 		// which will be used for stats gathering where available.
 		enable_extension(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME, available_instance_extensions, m_enabled_extensions);

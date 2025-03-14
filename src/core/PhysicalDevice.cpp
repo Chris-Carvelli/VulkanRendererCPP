@@ -41,6 +41,16 @@ namespace vkc {
 		return present_supported;
 	}
 
+	bool PhysicalDevice::is_extension_available(const char* extension_desired) const {
+		for (const VkExtensionProperties& extension_supported : m_device_extensions) {
+			// TODO_OPTIMIZATION: we could sort m_device_extension for binary search
+			if (strcmp(extension_supported.extensionName, extension_desired) == 0)
+				return true;
+		}
+
+		return false;
+	}
+
 	void PhysicalDevice::print_info() {
 		CC_PRINT(IMPORTANT, "%s", m_properties.deviceName);
 		CC_PRINT(VERBOSE,   "%s", string_VkPhysicalDeviceType(static_cast<VkPhysicalDeviceType>(m_properties.deviceType)));

@@ -33,7 +33,18 @@ namespace vkc
 			queue_create_info.pQueuePriorities = queue_priorities[queue_family_index].data();
 		}
 
-		// TODO check if requested extensions are available on PhysicalDevice
+		for (const char* extension_name : extensions_requested)
+			if (gpu.is_extension_available(extension_name))
+				m_enabled_extensions.emplace_back(extension_name);
+			else
+				CC_EXIT(-1, "Required extension %s not available on %s", extension_name, gpu.get_device_name());
+
+		for (const char* extension_name : extensions_desired)
+			if (gpu.is_extension_available(extension_name))
+				m_enabled_extensions.emplace_back(extension_name);
+			else
+				CC_LOG(WARNING, "Desired extension %s not available on %s", extension_name, gpu.get_device_name());
+		
 
 		VkDeviceCreateInfo create_info{ VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO };
 

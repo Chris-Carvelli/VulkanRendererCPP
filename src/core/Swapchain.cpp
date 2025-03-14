@@ -73,6 +73,7 @@ namespace {
 namespace vkc {
 	Swapchain::Swapchain(VkPhysicalDevice physical_device, VkDevice device, VkSurfaceKHR surface, VkExtent2D extents)
     {
+        m_device_handle = device;
 
         // CHRIS do we really need this every time we re-create the swapchain? This is the same for all physical devices!
         SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physical_device, surface);
