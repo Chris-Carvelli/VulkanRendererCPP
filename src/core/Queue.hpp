@@ -13,6 +13,8 @@ namespace vkc {
 
 		Queue(Queue&& other);
 
+		~Queue();
+
 		/*void submit(const HPPCommandBuffer& command_buffer,  VkFence fence) const;
 
 		 VkResult present(const  VkPresentInfoKHR& present_infos) const;*/

@@ -76,4 +76,8 @@ namespace vkc
 			}
 		}
 	}
+
+	Device::~Device() {
+		vkDestroyDevice(m_handle, NULL);
+	}
 }

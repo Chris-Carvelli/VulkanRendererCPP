@@ -1,6 +1,22 @@
 #include <VKRenderer.hpp>
 
-void VKRenderer::init()
+void VKRenderer::run() {
+	init_base();
+	init();
+
+	while (!m_window->should_quit())
+	{
+		m_render_context->render_begin();
+		render();
+		m_render_context->render_finalize();
+		m_window->collect_input();
+	}
+
+	// wait for queues to be done before cleanup
+	vkDeviceWaitIdle(m_device->get_handle());
+}
+
+void VKRenderer::init_base()
 {
 	const char* title = "TMP";
 
@@ -11,6 +27,9 @@ void VKRenderer::init()
 
 	m_surface = m_window->create_surfaceKHR(m_instance->get_handle());
 
+	// this needs to happen, otherwise we can't use PhysicalDevice to query QueueFamilies
+	m_instance->set_surface(m_surface);
+
 	m_device = std::unique_ptr<vkc::Device>(new vkc::Device(
 		m_instance->get_selected_gpu(),
 		m_surface,
@@ -18,14 +37,9 @@ void VKRenderer::init()
 	));
 
 	m_render_context = std::make_unique<vkc::RenderContext>(
-		m_instance->get_selected_gpu().get_handle(),
+		&m_instance->get_selected_gpu(),
 		m_device->get_handle(),
 		m_surface,
-		m_window->get_current_extent()
+		m_window.get()
 	);
-}
-
-void VKRenderer::render()
-{
-
 }

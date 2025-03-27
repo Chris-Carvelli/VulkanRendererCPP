@@ -10,7 +10,7 @@
 #include <assert.h>
 #include <stdint.h>
 
-#define MAX_LOG_CHARS 1024
+#define MAX_LOG_CHARS 2048
 
 // Colors
 #define TEXT_COLOR_BLACK 			"\x1b[30m"

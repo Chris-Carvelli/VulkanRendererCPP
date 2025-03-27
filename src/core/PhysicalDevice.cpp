@@ -27,6 +27,15 @@ namespace vkc {
 		vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &device_extension_properties_count, nullptr);
 		m_device_extensions = std::vector<VkExtensionProperties>(device_extension_properties_count);
 		vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &device_extension_properties_count, m_device_extensions.data());
+
+
+		uint32_t queue_families_count = 0;
+		vkGetPhysicalDeviceQueueFamilyProperties(m_handle, &queue_families_count, NULL);
+		m_queue_families.resize(queue_families_count);
+		vkGetPhysicalDeviceQueueFamilyProperties(m_handle, &queue_families_count, m_queue_families.data());
+	}
+	PhysicalDevice::~PhysicalDevice() {
+		// TODO destroy physical device
 	}
 
 	VkBool32 PhysicalDevice::is_present_supported(VkSurfaceKHR surface, uint32_t queue_family_index) const
@@ -49,6 +58,43 @@ namespace vkc {
 		}
 
 		return false;
+	}
+
+	uint32_t PhysicalDevice::find_memory_type(uint32_t type_filter, VkMemoryPropertyFlags properties) const {
+		for (uint32_t i = 0; i < m_memory_properties.memoryTypeCount; i++) {
+			if (type_filter & (1 << i) && (m_memory_properties.memoryTypes[i].propertyFlags & properties) == properties) {
+				return i;
+			}
+		}
+
+		CC_LOG(ERROR, "failed to find suitable memory type!");
+		return -1;
+	}
+
+	const QueueFamilyIndices PhysicalDevice::find_queue_families() const {
+		QueueFamilyIndices indices = { 0 };
+
+		// from tutorial: "It's not really possible to use a magic value to indicate the nonexistence of a queue family,
+		// since any value of uint32_t could in theory be a valid queue family index including 0"
+		// but the we have `graphicsFamily < queueFamilyCount`???
+		// -1 seems a perfectly valid magic value in this case.
+		indices.graphicsFamily = -1;
+		for (int i = 0; i < m_queue_families.size(); ++i)
+		{
+			if (m_queue_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
+				indices.graphicsFamily = i;
+
+			VkBool32 presentSupport = 0;
+			vkGetPhysicalDeviceSurfaceSupportKHR(m_handle, i, m_surface, &presentSupport);
+
+			if (presentSupport)
+				indices.presentFamily = i;
+
+			if (qfi_isComplete(&indices))
+				break;
+		}
+
+		return indices;
 	}
 
 	void PhysicalDevice::print_info() {

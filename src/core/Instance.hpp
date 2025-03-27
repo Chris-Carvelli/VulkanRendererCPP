@@ -23,6 +23,7 @@ namespace vkc {
 			std::vector<const char*> layers_optional,
 			std::vector<VkLayerSettingEXT> layer_settings_required
 		);
+		~Instance();
 
 		Instance() = delete;
 		Instance(const Instance&) = delete;
@@ -36,6 +37,11 @@ namespace vkc {
 		void print_info() const;
 
 		VkInstance get_handle() const { return m_handle; };
+
+		void set_surface(VkSurfaceKHR surface) {
+			// FIXME terrible hack because we don't handle GPU selection properly
+			m_gpus[0]->set_surface(surface);
+		};
 
 		const vkc::PhysicalDevice& get_selected_gpu() const;
 
@@ -53,12 +59,12 @@ namespace vkc {
 		/**
 		 * @brief Debug utils messenger callback for VK_EXT_Debug_Utils
 		 */
-		VkDebugUtilsMessengerEXT m_debug_utils_messenger;
+		VkDebugUtilsMessengerEXT m_debug_utils_messenger = VK_NULL_HANDLE;
 
 		/**
 		 * @brief The debug report callback
 		 */
-		VkDebugReportCallbackEXT m_debug_report_callback;
+		VkDebugReportCallbackEXT m_debug_report_callback = VK_NULL_HANDLE;
 #endif // VKC_DEBUG || ENABLE_VALID_LAYERS
 
 	};

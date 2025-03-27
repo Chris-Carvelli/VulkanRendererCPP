@@ -18,28 +18,32 @@ public:
 		: m_surface{ 0 }
 	{
 	};
+	~VKRenderer() {
+		// hack to force swapchain destructor to run before the destruction of the surface
+		m_render_context.reset();
+		m_device.reset();
 
-	void run()
-	{
-		init();
+		vkDestroySurfaceKHR(m_instance->get_handle(), m_surface, NULL);
 
-		while (!m_window->should_quit())
-		{
-            render();
-			m_window->collect_input();
-		}
+		m_instance.reset();
+		m_window.reset();
 	}
 
+	void run();
+
+protected:
+	// these could probably be pure virtual
+	virtual void init()   { }
+	virtual void render() { }
+
 private:
-    void init();
-    void render();
+	void init_base();
 
 private:
 	std::unique_ptr<vkc::Instance> m_instance;
 	std::unique_ptr<vkc::Window>   m_window;
 	std::unique_ptr<vkc::Device>   m_device;
 	std::unique_ptr<vkc::RenderContext>  m_render_context;
-	std::vector<vkc::RenderPass> m_render_passes;
 
 	VkSurfaceKHR m_surface;
 };

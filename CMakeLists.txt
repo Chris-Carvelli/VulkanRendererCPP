@@ -69,7 +69,7 @@ target_include_directories(VKRenderer_lib PUBLIC
 	${LIBRARIES_SOURCE_PATH}/glad/include
 	${LIBRARIES_SOURCE_PATH}/glfw/include
 	${LIBRARIES_SOURCE_PATH}/imgui/include
-	${LIBRARIES_SOURCE_PATH}/glm/include
+	${LIBRARIES_SOURCE_PATH}/glm
 	${LIBRARIES_SOURCE_PATH}/stb/include
     ${LIBRARIES_SOURCE_PATH}/tinyobj
 	${LIBRARIES_SOURCE_PATH}/assimp/include

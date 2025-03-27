@@ -11,11 +11,15 @@ namespace vkc {
 	{
 		PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT;
 		PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT;
+		PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT;
+		PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT;
 
 		// manual load of necessary function addresses
 		void loadVkFuncAddr(VkInstance instance) {
 			vkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT"));
 			vkCreateDebugReportCallbackEXT = reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT"));
+			vkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT"));
+			vkDestroyDebugReportCallbackEXT = reinterpret_cast<PFN_vkDestroyDebugReportCallbackEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT"));
 		}
 	}
 	
@@ -31,11 +35,14 @@ namespace vkc {
 			// Log debug message
 			if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
 			{
-				CC_LOG(WARNING, "%d - %s: %s", callback_data->messageIdNumber, callback_data->pMessageIdName, callback_data->pMessage);
+				//CC_LOG(WARNING, "%d - %s: %s", callback_data->messageIdNumber, callback_data->pMessageIdName, callback_data->pMessage);
+				CC_LOG(WARNING, callback_data->pMessage);
+
 			}
 			else if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
 			{
-				CC_LOG(ERROR, "%d - %s: %s", callback_data->messageIdNumber, callback_data->pMessageIdName, callback_data->pMessage);
+				//CC_LOG(ERROR, "%d - %s: %s", callback_data->messageIdNumber, callback_data->pMessageIdName, callback_data->pMessage);
+				CC_LOG(ERROR, callback_data->pMessage);
 			}
 			return VK_FALSE;
 		}
@@ -163,7 +170,7 @@ namespace vkc {
 		}
 	}        // namespace
 
-	vkc::Instance::Instance(
+	Instance::Instance(
 		const char* application_name,
 		std::vector<const char*> extensions_requested,
 		std::vector<const char*> extensions_optional,
@@ -307,6 +314,17 @@ namespace vkc {
 		query_gpus();
 	}
 
+	Instance::~Instance() {
+		
+#ifdef ENABLE_VALID_LAYERS
+		if (m_debug_utils_messenger != VK_NULL_HANDLE)
+			vkDestroyDebugUtilsMessengerEXT(m_handle, m_debug_utils_messenger, NULL);
+		if (m_debug_report_callback != VK_NULL_HANDLE)
+			vkDestroyDebugReportCallbackEXT(m_handle, m_debug_report_callback, NULL);
+#endif
+		vkDestroyInstance(m_handle, NULL);
+	}
+
 	void Instance::print_info() const {
 		CC_PRINT(LOG, "GPUs");
 		for (auto& gpu : m_gpus)
@@ -327,6 +345,7 @@ namespace vkc {
 		for (auto& physical_device : physical_devices)
 			m_gpus.push_back(std::make_unique<PhysicalDevice>(*this, physical_device));
 	}
+
 	const vkc::PhysicalDevice& Instance::get_selected_gpu() const {
 		CC_ASSERT(!m_gpus.empty(), "No available gpu");
 		return *m_gpus[0];

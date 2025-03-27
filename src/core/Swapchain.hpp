@@ -7,24 +7,11 @@
 namespace vkc {
 	class Device;
 
-	enum ImageFormat
-	{
-		sRGB,
-		UNORM
-	};
-
-	struct SwapchainProperties
-	{
-		VkSwapchainKHR                old_swapchain;
-		uint32_t                      image_count{ 3 };
-		VkExtent2D                    extent{};
-		VkSurfaceFormatKHR            surface_format{};
-		uint32_t                      array_layers;
-		VkImageUsageFlags             image_usage;
-		VkSurfaceTransformFlagBitsKHR pre_transform;
-		VkCompositeAlphaFlagBitsKHR   composite_alpha;
-		VkPresentModeKHR              present_mode;
-	};
+	typedef struct {
+		VkSurfaceCapabilitiesKHR capabilities;
+		std::vector<VkSurfaceFormatKHR> formats;
+		std::vector<VkPresentModeKHR>   present_modes;
+	} SwapChainSupportDetails;
 
 	class Swapchain {
 	public:
@@ -34,14 +21,34 @@ namespace vkc {
 		Swapchain(Swapchain&& other) = delete;
 		Swapchain& operator=(const Swapchain&) = delete;
 		Swapchain& operator=(Swapchain&&) = delete;
+
+		VkSwapchainKHR get_handle() const { return m_handle; };
+		VkExtent2D get_extent() const { return m_extents; };
+		VkFormat get_image_format() const { return m_image_format; };
+
+		const std::vector<VkImageView>& get_image_views() const { return m_image_views; };
+
+		void recreate(VkExtent2D extents);
 	private:
-		VkDevice m_device_handle;
+		void create(VkExtent2D extents);
+		void destroy();
+
+		VkPhysicalDevice	m_physical_device_handle;
+		VkDevice			m_device_handle;
+		VkSurfaceKHR		m_surface_handle;
 
 		VkSwapchainKHR m_handle{ VK_NULL_HANDLE };
+
+		// swapchain support info
+		SwapChainSupportDetails swap_chain_support;
+		VkSurfaceFormatKHR surface_format;
+		VkPresentModeKHR present_mode;
+		
 
 		// color outputs to be sent to the screen/window.
 		// each RenderFrame will reference one of these (plus their own other attachments, like depth)
 		std::vector<VkImage> m_images;
+		std::vector<VkImageView> m_image_views;
 
 		// info available for querying
 		VkFormat m_image_format;

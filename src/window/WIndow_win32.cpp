@@ -108,7 +108,7 @@ namespace vkc {
 
         return (VkExtent2D) {
             .width = (uint32_t)(windowRect.right - windowRect.left),
-            .height = (uint32_t)(windowRect.top - windowRect.bottom)
+            .height = (uint32_t)(windowRect.bottom - windowRect.top)
         };
     }
 }

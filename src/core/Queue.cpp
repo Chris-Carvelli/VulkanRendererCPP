@@ -8,8 +8,7 @@ namespace vkc {
         , m_family_index{ family_index }
         , m_index{ index }
         , m_can_present{ can_present }
-        , m_properties{ properties 
-}
+        , m_properties{ properties }
     {
         vkGetDeviceQueue(device.get_handle(), family_index, index, &m_handle);
     }
@@ -28,5 +27,9 @@ namespace vkc {
         other.m_properties = {};
         other.m_can_present = VK_FALSE;
         other.m_index = 0;
+    }
+
+    Queue::~Queue() {
+        // TODO destroy queue? Maybe not needed
     }
 }

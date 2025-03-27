@@ -19,6 +19,7 @@ namespace vkc {
 			std::vector<const char*> extensions_requested = {},
 			std::vector<const char*> extensions_desired = {}
 		);
+		~Device();
 
 		/*Device(PhysicalDevice& gpu,
 			VkDevice& vulkan_device,
