@@ -3,6 +3,143 @@
 #include <VulkanUtils.h>
 #include <window/Window.hpp>
 #include <core/PhysicalDevice.hpp>
+#include <core/DrawCall.hpp>
+
+#include <core/VertexData.h>
+
+// TMP_Update includes
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+// TMP_Assets includes
+#define TINYOBJLOADER_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#include <tiny_obj_loader.h>
+#include <stb_image.h>
+#include <map>
+#include <filesystem>
+#include <string.h>
+
+namespace TMP_Assets {
+    int num_mesh_assets;
+
+    //int num_mesh_assets = sizeof(model_paths) / sizeof(model_paths[0]);
+
+    std::map<uint32_t, MeshData> mesh_data;
+    std::map<uint32_t, TextureData> texture_data;
+
+    // only one texture for now
+    TextureData get_texture_data() {
+        return texture_data[0];
+    }
+
+    MeshData& get_mesh_data(uint32_t index) {
+        return mesh_data[index];
+    }
+
+    MeshData load_mesh(const char* path) {
+        tinyobj::attrib_t attrib;
+        std::vector<tinyobj::shape_t> shapes;
+        std::vector<tinyobj::material_t> materials;
+        std::string err;
+        std::string warn;
+
+        assert(tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path));
+
+        MeshData ret;
+        int n_indices = 0;
+        // cunt indices (vertices will be the same number because we're cutting corners)
+        for (const auto& shape : shapes)
+            n_indices += shape.mesh.indices.size();
+
+        ret.vertices.resize(n_indices);
+        ret.indices.resize(n_indices);
+
+        int i = 0;
+        for (const auto& shape : shapes)
+            for (const auto& index : shape.mesh.indices) {
+                ret.indices[i] = i;
+                // flipped X and Y to match Kenney assets orientation
+                // (prob. default blender)
+                // this should probably be an import util + cooking anyway
+                ret.vertices[i].position = glm::vec3(
+                    attrib.vertices[3 * index.vertex_index + 0],
+                    attrib.vertices[3 * index.vertex_index + 2],
+                    attrib.vertices[3 * index.vertex_index + 1]
+                );
+                ret.vertices[i].texCoords = glm::vec2(
+                    attrib.texcoords[2 * index.texcoord_index + 0],
+                    1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+                );
+                ret.vertices[i].color = glm::vec3(1.0f);
+                ++i;
+            }
+
+        return ret;
+    }
+
+    MeshData load_meshes(const char** paths) {
+        return {}; // TODO
+    }
+
+    TextureData load_texture(const char* path, TexChannelTypes channels) {
+        int texWidth = 0;
+        int texHeight = 0;
+        int texChannels = 0;
+        stbi_uc* pixels = stbi_load(path, &texWidth, &texHeight, &texChannels, channels);
+        assert(pixels != nullptr);
+
+        // TODO get number of ACTUAL channels based on requested channels (`channels` parameter)
+        size_t size = texWidth * texHeight * 4;
+
+        TextureData ret;
+        ret.width = (uint16_t)texWidth;
+        ret.height = (uint16_t)texHeight;
+        ret.channelsCount = (uint8_t)texChannels;
+        ret.channels = channels;
+        ret.data.resize(size);
+        memcpy(ret.data.data(), pixels, size);
+
+        stbi_image_free(pixels);
+        return ret;
+    }
+}
+
+namespace TMP_Update {
+    glm::mat4 perspective_projection;
+    static float x = 0.0f;
+    UniformBufferObject ubo;
+
+    const uint32_t drawcall_cout = 200;
+    std::vector<ModelData> model_data;
+
+    void updateUniformBuffer(uint32_t currentFrame, VkExtent2D swapchain_extent) {
+
+        // zoom out depending on loaded objects
+        float l = glm::sqrt(drawcall_cout);
+        float fow = (float)swapchain_extent.width / swapchain_extent.height;
+        perspective_projection = glm::perspective(glm::radians(45.0f), fow, 0.1f, (float)drawcall_cout);
+
+        // TODO calculate deltaTime
+        const float time = 1 / 60.0f;
+        const float offset = 1.0f;
+        x += time;
+
+
+        const glm::vec3 dir_up = (glm::vec3){ 0, 0, 1 };
+        const glm::vec3 pos_camera = glm::rotate(glm::mat4(1.0f), x, dir_up) * (glm::vec4) { l, l, l, 1 };
+        const glm::vec3 pos_target = (glm::vec3){ 0, 0, 0 };
+
+        glm::mat4 m = glm::mat4(1.0f);
+        ubo = (UniformBufferObject) {
+            .view = glm::lookAt(pos_camera, pos_target, dir_up),
+            .proj = perspective_projection
+        };
+
+        // invert up axis
+        ubo.proj[1][1] *= -1;
+    }
+}
 
 namespace vkc {
     // TODO fix these long constructor? (dependency injection good I guess, not sure about this)
@@ -60,9 +197,30 @@ namespace vkc {
                 this,
                 command_buffers[i]
             );
+
+        TMP_Assets::num_mesh_assets = 0;
+        for (const auto& entry : std::filesystem::directory_iterator("res/models/pack_prototype"))
+        {
+            TMP_Assets::mesh_data[TMP_Assets::num_mesh_assets++] = TMP_Assets::load_mesh(entry.path().string().c_str());
+        }
+        TMP_Assets::texture_data[0] = TMP_Assets::load_texture("res/textures/colormap.png", TMP_Assets::TEX_CHANNELS_RGB_A);
+
+        TMP_Update::model_data.resize(TMP_Update::drawcall_cout);
+        int l = glm::sqrt(TMP_Update::drawcall_cout);
+        for (int i = 0; i < TMP_Update::drawcall_cout; ++i)
+            TMP_Update::model_data[i] = ModelData{ .model = glm::translate(glm::mat4(1.0f), glm::vec3(i % l - l/2, i / l - l/2, 0)) };
+
+        for(auto& data : TMP_Assets::mesh_data)
+            Drawcall::createModelBuffers(data.first, device, this);
+        Drawcall::createTextureImage(TMP_Assets::texture_data[0], device, this);
+
+        // only one renderpass for now
+        m_render_passes.resize(1);
+        m_render_passes[0] = std::make_unique<vkc::RenderPass>(device, this);
     }
 
     RenderContext::~RenderContext() {
+        Drawcall::destroy_resources(m_device);
         vkDestroyCommandPool(m_device, m_command_pool, NULL);
     }
 
@@ -71,15 +229,45 @@ namespace vkc {
     }
 
     void RenderContext::render_begin() {
+        // TODO we don't want to render ALL objects with ALL pipeline
+        //      make a struct of <renderpass, pipeline, material data, object data>
+        //      (so that we can also sort accordingly)
+
+
+        //clear previous drawcalls
+        Drawcall::clear_drawcalls();
+        // make up some drawcalls for testing
+        TMP_Update::updateUniformBuffer(m_active_frame_index, m_swapchain->get_extent());
+        for (uint32_t i = 0; i < TMP_Update::drawcall_cout; ++i)
+        {
+            Drawcall::add_drawcall(Drawcall::DrawcallData(
+                TMP_Update::model_data[i],
+                i % TMP_Assets::num_mesh_assets)
+            );
+        }
 
         // render current frame
-        m_frames[m_active_frame_index]->render(
-            m_swapchain->get_handle(),
-            m_queue_graphic,
-            m_queue_present,
-            m_active_frame_index,
-            m_swapchain->get_extent()
-        );
+        for (const std::unique_ptr<RenderPass>& obj_render_pass : m_render_passes)
+        {
+            VkRenderPassBeginInfo begin_info = obj_render_pass->get_being_info(m_active_frame_index);
+            for (int i = 0; i < obj_render_pass->get_pipelines_count(); ++i)
+            {
+                // NOT THREAD SAFE!
+                vkc::Pipeline* obj_pipeline = obj_render_pass->get_pipeline_ptr(i);
+
+                m_frames[m_active_frame_index]->render(
+                    m_swapchain->get_handle(),
+                    m_queue_graphic,
+                    m_queue_present,
+                    m_active_frame_index,
+                    m_swapchain->get_extent(),
+                    begin_info,
+                    obj_pipeline,
+                    TMP_Update::ubo,
+                    Drawcall::get_drawcalls()
+                );
+            }
+        }
     }
 
     void RenderContext::render_finalize() {
@@ -90,10 +278,10 @@ namespace vkc {
         assert(m_window != nullptr);
         m_swapchain->recreate(m_window->get_current_extent());
 
-        for (auto& render_frame : m_frames)
+        for (auto& render_pass : m_render_passes)
             // TODO FIXME this is actually a renderpass method
             //  (recreates framebuffers and assciated image attachments)
-            render_frame->handle_swapchain_recreation();
+            render_pass->handle_swapchain_recreation();
     }
 
     VkCommandBuffer RenderContext::beginSingleTimeCommands() {

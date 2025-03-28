@@ -2,15 +2,55 @@
 
 #include <vulkan/vulkan.h>
 
+#include <core/Pipeline.hpp>
+
 #include <vector>
+#include <memory>
 
 namespace vkc {
-	class RenderPass {
-	private:
-		VkRenderPass m_handle;
-		VkRenderPass m_handle_framebuffer;
+	class RenderContext;
 
-		std::vector<uint32_t> m_attachments_input;
-		std::vector<uint32_t> m_attachments_output;
+	// sore RenderPass for now
+	class RenderPass {
+	public:
+		RenderPass(VkDevice device, RenderContext* obj_render_context);
+		~RenderPass();
+
+		VkRenderPassBeginInfo get_being_info(uint8_t frame_index) const;
+		uint8_t get_pipelines_count() const;
+		VkPipeline get_pipeline_handle(uint8_t i);
+
+		// NOT THREAD SAFE!
+		vkc::Pipeline* get_pipeline_ptr(uint8_t i);
+
+		// TODO framebuffer only cares about swaphacin recreation
+		void handle_swapchain_recreation();
+	private:
+		void create_framebuffers();
+		void create_depth_resources();
+		void create_pipelines();
+
+		// TODO framebuffer only cares about swaphacin recreation
+		void handle_swapchain_destruction();
+	private:
+		// back-references
+		VkDevice m_handle_device;
+		RenderContext* m_obj_render_context;
+
+		// owned references
+		VkRenderPass m_handle;
+		std::vector<VkFramebuffer> m_handle_framebuffers;
+		std::vector<std::unique_ptr<Pipeline>> m_pipelines;
+		VkImage			m_depth_image;
+		VkDeviceMemory	m_depth_image_memory;
+		VkImageView		m_depth_image_view;
+
+		// one per attachment, in attachment order
+
+		const VkClearValue m_clear_values[2] = {
+			(VkClearValue) { .color = (VkClearColorValue){{ 0.0f, 0.0f, 0.0f, 1.0f }} },
+			(VkClearValue) { .depthStencil = (VkClearDepthStencilValue){ 1.0f, 0 } }
+		};
+		const int m_clear_values_count = 2;
 	};
 }

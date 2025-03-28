@@ -1,3 +1,12 @@
+/**
+* TODO this should not be called `VertexData`
+*      ATM it contains all the input info of a certain pipeline
+*       - VertexData        per-vertex data
+*       - InstanceData      per-instance data
+*       - UniformData       per-frame data
+*       - *MaterialData*    material data (not implemented yet)
+*/
+
 #pragma once
 
 #include <vulkan/vulkan.h>
@@ -13,6 +22,16 @@ typedef struct {
 typedef struct {
     glm::mat4 model_matrix;
 } InstanceData;
+
+// TODO where to pit this? Together with vertexData?
+typedef struct {
+    glm::mat4 view;
+    glm::mat4 proj;
+} UniformBufferObject;
+
+typedef struct {
+    glm::mat4 model;
+} ModelData;
 
 static const VkVertexInputBindingDescription bindingDescriptions[] = {
     (VkVertexInputBindingDescription) {
@@ -46,18 +65,18 @@ static const VkVertexInputAttributeDescription attributeDescriptions[] = {
 static const uint32_t attributeDescriptionsCount = sizeof(attributeDescriptions) / sizeof(VkVertexInputAttributeDescription);
 
 // VertexData
-const VkVertexInputBindingDescription* vertexData_getBindingDescriptions() {
+inline const VkVertexInputBindingDescription* vertexData_getBindingDescriptions() {
     return bindingDescriptions;
 }
 
-const uint32_t vertexData_getBindingDescriptionsCount() {
+inline const uint32_t vertexData_getBindingDescriptionsCount() {
     return bindingDescriptionsCount;
 }
 
-const VkVertexInputAttributeDescription* vertexData_getAttributeDescriptions() {
+inline const VkVertexInputAttributeDescription* vertexData_getAttributeDescriptions() {
     return attributeDescriptions;
 }
 
-const uint32_t vertexData_getAttributeDescriptionsCount() {
+inline const uint32_t vertexData_getAttributeDescriptionsCount() {
     return attributeDescriptionsCount;
 }

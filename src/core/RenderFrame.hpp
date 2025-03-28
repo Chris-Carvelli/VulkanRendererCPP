@@ -1,12 +1,18 @@
 #pragma once
 
 #include <vulkan/vulkan.h>
+#include <core/VertexData.h>
 
 #include <vector>
 
 namespace vkc {
 	class RenderContext;
 	class Swapchain;
+	class Pipeline;
+
+	namespace Drawcall {
+		class DrawcallData;
+	}
 
 	class RenderFrame {
 	public:
@@ -22,9 +28,12 @@ namespace vkc {
 			VkQueue queue_render,
 			VkQueue queue_present,
 			uint32_t frame_index,
-			VkExtent2D swapchain_extent
+			VkExtent2D swapchain_extent,
+			VkRenderPassBeginInfo render_pass_info,
+			vkc::Pipeline* obj_pipeline,
+			UniformBufferObject ubo,
+			const std::vector<Drawcall::DrawcallData>& drawcalls
 		);
-		void handle_swapchain_recreation();
 
 	private:
 		// references
@@ -39,7 +48,6 @@ namespace vkc {
 		VkSemaphore m_semaphore_render_finished;
 		VkSemaphore m_semaphore_image_available;
 
-		void handle_swapchain_destruction();
 
 		// TODO Buffer pool: a data structure to allow high-level structures to send per-frame data to the GPU (uniform buffers mostly)
 	};

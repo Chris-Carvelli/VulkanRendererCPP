@@ -19,22 +19,48 @@
 		- [ ] rename camel case symbols
 		- [ ] prefix `handle` to all vulkan objects
 		- [ ] prefix `obj` to all vkc object pointers
-	- [ ] use `CC_VK_CHECK` macro on all object (eventually, add an optiona log message in case of error if needed)
+	- [ ] use `CC_VK_CHECK` macro on all object (eventually, add an optional log message in case of error if needed)
 	- [ ] fix the super mangled Instance/PhysicalDevice/Surface/Device mess for the graphics queue
 	- [ ] do attachments belong to pipeline or renderpass? (probably renderpass. But it also depends between inputs and outputs?)
 	- [ ] implement `findDepthFormat()`
 	- [ ] check if we want/need anisotropy. If so, request and enable it in physical/logical device
 	- [ ] proper handling of indexed meshes
-	- [ ] VK objects cleanup
-
-- next time
+	- [x] VK objects cleanup
 	- [ ] setup to have one buffer per object, always on GPU
 		- [ ] map all resources on app creation
-		- [ ] rendercalls reference bufers
+		- [ ] rendercalls reference bufers4
 	- [ ] setup to have ono UBO, une VBO and one EBO
 		- [ ] command buffers for moving data from CPU to GPU
 		- [ ] `drawIndirect`
 	- [ ] compare approaches
+
+- 28/03/25
+	- [x] `RenderPass` initialized a single `Pipeline`
+	- [x] `RenderContext` own at least one `RenderPass`
+	- [x] `RenderContext` passes rende rpass and pipeline info to `RenderFrame`
+	- [x] `RenderContext` handles rendering of Application objects (first step towards DrawCalls)
+		- [x] `RenderContext` loads asset data (mesh and texture)
+		- [x] `RenderContext` create VK objects from asset data
+		- [x] fix remaining problems and test naive loop
+	- [ ] test multiple objects
+		- [x] map of assets
+		- [x] load tiles
+		- [x] loop over all objects
+		- [x] debug
+			- [x] mesh path is wrong (name only, missing dir)
+			- [x] naive setup calling `RnderFrame::render` for every drawcall does not work. Need to pass all the drawcalls at the same time
+		- [x] test push constants
+			- [x] modify shaders
+			- [x] modify `VertexData.h`
+			- [x] set constants
+			- [x] record multiple cmd buffers in `RnderFrame::render`
+			- [x] debug
+		- [ ] polish
+			- [x] create objects centered
+			- [x] fix object orientation on loading
+			- [x] test with MORE drawcalls
+			- [x] load entire asset pack
+		- [ ] rename one of the two `ModelData` (used for both mesh info AND push constants, no good)
 
 - 21/03/25
 	- [x] check order of VK object initialization

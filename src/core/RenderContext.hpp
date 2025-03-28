@@ -8,6 +8,31 @@
 
 #include <memory>
 
+namespace TMP_Assets {
+	typedef enum : uint8_t {
+		TEX_CHANNELS_NONE = 0x0,
+		TEX_CHANNELS_GREY = 0x1,
+		TEX_CHANNELS_GREY_A = 0x2,
+		TEX_CHANNELS_RGB = 0x3,
+		TEX_CHANNELS_RGB_A = 0x4
+	} TexChannelTypes;
+
+	typedef struct {
+		std::vector<VertexData> vertices;
+		std::vector<uint32_t> indices;
+	} MeshData;
+
+	typedef struct {
+		uint16_t width;
+		uint16_t height;
+		uint8_t channelsCount;
+		TexChannelTypes channels;
+		std::vector<unsigned char> data;
+	} TextureData;
+
+	TextureData get_texture_data();
+	MeshData& get_mesh_data(uint32_t index);
+}
 
 namespace vkc {
 	class Window;
@@ -35,7 +60,12 @@ namespace vkc {
 
 		// memory utils
 		void copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size);
-		void copy_buffer_to_image(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+		void copy_buffer_to_image(
+			VkBuffer buffer,
+			VkImage image,
+			uint32_t width,
+			uint32_t height
+		);
 		void createBuffer(
 			VkDeviceSize size,
 			VkBufferUsageFlags usage,
@@ -65,9 +95,7 @@ namespace vkc {
 			VkImageAspectFlags aspectFlags
 		);
 
-
 	private:
-
 		VkCommandBuffer beginSingleTimeCommands();
 		void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 
@@ -81,9 +109,9 @@ namespace vkc {
 
 		std::unique_ptr<vkc::Swapchain> m_swapchain;
 
-		// struc SwapchainProperties, let's see what's needed here and where
 
 		std::vector<std::unique_ptr<RenderFrame>> m_frames;
+		std::vector<std::unique_ptr<RenderPass>> m_render_passes;
 
 		// pools
 		VkCommandPool m_command_pool;
