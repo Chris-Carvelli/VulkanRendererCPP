@@ -34,6 +34,11 @@
 		- [ ] `drawIndirect`
 	- [ ] compare approaches
 
+- next time
+	- [ ] rename one of the two `ModelData` (used for both mesh info AND push constants, no good)
+	- [ ] test multiple renderpasses
+	- [ ] plan next mid-term goal
+
 - 28/03/25
 	- [x] `RenderPass` initialized a single `Pipeline`
 	- [x] `RenderContext` own at least one `RenderPass`
@@ -60,7 +65,6 @@
 			- [x] fix object orientation on loading
 			- [x] test with MORE drawcalls
 			- [x] load entire asset pack
-		- [ ] rename one of the two `ModelData` (used for both mesh info AND push constants, no good)
 
 - 21/03/25
 	- [x] check order of VK object initialization
