@@ -31,7 +31,7 @@ namespace vkc {
 			VkExtent2D swapchain_extent,
 			VkRenderPassBeginInfo render_pass_info,
 			vkc::Pipeline* obj_pipeline,
-			UniformBufferObject ubo,
+			DataUniformFrame ubo,
 			const std::vector<Drawcall::DrawcallData>& drawcalls
 		);
 

@@ -34,8 +34,8 @@
 		- [ ] `drawIndirect`
 	- [ ] compare approaches
 
-- next time
-	- [ ] rename one of the two `ModelData` (used for both mesh info AND push constants, no good)
+- 29/03/25
+	- [x] rename one of the two `ModelData` (used for both mesh info AND push constants, no good)
 	- [ ] test multiple renderpasses
 	- [ ] plan next mid-term goal
 

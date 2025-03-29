@@ -20,7 +20,7 @@ namespace vkc {
 		VkPipeline get_handle() const { return m_handle; };
 		VkPipelineLayout get_layout() const{ return m_handle_pipeline_layout; };
 
-		void update_uniform_buffer(UniformBufferObject& ubo, uint32_t current_frame);
+		void update_uniform_buffer(DataUniformFrame& ubo, uint32_t current_frame);
 		void bind_descriptor_sets(VkCommandBuffer command_buffer, uint32_t image_index);
 
 	private:

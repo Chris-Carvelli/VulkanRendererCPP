@@ -117,7 +117,7 @@ namespace vkc {
 		// push constants
 		VkPushConstantRange range = { VK_SHADER_STAGE_VERTEX_BIT };
 		range.offset = 0;
-		range.size = sizeof(ModelData);
+		range.size = sizeof(DataUniformModel);
 
 		// pipeline assembly
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO };
@@ -174,8 +174,7 @@ namespace vkc {
 		vkDestroySampler(m_handle_device, m_texture_sampler, NULL);
 	}
 
-	void Pipeline::update_uniform_buffer(UniformBufferObject& ubo, uint32_t current_frame) {
-		InstanceData a;
+	void Pipeline::update_uniform_buffer(DataUniformFrame& ubo, uint32_t current_frame) {
 		memcpy(m_uniform_buffers_mapped[current_frame], &ubo, sizeof(ubo));
 	}
 
@@ -267,7 +266,7 @@ namespace vkc {
 			bufferInfo.buffer = m_uniform_buffers[i];
 			bufferInfo.offset = 0;
 			// TODO if UBO is application-specific, should we pass the size as parameter?
-			bufferInfo.range = sizeof(UniformBufferObject);
+			bufferInfo.range = sizeof(DataUniformFrame);
 
 			VkDescriptorImageInfo imageInfo = { 0 };
 			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -300,7 +299,7 @@ namespace vkc {
 	}
 
 	void Pipeline::create_uniform_buffers() {
-		VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+		VkDeviceSize bufferSize = sizeof(DataUniformFrame);
 		uint8_t num_swapchain_images = m_obj_render_context->get_num_render_frames();
 
 		m_uniform_buffers.resize(num_swapchain_images);

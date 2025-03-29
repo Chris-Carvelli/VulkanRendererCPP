@@ -21,9 +21,9 @@ namespace vkc {
 		// forward declaration of namespace-nested structs
 		class DrawcallData {
 		public:
-			ModelData model_data;
+			DataUniformModel model_data;
 			uint32_t idx_model_data;
-			DrawcallData(ModelData p_model_data, uint32_t p_idx_model_data) {
+			DrawcallData(DataUniformModel p_model_data, uint32_t p_idx_model_data) {
 				model_data = p_model_data;
 				idx_model_data = p_idx_model_data;
 			}

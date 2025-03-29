@@ -108,10 +108,10 @@ namespace TMP_Assets {
 namespace TMP_Update {
     glm::mat4 perspective_projection;
     static float x = 0.0f;
-    UniformBufferObject ubo;
+    DataUniformFrame ubo;
 
     const uint32_t drawcall_cout = 200;
-    std::vector<ModelData> model_data;
+    std::vector<DataUniformModel> model_data;
 
     void updateUniformBuffer(uint32_t currentFrame, VkExtent2D swapchain_extent) {
 
@@ -131,7 +131,7 @@ namespace TMP_Update {
         const glm::vec3 pos_target = (glm::vec3){ 0, 0, 0 };
 
         glm::mat4 m = glm::mat4(1.0f);
-        ubo = (UniformBufferObject) {
+        ubo = (DataUniformFrame) {
             .view = glm::lookAt(pos_camera, pos_target, dir_up),
             .proj = perspective_projection
         };
@@ -208,7 +208,7 @@ namespace vkc {
         TMP_Update::model_data.resize(TMP_Update::drawcall_cout);
         int l = glm::sqrt(TMP_Update::drawcall_cout);
         for (int i = 0; i < TMP_Update::drawcall_cout; ++i)
-            TMP_Update::model_data[i] = ModelData{ .model = glm::translate(glm::mat4(1.0f), glm::vec3(i % l - l/2, i / l - l/2, 0)) };
+            TMP_Update::model_data[i] = DataUniformModel{ .model = glm::translate(glm::mat4(1.0f), glm::vec3(i % l - l/2, i / l - l/2, 0)) };
 
         for(auto& data : TMP_Assets::mesh_data)
             Drawcall::createModelBuffers(data.first, device, this);

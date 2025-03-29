@@ -19,19 +19,15 @@ typedef struct {
     glm::vec2 texCoords;
 } VertexData;
 
-typedef struct {
-    glm::mat4 model_matrix;
-} InstanceData;
-
 // TODO where to pit this? Together with vertexData?
 typedef struct {
     glm::mat4 view;
     glm::mat4 proj;
-} UniformBufferObject;
+} DataUniformFrame;
 
 typedef struct {
     glm::mat4 model;
-} ModelData;
+} DataUniformModel;
 
 static const VkVertexInputBindingDescription bindingDescriptions[] = {
     (VkVertexInputBindingDescription) {
