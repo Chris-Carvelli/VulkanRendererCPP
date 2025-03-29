@@ -164,10 +164,28 @@ namespace vkc {
 		);
 	}
 
-	// only supports one pipeline ATM
 	void RenderPass::create_pipelines() {
-		m_pipelines.resize(1);
-		m_pipelines[0] = std::make_unique<vkc::Pipeline>(m_handle_device, m_obj_render_context, m_handle);
+		m_pipelines.resize(2);
+		
+		// forward pass
+		m_pipelines[0] = std::make_unique<vkc::Pipeline>(
+			m_handle_device,
+			m_obj_render_context,
+			m_handle,
+			"res/shaders/shader_base.vert.spv",
+			"res/shaders/shader_base.frag.spv",
+			VK_CULL_MODE_NONE
+		);
+
+		// outlines
+		m_pipelines[1] = std::make_unique<vkc::Pipeline>(
+			m_handle_device,
+			m_obj_render_context,
+			m_handle,
+			"res/shaders/shader_outline.vert.spv",
+			"res/shaders/shader_unlit.frag.spv",
+			VK_CULL_MODE_FRONT_BIT
+		);
 	}
 
 	void RenderPass::handle_swapchain_destruction() {

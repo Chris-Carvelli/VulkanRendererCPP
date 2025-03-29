@@ -37,6 +37,14 @@
 - 29/03/25
 	- [x] rename one of the two `ModelData` (used for both mesh info AND push constants, no good)
 	- [ ] test multiple renderpasses
+		- [x] create arrays of `BeginRenderPassInfo` and `VkPipeline`
+		- [x] add ids/indices of render pass and pipeline into drawcall
+		- [ ] sort drawcalls
+		- [x] create outline shader
+			- [x] add normals to model data (instead of color)
+			- [x] write shader
+		- [ ] create new pipeline
+			- [ ] shaders as inputs?
 	- [ ] plan next mid-term goal
 
 - 28/03/25

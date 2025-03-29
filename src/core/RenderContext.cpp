@@ -37,7 +37,10 @@ namespace TMP_Assets {
         return mesh_data[index];
     }
 
-    MeshData load_mesh(const char* path) {
+    MeshData load_mesh(const char* path, bool invert_x_y=false) {
+        int offset_x = 0;
+        int offset_y = invert_x_y ? 2 : 1;
+        int offset_z = invert_x_y ? 1 : 2;
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
         std::vector<tinyobj::material_t> materials;
@@ -63,15 +66,23 @@ namespace TMP_Assets {
                 // (prob. default blender)
                 // this should probably be an import util + cooking anyway
                 ret.vertices[i].position = glm::vec3(
-                    attrib.vertices[3 * index.vertex_index + 0],
-                    attrib.vertices[3 * index.vertex_index + 2],
-                    attrib.vertices[3 * index.vertex_index + 1]
+                    attrib.vertices[3 * index.vertex_index + offset_x],
+                    attrib.vertices[3 * index.vertex_index + offset_y],
+                    attrib.vertices[3 * index.vertex_index + offset_z]
                 );
+
+                ret.vertices[i].color = glm::vec3(1.0f);
+
+                ret.vertices[i].normal = glm::vec3(
+                    attrib.normals[3 * index.normal_index + offset_x],
+                    attrib.normals[3 * index.normal_index + offset_y],
+                    attrib.normals[3 * index.normal_index + offset_z]
+                );
+
                 ret.vertices[i].texCoords = glm::vec2(
                     attrib.texcoords[2 * index.texcoord_index + 0],
                     1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
                 );
-                ret.vertices[i].color = glm::vec3(1.0f);
                 ++i;
             }
 
@@ -110,18 +121,20 @@ namespace TMP_Update {
     static float x = 0.0f;
     DataUniformFrame ubo;
 
-    const uint32_t drawcall_cout = 200;
+    const uint32_t drawcall_cout = 1;
     std::vector<DataUniformModel> model_data;
 
     void updateUniformBuffer(uint32_t currentFrame, VkExtent2D swapchain_extent) {
 
         // zoom out depending on loaded objects
-        float l = glm::sqrt(drawcall_cout);
+        //float l = glm::sqrt(drawcall_cout);
+        float l = 2;
         float fow = (float)swapchain_extent.width / swapchain_extent.height;
-        perspective_projection = glm::perspective(glm::radians(45.0f), fow, 0.1f, (float)drawcall_cout);
+        //perspective_projection = glm::perspective(glm::radians(45.0f), fow, 0.1f, (float)drawcall_cout);
+        perspective_projection = glm::perspective(glm::radians(45.0f), fow, 0.1f, 10.0f);
 
         // TODO calculate deltaTime
-        const float time = 1 / 60.0f;
+        const float time = 1.0f / 2200.0f;
         const float offset = 1.0f;
         x += time;
 
@@ -199,11 +212,14 @@ namespace vkc {
             );
 
         TMP_Assets::num_mesh_assets = 0;
-        for (const auto& entry : std::filesystem::directory_iterator("res/models/pack_prototype"))
+        /*for (const auto& entry : std::filesystem::directory_iterator("res/models/pack_prototype"))
         {
-            TMP_Assets::mesh_data[TMP_Assets::num_mesh_assets++] = TMP_Assets::load_mesh(entry.path().string().c_str());
-        }
-        TMP_Assets::texture_data[0] = TMP_Assets::load_texture("res/textures/colormap.png", TMP_Assets::TEX_CHANNELS_RGB_A);
+            TMP_Assets::mesh_data[TMP_Assets::num_mesh_assets++] = TMP_Assets::load_mesh(entry.path().string().c_str(), true);
+        }*/
+        TMP_Assets::mesh_data[TMP_Assets::num_mesh_assets++] = TMP_Assets::load_mesh("res/models/viking_room.obj");
+        //TMP_Assets::texture_data[0] = TMP_Assets::load_texture("res/textures/colormap.png", TMP_Assets::TEX_CHANNELS_RGB_A);
+        TMP_Assets::texture_data[0] = TMP_Assets::load_texture("res/textures/viking_room.png", TMP_Assets::TEX_CHANNELS_RGB_A);
+
 
         TMP_Update::model_data.resize(TMP_Update::drawcall_cout);
         int l = glm::sqrt(TMP_Update::drawcall_cout);
@@ -238,36 +254,34 @@ namespace vkc {
         Drawcall::clear_drawcalls();
         // make up some drawcalls for testing
         TMP_Update::updateUniformBuffer(m_active_frame_index, m_swapchain->get_extent());
+        vkc::RenderPass* obj_render_pass = m_render_passes[0].get();
         for (uint32_t i = 0; i < TMP_Update::drawcall_cout; ++i)
         {
+            // base drawcall
             Drawcall::add_drawcall(Drawcall::DrawcallData(
+                obj_render_pass,
+                obj_render_pass->get_pipeline_ptr(0),
+                TMP_Update::model_data[i],
+                i % TMP_Assets::num_mesh_assets)
+            );
+            // outline drawcall
+            Drawcall::add_drawcall(Drawcall::DrawcallData(
+                obj_render_pass,
+                obj_render_pass->get_pipeline_ptr(1),
                 TMP_Update::model_data[i],
                 i % TMP_Assets::num_mesh_assets)
             );
         }
 
-        // render current frame
-        for (const std::unique_ptr<RenderPass>& obj_render_pass : m_render_passes)
-        {
-            VkRenderPassBeginInfo begin_info = obj_render_pass->get_being_info(m_active_frame_index);
-            for (int i = 0; i < obj_render_pass->get_pipelines_count(); ++i)
-            {
-                // NOT THREAD SAFE!
-                vkc::Pipeline* obj_pipeline = obj_render_pass->get_pipeline_ptr(i);
-
-                m_frames[m_active_frame_index]->render(
-                    m_swapchain->get_handle(),
-                    m_queue_graphic,
-                    m_queue_present,
-                    m_active_frame_index,
-                    m_swapchain->get_extent(),
-                    begin_info,
-                    obj_pipeline,
-                    TMP_Update::ubo,
-                    Drawcall::get_drawcalls()
-                );
-            }
-        }
+        m_frames[m_active_frame_index]->render(
+            m_swapchain->get_handle(),
+            m_queue_graphic,
+            m_queue_present,
+            m_active_frame_index,
+            m_swapchain->get_extent(),
+            TMP_Update::ubo,
+            Drawcall::get_drawcalls()
+        );
     }
 
     void RenderContext::render_finalize() {

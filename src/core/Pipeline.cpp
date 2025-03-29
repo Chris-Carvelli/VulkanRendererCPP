@@ -6,15 +6,22 @@
 #include <core/VertexData.h>
 
 namespace vkc {
-	Pipeline::Pipeline(VkDevice handle_device, vkc::RenderContext* obj_render_context, VkRenderPass handle_render_pass) {
-		m_handle_device = handle_device;
-		m_handle_render_pass = handle_render_pass;
-		m_obj_render_context = obj_render_context;
-
+	Pipeline::Pipeline(
+		VkDevice handle_device,
+		vkc::RenderContext* obj_render_context,
+		VkRenderPass handle_render_pass,
+		const char *vert_path,
+		const char *frag_path,
+		VkCullModeFlags face_culling_mode
+	)
+		: m_handle_device      { handle_device }
+		, m_handle_render_pass { handle_render_pass }
+		, m_obj_render_context { obj_render_context }
+	{
 		create_descriptor_set_layout();
 
-		std::vector<char> shaderCodeVert = TMP_VUlkanUtils::read_file_binary("res/shaders/shader_base.vert.spv");
-		std::vector<char> shaderCodeFrag = TMP_VUlkanUtils::read_file_binary("res/shaders/shader_base.frag.spv");
+		std::vector<char> shaderCodeVert = TMP_VUlkanUtils::read_file_binary(vert_path);
+		std::vector<char> shaderCodeFrag = TMP_VUlkanUtils::read_file_binary(frag_path);
 
 		VkShaderModule shaderModuleVert = create_shader_module(handle_device, shaderCodeVert.data(), shaderCodeVert.size());
 		VkShaderModule shaderModuleFrag = create_shader_module(handle_device, shaderCodeFrag.data(), shaderCodeFrag.size());
@@ -68,7 +75,7 @@ namespace vkc {
 		// rasterizer.rasterizerDiscardEnable = VK_FALSE; // this should be default false
 		// rasterizer.polygonMode = VK_POLYGON_MODE_FILL; // this should be fill by default
 		rasterizer.lineWidth = 1.0f;
-		rasterizer.cullMode = VK_CULL_MODE_NONE;
+		rasterizer.cullMode = face_culling_mode;
 		rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
 

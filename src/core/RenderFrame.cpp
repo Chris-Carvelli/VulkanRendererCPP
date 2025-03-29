@@ -46,22 +46,9 @@ namespace vkc {
 		VkQueue queue_present,
 		uint32_t frame_index,
 		VkExtent2D swapchain_extent,
-		VkRenderPassBeginInfo render_pass_info,
-		vkc::Pipeline* obj_pipeline,
 		DataUniformFrame ubo,
 		const std::vector<Drawcall::DrawcallData>& drawcalls
 	) {
-		// 1. [frame]	begin command buffer
-		// 2. [pass]		begin renderpass
-		// 3. [shdr	]		bind pipeline
-		// 4. [pass	]			draw calls (+ uniforms)
-		// 5. [pass	]		end renderpass
-		// 6. [frame]	end command buffer
-		// 5. [ctx	]	submit to render queue
-		// 6. [ctx	]	submit to present queue
-
-
-
 		vkWaitForFences(m_device, 1, &m_fence_in_flight, VK_TRUE, UINT64_MAX);
 
 		VkResult resultNextImage = vkAcquireNextImageKHR(m_device, swapchain, UINT64_MAX, m_semaphore_image_available, VK_NULL_HANDLE, &frame_index);
@@ -76,9 +63,6 @@ namespace vkc {
 		else if (resultNextImage < VK_SUCCESS)
 			CC_LOG(ERROR, "[VkResult %d] failed to present swapchain: %s", resultNextImage, string_VkResult(resultNextImage));
 
-		// this will be executed reading the uniform data form a queue of DrawCalls
-		obj_pipeline->update_uniform_buffer(ubo, frame_index);
-
 		vkResetFences(m_device, 1, &m_fence_in_flight);
 
 		vkResetCommandBuffer(m_command_buffer, 0);
@@ -88,20 +72,16 @@ namespace vkc {
 		beginInfo.flags = 0;               // Optional
 		beginInfo.pInheritanceInfo = NULL; // Optional
 
-
 		if (vkBeginCommandBuffer(m_command_buffer, &beginInfo) != VK_SUCCESS) {
 			CC_LOG(ERROR, "failed to begin recording command buffer!");
 		}
 
-		// renderpass =========================================================
-		vkCmdBeginRenderPass(m_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
-		// ====================================================================
-
-		// pipeline ===========================================================
-		vkCmdBindPipeline(m_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, obj_pipeline->get_handle());
-		obj_pipeline->bind_descriptor_sets(m_command_buffer, frame_index);
-		// ====================================================================
-
+		// viewport and scissor ===============================================
+		// these could be metadata of shaders/pipelines/renderpasses
+		// examples of only some calls setting special ones
+		// - minimap
+		// - fake windows
+		// deal with then when we'll need it
 		VkViewport viewport = { };
 		viewport.x = 0.0f;
 		viewport.y = 0.0f;
@@ -118,22 +98,56 @@ namespace vkc {
 		};
 		scissor.extent = swapchain_extent;
 		vkCmdSetScissor(m_command_buffer, 0, 1, &scissor);
+		// ====================================================================
+		
+		// renderpass =========================================================
+		
+		// ====================================================================
 
-		// command buffer =====================================================
-		int c = 0;
+		// pipeline ===========================================================
+		
+		// ====================================================================
+
+		// draw calls =========================================================
+		vkc::RenderPass* obj_curr_render_pass = nullptr;
+		vkc::Pipeline* obj_curr_pipeline = nullptr;
+		VkRenderPassBeginInfo begin_info;
 		for(const auto& drawcall : drawcalls)
 		{
-			++c;
-			Drawcall::ModelDataGPU model_data_gpu = Drawcall::get_model_data(drawcall.idx_model_data);
+			if (drawcall.obj_render_pass != obj_curr_render_pass)
+			{
+				obj_curr_render_pass = drawcall.obj_render_pass;
+				begin_info = obj_curr_render_pass->get_being_info(frame_index);
+				vkCmdBeginRenderPass(
+					m_command_buffer,
+					&begin_info,
+					VK_SUBPASS_CONTENTS_INLINE
+				);
+			}
+
+			if (drawcall.obj_pipeline != obj_curr_pipeline) {
+				obj_curr_pipeline = drawcall.obj_pipeline;
+				vkCmdBindPipeline(
+					m_command_buffer,
+					VK_PIPELINE_BIND_POINT_GRAPHICS,
+					obj_curr_pipeline->get_handle()
+				);
+				obj_curr_pipeline->bind_descriptor_sets(
+					m_command_buffer,
+					frame_index);
+				obj_curr_pipeline->update_uniform_buffer(ubo, frame_index);
+			}
+
+			Drawcall::ModelDataGPU model_data_gpu = Drawcall::get_model_data(drawcall.idx_data_attributes);
 			VkBuffer vertexBuffers[] = { model_data_gpu.vertex_buffer };
 			VkDeviceSize offsets[] = { 0 };
 			vkCmdPushConstants(
 				m_command_buffer,
-				obj_pipeline->get_layout(),
+				obj_curr_pipeline->get_layout(),
 				VK_SHADER_STAGE_VERTEX_BIT,
 				0,
-				sizeof(drawcall.model_data),
-				&drawcall.model_data
+				sizeof(drawcall.data_uniform_model),
+				&drawcall.data_uniform_model
 			);
 			vkCmdBindVertexBuffers(m_command_buffer, 0, 1, vertexBuffers, offsets);
 			vkCmdBindIndexBuffer(m_command_buffer, model_data_gpu.index_buffer, 0, VK_INDEX_TYPE_UINT32);
@@ -141,7 +155,6 @@ namespace vkc {
 			vkCmdDrawIndexed(m_command_buffer, model_data_gpu.indices_count, 1, 0, 0, 0);
 		}
 		// ====================================================================
-
 
 		vkCmdEndRenderPass(m_command_buffer);
 

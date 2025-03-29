@@ -11,7 +11,7 @@ namespace vkc {
 	class Pipeline;
 
 	namespace Drawcall {
-		class DrawcallData;
+		struct DrawcallData;
 	}
 
 	class RenderFrame {
@@ -29,8 +29,6 @@ namespace vkc {
 			VkQueue queue_present,
 			uint32_t frame_index,
 			VkExtent2D swapchain_extent,
-			VkRenderPassBeginInfo render_pass_info,
-			vkc::Pipeline* obj_pipeline,
 			DataUniformFrame ubo,
 			const std::vector<Drawcall::DrawcallData>& drawcalls
 		);
