@@ -8,6 +8,8 @@ namespace vkc {
 	namespace utils {
 		class DearImGui {
             const int MIN_IMAGE_COUNT = 2;
+        public:
+            static DearImGui * TMP_SingletonInstance;
 
         public:
             DearImGui();
@@ -25,6 +27,10 @@ namespace vkc {
 
             void BeginFrame();
             void EndFrame(VkCommandBuffer cmd_buffer);
-		};
-	}
+            
+        private:
+            VkDevice m_device;
+            VkDescriptorPool m_DescriptorPool;
+        };
+    }
 }

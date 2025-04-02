@@ -8,6 +8,8 @@
 
 namespace vkc {
 	namespace utils {
+        DearImGui* DearImGui::TMP_SingletonInstance = nullptr;
+
         DearImGui::DearImGui()
         {
             IMGUI_CHECKVERSION();
@@ -19,6 +21,7 @@ namespace vkc {
 
         DearImGui::~DearImGui()
         {
+            Cleanup();
             ImGui::DestroyContext();
         }
 
@@ -29,6 +32,12 @@ namespace vkc {
             VkDevice g_Device,
             VkRenderPass g_RenderPass
         ) {
+
+
+            TMP_SingletonInstance = this;
+
+            m_device = g_Device;
+
             // queue family: let ImGui figure it out. We can force it later
             uint32_t g_QueueFamily = ImGui_ImplVulkanH_SelectQueueFamilyIndex(g_PhysicalDevice);
 
@@ -39,7 +48,6 @@ namespace vkc {
             // descriptor pool
             // from https://github.com/ocornut/imgui/blob/master/examples/example_win32_vulkan/main.cpp
             // If you wish to load e.g. additional textures you may need to alter pools sizes and maxSets.
-            VkDescriptorPool g_DescriptorPool;
             {
                 VkDescriptorPoolSize pool_sizes[] =
                 {
@@ -53,7 +61,7 @@ namespace vkc {
                     pool_info.maxSets += pool_size.descriptorCount;
                 pool_info.poolSizeCount = (uint32_t)IM_ARRAYSIZE(pool_sizes);
                 pool_info.pPoolSizes = pool_sizes;
-                vkCreateDescriptorPool(g_Device, &pool_info, nullptr, &g_DescriptorPool);
+                vkCreateDescriptorPool(g_Device, &pool_info, nullptr, &m_DescriptorPool);
             }
 
             // TODO make implementati
@@ -66,7 +74,7 @@ namespace vkc {
             init_info.QueueFamily = g_QueueFamily;
             init_info.Queue = g_Queue;
             init_info.PipelineCache = nullptr;
-            init_info.DescriptorPool = g_DescriptorPool;
+            init_info.DescriptorPool = m_DescriptorPool;
             init_info.RenderPass = g_RenderPass;
             init_info.Subpass = 0;
             init_info.MinImageCount = MIN_IMAGE_COUNT;
@@ -83,6 +91,8 @@ namespace vkc {
         {
             ImGui_ImplVulkan_Shutdown();
             ImGui_ImplWin32_Shutdown();
+
+            vkDestroyDescriptorPool(m_device, m_DescriptorPool, nullptr);
         }
 
         void DearImGui::BeginFrame()

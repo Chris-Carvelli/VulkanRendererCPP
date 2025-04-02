@@ -5,8 +5,12 @@
 #include <core/Pipeline.hpp>
 #include <core/DrawCall.hpp>
 
-// probably not needed her,e we just need access to the drawcall
+// probably not needed here, we just need access to the drawcall
 #include <core/RenderContext.hpp>
+
+// TMP test imgui
+#include <imgui.h>
+#include <utils/DearImGui.hpp>
 
 namespace vkc {
 	RenderFrame::RenderFrame(
@@ -114,7 +118,7 @@ namespace vkc {
 		VkRenderPassBeginInfo begin_info;
 		for(const auto& drawcall : drawcalls)
 		{
-			//if (drawcall.obj_render_pass != obj_curr_render_pass)
+			if (drawcall.obj_render_pass != obj_curr_render_pass)
 			{
 				obj_curr_render_pass = drawcall.obj_render_pass;
 				begin_info = obj_curr_render_pass->get_being_info(frame_index);
@@ -125,7 +129,7 @@ namespace vkc {
 				);
 			}
 
-			//if (drawcall.obj_pipeline != obj_curr_pipeline)
+			if (drawcall.obj_pipeline != obj_curr_pipeline)
 			{
 				obj_curr_pipeline = drawcall.obj_pipeline;
 				vkCmdBindPipeline(
@@ -156,6 +160,13 @@ namespace vkc {
 			vkCmdDrawIndexed(m_command_buffer, model_data_gpu.indices_count, 1, 0, 0, 0);
 		}
 		// ====================================================================
+
+		// TMP test imgui
+		vkc::utils::DearImGui::TMP_SingletonInstance->BeginFrame();
+		ImGui::Begin("hello");
+		ImGui::Text("world");
+		ImGui::End();
+		vkc::utils::DearImGui::TMP_SingletonInstance->EndFrame(m_command_buffer);
 
 		vkCmdEndRenderPass(m_command_buffer);
 

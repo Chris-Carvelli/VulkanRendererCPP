@@ -1,4 +1,4 @@
-#include "Pipeline.hpp"
+#include "Pipeline_FX.hpp"
 
 #include <VulkanUtils.h>
 #include <core/RenderContext.hpp>
@@ -6,7 +6,7 @@
 #include <core/VertexData.h>
 
 namespace vkc {
-	Pipeline::Pipeline(
+	Pipeline_FX::Pipeline_FX(
 		VkDevice handle_device,
 		vkc::RenderContext* obj_render_context,
 		VkRenderPass handle_render_pass,
@@ -89,15 +89,10 @@ namespace vkc {
 		multisampling.alphaToOneEnable = VK_FALSE; // Optional
 
 		VkPipelineDepthStencilStateCreateInfo depthStencil = { VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO };
-		depthStencil.depthTestEnable = VK_TRUE;
-		depthStencil.depthWriteEnable = VK_TRUE;
-		depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+		depthStencil.depthTestEnable = VK_FALSE;
+		depthStencil.depthWriteEnable = VK_FALSE;
 		depthStencil.depthBoundsTestEnable = VK_FALSE;
-		depthStencil.minDepthBounds = 0.0f; // Optional
-		depthStencil.maxDepthBounds = 1.0f; // Optional
 		depthStencil.stencilTestEnable = VK_FALSE;
-		depthStencil.front = (VkStencilOpState){}; // Optional
-		depthStencil.back = (VkStencilOpState){}; // Optional
 
 		// color blend - framebuffer
 		VkPipelineColorBlendAttachmentState colorBlendAttachment = { 0 };
@@ -167,9 +162,7 @@ namespace vkc {
 		create_descriptor_sets();
 	}
 
-	Pipeline::~Pipeline() {
-		if (m_handle == VK_NULL_HANDLE)
-			return;
+	Pipeline_FX::~Pipeline_FX() {
 		vkDestroyPipelineLayout(m_handle_device, m_handle_pipeline_layout, NULL);
 		vkDestroyPipeline(m_handle_device, m_handle, NULL);
 		vkDestroyDescriptorSetLayout(m_handle_device, m_handle_descriptor_set_layout, NULL);
@@ -182,11 +175,11 @@ namespace vkc {
 		vkDestroySampler(m_handle_device, m_texture_sampler, NULL);
 	}
 
-	void Pipeline::update_uniform_buffer(DataUniformFrame& ubo, uint32_t current_frame) {
+	void Pipeline_FX::update_uniform_buffer(DataUniformFrame& ubo, uint32_t current_frame) {
 		memcpy(m_uniform_buffers_mapped[current_frame], &ubo, sizeof(ubo));
 	}
 
-	void Pipeline::bind_descriptor_sets(VkCommandBuffer command_buffer, uint32_t image_index) {
+	void Pipeline_FX::bind_descriptor_sets(VkCommandBuffer command_buffer, uint32_t image_index) {
 		vkCmdBindDescriptorSets(
 			command_buffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -198,7 +191,7 @@ namespace vkc {
 		);
 	}
 
-	void Pipeline::create_descriptor_set_layout() {
+	void Pipeline_FX::create_descriptor_set_layout() {
 		VkDescriptorSetLayoutBinding uboLayoutBinding = { 0 };
 		uboLayoutBinding.binding = 0;
 		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -228,7 +221,7 @@ namespace vkc {
 	}
 
 	// TODO should this be automatically read from pipeline info?
-	void Pipeline::create_descriptor_sets() {
+	void Pipeline_FX::create_descriptor_sets() {
 		uint8_t num_swapchain_images = m_obj_render_context->get_num_render_frames();
 
 		// descriptor pool
@@ -306,7 +299,7 @@ namespace vkc {
 		}
 	}
 
-	void Pipeline::create_uniform_buffers() {
+	void Pipeline_FX::create_uniform_buffers() {
 		VkDeviceSize bufferSize = sizeof(DataUniformFrame);
 		uint8_t num_swapchain_images = m_obj_render_context->get_num_render_frames();
 
@@ -326,7 +319,7 @@ namespace vkc {
 		}
 	}
 
-	void Pipeline::create_texture_samplers() {
+	void Pipeline_FX::create_texture_samplers() {
 		VkSamplerCreateInfo samplerInfo = { VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO };
 		samplerInfo.magFilter = VK_FILTER_LINEAR;
 		samplerInfo.minFilter = VK_FILTER_LINEAR;
@@ -351,7 +344,7 @@ namespace vkc {
 		}
 	}
 
-	VkShaderModule Pipeline::create_shader_module(VkDevice device, const char* code, const size_t codeSize) {
+	VkShaderModule Pipeline_FX::create_shader_module(VkDevice device, const char* code, const size_t codeSize) {
 		VkShaderModuleCreateInfo createInfo = { VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO };
 		createInfo.codeSize = codeSize;
 		createInfo.pCode = (const uint32_t*)code;

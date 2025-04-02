@@ -21,6 +21,7 @@ public:
 	};
 	~VKRenderer() {
 		// hack to force swapchain destructor to run before the destruction of the surface
+		m_dear_imgui.reset();
 		m_render_context.reset();
 		m_device.reset();
 

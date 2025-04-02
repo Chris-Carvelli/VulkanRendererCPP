@@ -3,6 +3,8 @@
 #include <VulkanUtils.h>
 #include <core/RenderContext.hpp>
 
+#include <core/Pipeline_FX.hpp>
+
 namespace vkc {
 	RenderPass::RenderPass(VkDevice device, RenderContext* obj_render_context)
 		: m_handle_device{ device }
@@ -179,7 +181,7 @@ namespace vkc {
 		);
 
 		// outlines
-		m_pipelines[1] = std::make_unique<vkc::Pipeline>(
+		m_pipelines[1] = std::make_unique<vkc::Pipeline_FX>(
 			m_handle_device,
 			m_obj_render_context,
 			m_handle,

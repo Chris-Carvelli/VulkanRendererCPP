@@ -16,6 +16,8 @@ namespace vkc {
 		RenderPass(VkDevice device, RenderContext* obj_render_context);
 		~RenderPass();
 
+		VkRenderPass get_handle() const { return m_handle; };
+
 		VkRenderPassBeginInfo get_being_info(uint8_t frame_index) const;
 		uint8_t get_pipelines_count() const;
 		VkPipeline get_pipeline_handle(uint8_t i);

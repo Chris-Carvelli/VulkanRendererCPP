@@ -8,7 +8,6 @@ void VKRenderer::run() {
 	{
 		m_render_context->render_begin();
 		render();
-		m_render_context->render_finalize();
 		m_window->collect_input();
 	}
 
@@ -52,6 +51,6 @@ void VKRenderer::init_base()
 		// TODO after making pipeline/renderpass creation API,
 		//      create UI renderpass and pass it here
 		//      (may need also the pipeline, for the frame recording finalization)
-		nullptr
+		m_render_context->get_renderpass(0)->get_handle()
 	);
 }

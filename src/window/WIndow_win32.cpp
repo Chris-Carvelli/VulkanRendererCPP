@@ -19,10 +19,17 @@ inline void TMP_CC_LOG_SYS_ERROR() {
 #include <winuser.h>
 #include <windef.h>
 #include <vulkan/vulkan_win32.h>
+#include <imgui_impl_win32.h>
+
 #pragma comment(lib,"user32.lib")
+
+
+// Forward declare message handler from imgui_impl_win32.cpp
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // win32 specific data
 namespace {
+
     std::vector<const char*> platform_extensions = {
         "VK_KHR_win32_surface"
     };
@@ -30,6 +37,9 @@ namespace {
     // this is the main message handler for the program
     LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
+        if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+            return true;
+
         if (message == WM_DESTROY)
         {
             PostQuitMessage(0);

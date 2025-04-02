@@ -58,6 +58,8 @@ namespace vkc {
 		void render_finalize();
 		void recreate_swapchain();
 
+		RenderPass* get_renderpass(uint32_t i) const { return m_render_passes[i].get(); };
+
 		// memory utils
 		void copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size);
 		void copy_buffer_to_image(

@@ -2,23 +2,17 @@
 
 #include <vulkan/vulkan.h>
 #include <core/VertexData.h>
-#include <vector>
+#include <core/Pipeline.hpp>
 
+#include <vector>
 
 namespace vkc {
 	class RenderContext;
 
-	class Pipeline {
-	protected:
-		Pipeline()
-			: m_handle_device{ VK_NULL_HANDLE }
-			, m_handle{ VK_NULL_HANDLE }
-			, m_handle_render_pass{ VK_NULL_HANDLE }
-			, m_obj_render_context{ nullptr }
-		{ };
-
+	class Pipeline_FX : public Pipeline
+	{
 	public:
-		Pipeline(
+		Pipeline_FX(
 			VkDevice handle_device,
 			vkc::RenderContext* obj_render_context,
 			VkRenderPass handle_render_pass,
@@ -26,7 +20,7 @@ namespace vkc {
 			const char* frag_path,
 			VkCullModeFlags face_culling_mode = VK_CULL_MODE_BACK_BIT
 		);
-		virtual ~Pipeline();
+		~Pipeline_FX();
 
 		virtual VkPipeline get_handle() const { return m_handle; };
 		virtual VkPipelineLayout get_layout() const{ return m_handle_pipeline_layout; };
