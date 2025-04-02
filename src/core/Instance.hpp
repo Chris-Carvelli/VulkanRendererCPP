@@ -43,7 +43,7 @@ namespace vkc {
 			m_gpus[0]->set_surface(surface);
 		};
 
-		const vkc::PhysicalDevice& get_selected_gpu() const;
+		vkc::PhysicalDevice& get_selected_gpu() const;
 
 	private:
 		void query_gpus();

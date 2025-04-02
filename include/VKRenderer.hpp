@@ -9,6 +9,7 @@
 #include <core/RenderContext.hpp>
 #include <core/RenderPass.hpp>
 #include <window/Window.hpp>
+#include <utils/DearImGui.hpp>
 
 #include <memory>
 
@@ -44,6 +45,8 @@ private:
 	std::unique_ptr<vkc::Window>   m_window;
 	std::unique_ptr<vkc::Device>   m_device;
 	std::unique_ptr<vkc::RenderContext>  m_render_context;
+
+	std::unique_ptr<vkc::utils::DearImGui> m_dear_imgui;
 
 	VkSurfaceKHR m_surface;
 };

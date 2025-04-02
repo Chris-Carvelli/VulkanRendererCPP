@@ -1,8 +1,8 @@
 include_directories(include)
+
+message("424243: ${LIBRARIES_SOURCE_PATH}")
 include_directories(#${TARGET_NAME} PRIVATE
-        include
-        ${EXTERNAL_LIBRARIES_SOURCE_PATH}/glad/include
-        ${EXTERNAL_LIBRARIES_SOURCE_PATH}/glfw/include
+        ${LIBRARIES_SOURCE_PATH}/vulkan/include
 		)
 file(GLOB target_src "src/*.cpp" )
-add_library(imgui STATIC ${target_src})
+add_library(imgui STATIC ${target_src} "src/")

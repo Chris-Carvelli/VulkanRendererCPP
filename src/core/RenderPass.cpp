@@ -164,6 +164,7 @@ namespace vkc {
 		);
 	}
 
+	// TMP hardcoded pipelines, may be useful to have an `add_pipeline()` API
 	void RenderPass::create_pipelines() {
 		m_pipelines.resize(2);
 		

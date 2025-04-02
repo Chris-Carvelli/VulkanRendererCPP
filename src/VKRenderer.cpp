@@ -42,4 +42,16 @@ void VKRenderer::init_base()
 		m_surface,
 		m_window.get()
 	);
+
+	m_dear_imgui = std::make_unique<vkc::utils::DearImGui>();
+	m_dear_imgui->Initialize(
+		m_window.get(),
+		m_instance->get_handle(),
+		m_instance->get_selected_gpu().get_handle(),
+		m_device->get_handle(),
+		// TODO after making pipeline/renderpass creation API,
+		//      create UI renderpass and pass it here
+		//      (may need also the pipeline, for the frame recording finalization)
+		nullptr
+	);
 }

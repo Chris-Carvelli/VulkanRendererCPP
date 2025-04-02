@@ -111,4 +111,8 @@ namespace vkc {
             .height = (uint32_t)(windowRect.bottom - windowRect.top)
         };
     }
+
+    void* Window::get_native_window_handle() {
+        return ::hWnd;
+    }
 }

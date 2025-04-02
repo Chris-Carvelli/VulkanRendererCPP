@@ -46,11 +46,10 @@ ENDMACRO()
 # =========================================================
 # Libraries
 # =========================================================
+
+set(LIBRARIES_SOURCE_PATH "${CMAKE_SOURCE_DIR}/lib")
+
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib)
-set(LIBRARIES_SOURCE_PATH "lib")
-
-
-
 
 
 # =========================================================
@@ -66,20 +65,16 @@ target_include_directories(VKRenderer_lib PUBLIC "src")
 target_include_directories(VKRenderer_lib PUBLIC "include")
 
 target_include_directories(VKRenderer_lib PUBLIC
-	${LIBRARIES_SOURCE_PATH}/glad/include
-	${LIBRARIES_SOURCE_PATH}/glfw/include
 	${LIBRARIES_SOURCE_PATH}/imgui/include
 	${LIBRARIES_SOURCE_PATH}/glm
 	${LIBRARIES_SOURCE_PATH}/stb/include
     ${LIBRARIES_SOURCE_PATH}/tinyobj
-	${LIBRARIES_SOURCE_PATH}/assimp/include
-	${LIBRARIES_SOURCE_PATH}/assimp
     #${LIBRARIES_SOURCE_PATH}/vulkan/include
     ${LIBRARIES_SOURCE_PATH}/ccstructs
 )
 
 target_link_libraries(VKRenderer_lib Vulkan::Vulkan)
-target_link_libraries(VKRenderer_lib ${LIBRARIES_STATIC})
+target_link_libraries(VKRenderer_lib ${LIBRARIES_STATIC} imgui)
 
 
 # =========================================================

@@ -121,17 +121,17 @@ namespace TMP_Update {
     static float x = 0.0f;
     DataUniformFrame ubo;
 
-    const uint32_t drawcall_cout = 1;
+    const uint32_t drawcall_cout = 200;
     std::vector<DataUniformModel> model_data;
 
     void updateUniformBuffer(uint32_t currentFrame, VkExtent2D swapchain_extent) {
 
         // zoom out depending on loaded objects
-        //float l = glm::sqrt(drawcall_cout);
-        float l = 2;
+        float l = glm::sqrt(drawcall_cout);
+        //float l = 2;
         float fow = (float)swapchain_extent.width / swapchain_extent.height;
-        //perspective_projection = glm::perspective(glm::radians(45.0f), fow, 0.1f, (float)drawcall_cout);
-        perspective_projection = glm::perspective(glm::radians(45.0f), fow, 0.1f, 10.0f);
+        perspective_projection = glm::perspective(glm::radians(45.0f), fow, 0.1f, (float)drawcall_cout);
+        //perspective_projection = glm::perspective(glm::radians(45.0f), fow, 0.1f, 10.0f);
 
         // TODO calculate deltaTime
         const float time = 1.0f / 2200.0f;
@@ -212,13 +212,13 @@ namespace vkc {
             );
 
         TMP_Assets::num_mesh_assets = 0;
-        /*for (const auto& entry : std::filesystem::directory_iterator("res/models/pack_prototype"))
+        for (const auto& entry : std::filesystem::directory_iterator("res/models/pack_prototype"))
         {
             TMP_Assets::mesh_data[TMP_Assets::num_mesh_assets++] = TMP_Assets::load_mesh(entry.path().string().c_str(), true);
-        }*/
-        TMP_Assets::mesh_data[TMP_Assets::num_mesh_assets++] = TMP_Assets::load_mesh("res/models/viking_room.obj");
-        //TMP_Assets::texture_data[0] = TMP_Assets::load_texture("res/textures/colormap.png", TMP_Assets::TEX_CHANNELS_RGB_A);
-        TMP_Assets::texture_data[0] = TMP_Assets::load_texture("res/textures/viking_room.png", TMP_Assets::TEX_CHANNELS_RGB_A);
+        }
+        //TMP_Assets::mesh_data[TMP_Assets::num_mesh_assets++] = TMP_Assets::load_mesh("res/models/viking_room.obj");
+        TMP_Assets::texture_data[0] = TMP_Assets::load_texture("res/textures/colormap.png", TMP_Assets::TEX_CHANNELS_RGB_A);
+        //TMP_Assets::texture_data[0] = TMP_Assets::load_texture("res/textures/viking_room.png", TMP_Assets::TEX_CHANNELS_RGB_A);
 
 
         TMP_Update::model_data.resize(TMP_Update::drawcall_cout);

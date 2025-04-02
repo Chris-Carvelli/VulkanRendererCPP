@@ -346,7 +346,7 @@ namespace vkc {
 			m_gpus.push_back(std::make_unique<PhysicalDevice>(*this, physical_device));
 	}
 
-	const vkc::PhysicalDevice& Instance::get_selected_gpu() const {
+	vkc::PhysicalDevice& Instance::get_selected_gpu() const {
 		CC_ASSERT(!m_gpus.empty(), "No available gpu");
 		return *m_gpus[0];
 	};

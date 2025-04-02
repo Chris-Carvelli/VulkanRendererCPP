@@ -114,7 +114,7 @@ namespace vkc {
 		VkRenderPassBeginInfo begin_info;
 		for(const auto& drawcall : drawcalls)
 		{
-			if (drawcall.obj_render_pass != obj_curr_render_pass)
+			//if (drawcall.obj_render_pass != obj_curr_render_pass)
 			{
 				obj_curr_render_pass = drawcall.obj_render_pass;
 				begin_info = obj_curr_render_pass->get_being_info(frame_index);
@@ -125,7 +125,8 @@ namespace vkc {
 				);
 			}
 
-			if (drawcall.obj_pipeline != obj_curr_pipeline) {
+			//if (drawcall.obj_pipeline != obj_curr_pipeline)
+			{
 				obj_curr_pipeline = drawcall.obj_pipeline;
 				vkCmdBindPipeline(
 					m_command_buffer,
