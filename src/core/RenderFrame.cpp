@@ -116,6 +116,7 @@ namespace vkc {
 		vkc::RenderPass* obj_curr_render_pass = nullptr;
 		vkc::Pipeline* obj_curr_pipeline = nullptr;
 		VkRenderPassBeginInfo begin_info;
+
 		for(const auto& drawcall : drawcalls)
 		{
 			if (drawcall.obj_render_pass != obj_curr_render_pass)
@@ -162,11 +163,7 @@ namespace vkc {
 		// ====================================================================
 
 		// TMP test imgui
-		vkc::utils::DearImGui::TMP_SingletonInstance->BeginFrame();
-		ImGui::Begin("hello");
-		ImGui::Text("world");
-		ImGui::End();
-		vkc::utils::DearImGui::TMP_SingletonInstance->EndFrame(m_command_buffer);
+		//vkc::utils::DearImGui::TMP_SingletonInstance->EndFrame(m_command_buffer);
 
 		vkCmdEndRenderPass(m_command_buffer);
 

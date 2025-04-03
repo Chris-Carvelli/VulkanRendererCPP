@@ -17,11 +17,8 @@ layout(location = 3) in vec2 inTexCoord;
 layout(location = 0) out vec3 fragColor;
 layout(location = 1) out vec2 fragTexCoord;
 
-const float outlineSize = 0.03;
 void main() {
-    vec4 clip_normal = ubo.proj * ubo.view * model_data.model * vec4(inNormal, 0.0);
-    gl_Position = ubo.view * model_data.model * vec4(inPosition, 1.0);
-    gl_Position += clip_normal * outlineSize;
+    gl_Position = ubo.proj * ubo.view * model_data.model * vec4(inPosition, 1.0);
     fragColor = inColor;
     fragTexCoord = inTexCoord;
 }

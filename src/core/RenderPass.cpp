@@ -177,7 +177,7 @@ namespace vkc {
 			m_handle,
 			"res/shaders/shader_base.vert.spv",
 			"res/shaders/shader_base.frag.spv",
-			VK_CULL_MODE_NONE
+			VK_CULL_MODE_BACK_BIT
 		);
 
 		// outlines

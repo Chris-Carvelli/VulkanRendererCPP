@@ -14,6 +14,13 @@
 #include <memory>
 
 class VKRenderer {
+	struct AppStats {
+		static const int FPS_SMOOTH_WINDOW_SIZE = 8;
+
+		float fps[FPS_SMOOTH_WINDOW_SIZE] = { 0 };
+		int curr_frame = 0;
+	};
+
 public:
 	VKRenderer()
 		: m_surface{ 0 }
@@ -41,6 +48,7 @@ protected:
 private:
 	void init_base();
 
+	void gui_record();
 private:
 	std::unique_ptr<vkc::Instance> m_instance;
 	std::unique_ptr<vkc::Window>   m_window;
@@ -50,4 +58,6 @@ private:
 	std::unique_ptr<vkc::utils::DearImGui> m_dear_imgui;
 
 	VkSurfaceKHR m_surface;
+
+	AppStats m_app_stats;
 };

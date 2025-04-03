@@ -1,13 +1,29 @@
 #include <VKRenderer.hpp>
 
+#include <imgui.h>
+
+#include <chrono>
+
 void VKRenderer::run() {
 	init_base();
 	init();
 
 	while (!m_window->should_quit())
 	{
+		auto time_start = std::chrono::high_resolution_clock::now();
+
 		m_render_context->render_begin();
+
+		//vkc::utils::DearImGui::TMP_SingletonInstance->BeginFrame();
 		render();
+		//gui_record();
+		m_render_context->render_finalize();
+		auto time_end = std::chrono::high_resolution_clock::now();
+		auto x = std::chrono::duration_cast<std::chrono::milliseconds>(time_end - time_start);
+
+		m_app_stats.fps[m_app_stats.curr_frame % AppStats::FPS_SMOOTH_WINDOW_SIZE] = 1000.0f / x.count();
+		m_app_stats.curr_frame++;
+
 		m_window->collect_input();
 	}
 
@@ -53,4 +69,14 @@ void VKRenderer::init_base()
 		//      (may need also the pipeline, for the frame recording finalization)
 		m_render_context->get_renderpass(0)->get_handle()
 	);
+}
+
+
+void VKRenderer::gui_record() {
+	float smoothed_fps = 0;
+	for (int i = 0; i < AppStats::FPS_SMOOTH_WINDOW_SIZE; ++i)
+		smoothed_fps += m_app_stats.fps[i];
+	ImGui::Begin("App Info");
+	ImGui::LabelText("FPS", "%3.0f", smoothed_fps / AppStats::FPS_SMOOTH_WINDOW_SIZE);
+	ImGui::End();
 }

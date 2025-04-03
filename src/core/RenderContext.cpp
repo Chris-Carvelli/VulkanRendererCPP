@@ -121,7 +121,7 @@ namespace TMP_Update {
     static float x = 0.0f;
     DataUniformFrame ubo;
 
-    const uint32_t drawcall_cout = 200;
+    const uint32_t drawcall_cout = 20;
     std::vector<DataUniformModel> model_data;
 
     void updateUniformBuffer(uint32_t currentFrame, VkExtent2D swapchain_extent) {
@@ -134,7 +134,7 @@ namespace TMP_Update {
         //perspective_projection = glm::perspective(glm::radians(45.0f), fow, 0.1f, 10.0f);
 
         // TODO calculate deltaTime
-        const float time = 1.0f / 2200.0f;
+        const float time = 1.0f / 60.0f;
         const float offset = 1.0f;
         x += time;
 
@@ -245,11 +245,6 @@ namespace vkc {
     }
 
     void RenderContext::render_begin() {
-        // TODO we don't want to render ALL objects with ALL pipeline
-        //      make a struct of <renderpass, pipeline, material data, object data>
-        //      (so that we can also sort accordingly)
-
-
         //clear previous drawcalls
         Drawcall::clear_drawcalls();
         // make up some drawcalls for testing
@@ -272,7 +267,9 @@ namespace vkc {
                 i % TMP_Assets::num_mesh_assets)
             );
         }
+    }
 
+    void RenderContext::render_finalize() {
         m_frames[m_active_frame_index]->render(
             m_swapchain->get_handle(),
             m_queue_graphic,
@@ -282,9 +279,7 @@ namespace vkc {
             TMP_Update::ubo,
             Drawcall::get_drawcalls()
         );
-    }
 
-    void RenderContext::render_finalize() {
         m_active_frame_index = (m_active_frame_index + 1) % get_num_render_frames();
     }
 

@@ -33,6 +33,7 @@
 		- [ ] command buffers for moving data from CPU to GPU
 		- [ ] `drawIndirect`
 	- [ ] compare approaches
+	- [ ] compile assets (png, glTF, glsl are in `res`, compiled version in `out`, get rid of the annoying `currDir` in VS launch config)
 
 - 29/03/25
 	- [x] rename one of the two `ModelData` (used for both mesh info AND push constants, no good)
