@@ -67,7 +67,8 @@ void VKRenderer::init_base()
 		// TODO after making pipeline/renderpass creation API,
 		//      create UI renderpass and pass it here
 		//      (may need also the pipeline, for the frame recording finalization)
-		m_render_context->get_renderpass(0)->get_handle()
+		m_render_context->get_renderpass(0)->get_handle(),
+		m_render_context->get_num_render_frames()
 	);
 }
 

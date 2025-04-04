@@ -20,7 +20,8 @@ namespace vkc {
                 VkInstance g_Instance,
                 VkPhysicalDevice g_PhysicalDevice,
                 VkDevice g_Device,
-                VkRenderPass g_RenderPass
+                VkRenderPass g_RenderPass,
+                uint32_t swapchain_image_count
             );
 
             void Cleanup();

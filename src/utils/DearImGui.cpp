@@ -30,7 +30,8 @@ namespace vkc {
             VkInstance g_Instance,
             VkPhysicalDevice g_PhysicalDevice,
             VkDevice g_Device,
-            VkRenderPass g_RenderPass
+            VkRenderPass g_RenderPass,
+            uint32_t swapchain_image_count
         ) {
 
 
@@ -78,8 +79,8 @@ namespace vkc {
             init_info.RenderPass = g_RenderPass;
             init_info.Subpass = 0;
             init_info.MinImageCount = MIN_IMAGE_COUNT;
-            // TODO figure out how this is computed (seems like it dependes on how many textures you want to render in ImGUI?
-            init_info.ImageCount = MIN_IMAGE_COUNT;
+            // this is the swapchain image count
+            init_info.ImageCount = swapchain_image_count;
             init_info.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
             init_info.Allocator = nullptr;
             // TODO this may be needed, but otherwise we have our own debug messaging

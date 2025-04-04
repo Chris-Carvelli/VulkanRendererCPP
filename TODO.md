@@ -39,7 +39,8 @@
 	- [ ] fix tris winding order
 	- [ ] refactor imgui integration
 		- [ ] needs to be called in `RenderFrame`, ugly singleton
-		- [ ] check why it creates/destroys cmb buffer at inappropriate times
+		- [x] check why it creates/destroys cmb buffer at inappropriate times
+				(SOLUTION: one of ImGui's Init parameters is `imageCount`, which stands for SWAPCHAIN image count. That was not set correctly)
 	- [ ] refactor pipelines
 		- [ ] handle multiple uniform buffer and push constants
 		- [ ] number and size of buffer is a creation parameter
@@ -47,6 +48,7 @@
 
 - 04/04/25
 	- [x] shader compile script
+	- [x] fixed imgui errors
 	- [ ] fix pipeline mess
 	- [ ] figure out next steps
 
