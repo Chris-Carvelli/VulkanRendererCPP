@@ -186,6 +186,10 @@ namespace vkc {
 		memcpy(m_uniform_buffers_mapped[current_frame], &ubo, sizeof(ubo));
 	}
 
+	void Pipeline::update_uniform_buffer_material(DataUniformMaterial& ubo, uint32_t current_frame) {
+		memcpy(m_uniform_buffers_mapped_material[current_frame], &ubo, sizeof(ubo));
+	}
+
 	void Pipeline::bind_descriptor_sets(VkCommandBuffer command_buffer, uint32_t image_index) {
 		vkCmdBindDescriptorSets(
 			command_buffer,
@@ -199,22 +203,27 @@ namespace vkc {
 	}
 
 	void Pipeline::create_descriptor_set_layout() {
-		VkDescriptorSetLayoutBinding uboLayoutBinding = { 0 };
-		uboLayoutBinding.binding = 0;
-		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		uboLayoutBinding.descriptorCount = 1;
-		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-		uboLayoutBinding.pImmutableSamplers = NULL; // Optional
+		VkDescriptorSetLayoutBinding uboLayoutBinding_frame = { 0 };
+		uboLayoutBinding_frame.binding = 0;
+		uboLayoutBinding_frame.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		uboLayoutBinding_frame.descriptorCount = 1;
+		uboLayoutBinding_frame.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+
+		VkDescriptorSetLayoutBinding uboLayoutBinding_material = { 0 };
+		uboLayoutBinding_material.binding = 1;
+		uboLayoutBinding_material.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		uboLayoutBinding_material.descriptorCount = 1;
+		uboLayoutBinding_material.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
 		VkDescriptorSetLayoutBinding samplerLayoutBinding = { 0 };
-		samplerLayoutBinding.binding = 1;
+		samplerLayoutBinding.binding = 2;
 		samplerLayoutBinding.descriptorCount = 1;
 		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		samplerLayoutBinding.pImmutableSamplers = NULL;
 		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
 		VkDescriptorSetLayoutBinding bindings[] = {
-			uboLayoutBinding,
+			uboLayoutBinding_frame,
+			uboLayoutBinding_material,
 			samplerLayoutBinding
 		};
 		static const uint32_t bindingsCount = sizeof(bindings) / sizeof(VkDescriptorSetLayoutBinding);
@@ -234,6 +243,10 @@ namespace vkc {
 		// descriptor pool
 		VkDescriptorPoolSize poolSize[] = {
 		(VkDescriptorPoolSize) {
+			.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+			.descriptorCount = num_swapchain_images
+		},
+			(VkDescriptorPoolSize) {
 			.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
 			.descriptorCount = num_swapchain_images
 		},
@@ -270,11 +283,15 @@ namespace vkc {
 		}
 
 		for (size_t i = 0; i < num_swapchain_images; i++) {
-			VkDescriptorBufferInfo bufferInfo = { 0 };
-			bufferInfo.buffer = m_uniform_buffers[i];
-			bufferInfo.offset = 0;
-			// TODO if UBO is application-specific, should we pass the size as parameter?
-			bufferInfo.range = sizeof(DataUniformFrame);
+			VkDescriptorBufferInfo bufferInfo_frame = { 0 };
+			bufferInfo_frame.buffer = m_uniform_buffers[i];
+			bufferInfo_frame.offset = 0;
+			bufferInfo_frame.range = sizeof(DataUniformFrame);
+
+			VkDescriptorBufferInfo bufferInfo_material = { 0 };
+			bufferInfo_material.buffer = m_uniform_buffers_material[i];
+			bufferInfo_material.offset = 0;
+			bufferInfo_material.range = sizeof(DataUniformMaterial);
 
 			VkDescriptorImageInfo imageInfo = { 0 };
 			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -282,19 +299,28 @@ namespace vkc {
 			imageInfo.sampler = m_texture_sampler;
 
 			VkWriteDescriptorSet descriptorWrites[] = {
-				(VkWriteDescriptorSet) { // uniforms buffer
+				(VkWriteDescriptorSet) { // uniforms buffer - frame
 					.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 					.dstSet = m_descriptor_sets[i],
 					.dstBinding = 0,
 					.dstArrayElement = 0,
 					.descriptorCount = 1,
 					.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-					.pBufferInfo = &bufferInfo
+					.pBufferInfo = &bufferInfo_frame
+				},
+				(VkWriteDescriptorSet) { // uniforms buffer - material
+					.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+					.dstSet = m_descriptor_sets[i],
+					.dstBinding = 1,
+					.dstArrayElement = 0,
+					.descriptorCount = 1,
+					.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+					.pBufferInfo = &bufferInfo_material
 				},
 				(VkWriteDescriptorSet) { // texture sampler
 					.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 					.dstSet = m_descriptor_sets[i],
-					.dstBinding = 1,
+					.dstBinding = 2,
 					.dstArrayElement = 0,
 					.descriptorCount = 1,
 					.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
@@ -307,22 +333,46 @@ namespace vkc {
 	}
 
 	void Pipeline::create_uniform_buffers() {
-		VkDeviceSize bufferSize = sizeof(DataUniformFrame);
-		uint8_t num_swapchain_images = m_obj_render_context->get_num_render_frames();
+		// frame data
+		{
+			VkDeviceSize bufferSize = sizeof(DataUniformFrame);
+			uint8_t num_swapchain_images = m_obj_render_context->get_num_render_frames();
 
-		m_uniform_buffers.resize(num_swapchain_images);
-		m_uniform_buffers_memory.resize(num_swapchain_images);
-		m_uniform_buffers_mapped.resize(num_swapchain_images);
+			m_uniform_buffers.resize(num_swapchain_images);
+			m_uniform_buffers_memory.resize(num_swapchain_images);
+			m_uniform_buffers_mapped.resize(num_swapchain_images);
 
-		for (size_t i = 0; i < num_swapchain_images; ++i) {
-			m_obj_render_context->createBuffer(
-				bufferSize,
-				VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-				&m_uniform_buffers[i],
-				&m_uniform_buffers_memory[i]
-			);
-			vkMapMemory(m_handle_device, m_uniform_buffers_memory[i], 0, bufferSize, 0, &m_uniform_buffers_mapped[i]);
+			for (size_t i = 0; i < num_swapchain_images; ++i) {
+				m_obj_render_context->createBuffer(
+					bufferSize,
+					VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+					VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+					&m_uniform_buffers[i],
+					&m_uniform_buffers_memory[i]
+				);
+				vkMapMemory(m_handle_device, m_uniform_buffers_memory[i], 0, bufferSize, 0, &m_uniform_buffers_mapped[i]);
+			}
+		}
+
+		// material data
+		{
+			VkDeviceSize bufferSize = sizeof(DataUniformMaterial);
+			uint8_t num_swapchain_images = m_obj_render_context->get_num_render_frames();
+
+			m_uniform_buffers_material.resize(num_swapchain_images);
+			m_uniform_buffers_memory_material.resize(num_swapchain_images);
+			m_uniform_buffers_mapped_material.resize(num_swapchain_images);
+
+			for (size_t i = 0; i < num_swapchain_images; ++i) {
+				m_obj_render_context->createBuffer(
+					bufferSize,
+					VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+					VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+					&m_uniform_buffers_material[i],
+					&m_uniform_buffers_memory_material[i]
+				);
+				vkMapMemory(m_handle_device, m_uniform_buffers_memory_material[i], 0, bufferSize, 0, &m_uniform_buffers_mapped_material[i]);
+			}
 		}
 	}
 

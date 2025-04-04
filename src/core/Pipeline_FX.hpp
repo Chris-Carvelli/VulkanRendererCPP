@@ -8,6 +8,7 @@
 
 namespace vkc {
 	class RenderContext;
+	class RenderPass;
 
 	class Pipeline_FX : public Pipeline
 	{
@@ -15,7 +16,7 @@ namespace vkc {
 		Pipeline_FX(
 			VkDevice handle_device,
 			vkc::RenderContext* obj_render_context,
-			VkRenderPass handle_render_pass,
+			vkc::RenderPass* obj_render_pass,
 			const char* vert_path,
 			const char* frag_path,
 			VkCullModeFlags face_culling_mode = VK_CULL_MODE_BACK_BIT
@@ -43,7 +44,7 @@ namespace vkc {
 	private:
 		// back references
 		VkDevice m_handle_device;
-		VkRenderPass m_handle_render_pass;
+		vkc::RenderPass* m_obj_render_pass;
 		vkc::RenderContext* m_obj_render_context;
 
 		// owned references

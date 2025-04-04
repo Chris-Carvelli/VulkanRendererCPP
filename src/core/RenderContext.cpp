@@ -20,6 +20,9 @@
 #include <filesystem>
 #include <string.h>
 
+// TMP_Update includes
+#include <imgui.h>
+
 namespace TMP_Assets {
     int num_mesh_assets;
 
@@ -119,13 +122,42 @@ namespace TMP_Assets {
 namespace TMP_Update {
     glm::mat4 perspective_projection;
     static float x = 0.0f;
-    DataUniformFrame ubo;
+    DataUniformFrame ubo = (DataUniformFrame){
+        .light_ambient = glm::vec3(0.3f, 0.3f, 0.3f),
+        .light_dir = glm::vec3(1, 1, 1),
+        .light_color = glm::vec3(1, 1, 1),
+        .light_intensity = 1
+    };
+
+    DataUniformMaterial tmp_material = (DataUniformMaterial){
+        .ambient = 1,
+        .diffuse = 1,
+        .specular = 1,
+        .specular_exp = 200,
+    };
 
     const uint32_t drawcall_cout = 20;
     std::vector<DataUniformModel> model_data;
 
-    void updateUniformBuffer(uint32_t currentFrame, VkExtent2D swapchain_extent) {
+    void TMP_update_gui() {
+        ImGui::Begin("tmp_update_info");
 
+        ImGui::SeparatorText("Frame data");
+        ImGui::ColorPicker3("Light Color Ambient", &ubo.light_ambient.x);
+        ImGui::ColorPicker3("Light Color Light", &ubo.light_color.x);
+        ImGui::DragFloat3("Light Direction", &ubo.light_dir.x);
+        ImGui::DragFloat("Light Intensity", &ubo.light_intensity);
+
+        ImGui::SeparatorText("Material Data");
+        ImGui::DragFloat("Ambient", &tmp_material.ambient);
+        ImGui::DragFloat("Diffuse", &tmp_material.diffuse);
+        ImGui::DragFloat("Specular", &tmp_material.specular);
+        ImGui::DragFloat("Specular Exponent", &tmp_material.specular_exp);
+
+        ImGui::End();
+    }
+
+    void updateUniformBuffer(VkExtent2D swapchain_extent) {
         // zoom out depending on loaded objects
         float l = glm::sqrt(drawcall_cout);
         //float l = 2;
@@ -143,11 +175,8 @@ namespace TMP_Update {
         const glm::vec3 pos_camera = glm::rotate(glm::mat4(1.0f), x, dir_up) * (glm::vec4) { l, l, l, 1 };
         const glm::vec3 pos_target = (glm::vec3){ 0, 0, 0 };
 
-        glm::mat4 m = glm::mat4(1.0f);
-        ubo = (DataUniformFrame) {
-            .view = glm::lookAt(pos_camera, pos_target, dir_up),
-            .proj = perspective_projection
-        };
+        ubo.view = glm::lookAt(pos_camera, pos_target, dir_up);
+        ubo.proj = perspective_projection;
 
         // invert up axis
         ubo.proj[1][1] *= -1;
@@ -248,7 +277,8 @@ namespace vkc {
         //clear previous drawcalls
         Drawcall::clear_drawcalls();
         // make up some drawcalls for testing
-        TMP_Update::updateUniformBuffer(m_active_frame_index, m_swapchain->get_extent());
+        TMP_Update::TMP_update_gui();
+        TMP_Update::updateUniformBuffer(m_swapchain->get_extent());
         vkc::RenderPass* obj_render_pass = m_render_passes[0].get();
         for (uint32_t i = 0; i < TMP_Update::drawcall_cout; ++i)
         {
@@ -256,16 +286,18 @@ namespace vkc {
             Drawcall::add_drawcall(Drawcall::DrawcallData(
                 obj_render_pass,
                 obj_render_pass->get_pipeline_ptr(0),
+                &TMP_Update::tmp_material,
                 TMP_Update::model_data[i],
                 i % TMP_Assets::num_mesh_assets)
             );
-            // outline drawcall
-            Drawcall::add_drawcall(Drawcall::DrawcallData(
-                obj_render_pass,
-                obj_render_pass->get_pipeline_ptr(1),
-                TMP_Update::model_data[i],
-                i % TMP_Assets::num_mesh_assets)
-            );
+            //// outline drawcall
+            //Drawcall::add_drawcall(Drawcall::DrawcallData(
+            //    obj_render_pass,
+            //    obj_render_pass->get_pipeline_ptr(1),
+            //    &TMP_Update::tmp_material,
+            //    TMP_Update::model_data[i],
+            //    i % TMP_Assets::num_mesh_assets)
+            //);
         }
     }
 

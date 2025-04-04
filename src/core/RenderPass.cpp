@@ -180,15 +180,15 @@ namespace vkc {
 			VK_CULL_MODE_BACK_BIT
 		);
 
-		// outlines
-		m_pipelines[1] = std::make_unique<vkc::Pipeline_FX>(
-			m_handle_device,
-			m_obj_render_context,
-			m_handle,
-			"res/shaders/shader_outline.vert.spv",
-			"res/shaders/shader_unlit.frag.spv",
-			VK_CULL_MODE_FRONT_BIT
-		);
+		//// outlines
+		//m_pipelines[1] = std::make_unique<vkc::Pipeline_FX>(
+		//	m_handle_device,
+		//	m_obj_render_context,
+		//	this,
+		//	"res/shaders/fx_shader_fullscreen.vert.spv",
+		//	"res/shaders/fx_shader.frag.spv",
+		//	VK_CULL_MODE_FRONT_BIT
+		//);
 	}
 
 	void RenderPass::handle_swapchain_destruction() {

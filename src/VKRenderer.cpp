@@ -12,11 +12,11 @@ void VKRenderer::run() {
 	{
 		auto time_start = std::chrono::high_resolution_clock::now();
 
+		vkc::utils::DearImGui::TMP_SingletonInstance->BeginFrame();
 		m_render_context->render_begin();
 
-		//vkc::utils::DearImGui::TMP_SingletonInstance->BeginFrame();
 		render();
-		//gui_record();
+		gui_record();
 		m_render_context->render_finalize();
 		auto time_end = std::chrono::high_resolution_clock::now();
 		auto x = std::chrono::duration_cast<std::chrono::milliseconds>(time_end - time_start);

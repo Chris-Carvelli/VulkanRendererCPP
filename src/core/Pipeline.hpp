@@ -32,6 +32,7 @@ namespace vkc {
 		virtual VkPipelineLayout get_layout() const{ return m_handle_pipeline_layout; };
 
 		virtual void update_uniform_buffer(DataUniformFrame& ubo, uint32_t current_frame);
+		virtual void update_uniform_buffer_material(DataUniformMaterial& ubo, uint32_t current_frame);
 		virtual void bind_descriptor_sets(VkCommandBuffer command_buffer, uint32_t image_index);
 
 	private:
@@ -61,9 +62,16 @@ namespace vkc {
 		// one of those per frame-in-flight
 		VkDescriptorPool m_descriptor_pool;
 		std::vector<VkDescriptorSet>	m_descriptor_sets;
+
+		// frame data
 		std::vector<VkBuffer>			m_uniform_buffers;
 		std::vector<VkDeviceMemory>		m_uniform_buffers_memory;
 		std::vector<void*>				m_uniform_buffers_mapped;
+
+		// material data
+		std::vector<VkBuffer>			m_uniform_buffers_material;
+		std::vector<VkDeviceMemory>		m_uniform_buffers_memory_material;
+		std::vector<void*>				m_uniform_buffers_mapped_material;
 
 		// data
 		// eventually we want to split image from sampler. It depends on how the VkWriteDescriptorSet is set up

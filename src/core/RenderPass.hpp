@@ -27,6 +27,8 @@ namespace vkc {
 
 		// TODO framebuffer only cares about swaphacin recreation
 		void handle_swapchain_recreation();
+
+		VkImageView get_depth_resource() const { return m_depth_image_view; };
 	private:
 		void create_framebuffers();
 		void create_depth_resources();

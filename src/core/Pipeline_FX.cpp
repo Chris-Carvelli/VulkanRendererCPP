@@ -9,13 +9,13 @@ namespace vkc {
 	Pipeline_FX::Pipeline_FX(
 		VkDevice handle_device,
 		vkc::RenderContext* obj_render_context,
-		VkRenderPass handle_render_pass,
+		vkc::RenderPass*    obj_render_pass,
 		const char *vert_path,
 		const char *frag_path,
 		VkCullModeFlags face_culling_mode // TODO config struct
 	)
 		: m_handle_device      { handle_device }
-		, m_handle_render_pass { handle_render_pass }
+		, m_obj_render_pass { obj_render_pass }
 		, m_obj_render_context { obj_render_context }
 	{
 		create_descriptor_set_layout();
@@ -117,17 +117,11 @@ namespace vkc {
 		colorBlending.blendConstants[2] = 0.0f; // Optional
 		colorBlending.blendConstants[3] = 0.0f; // Optional
 
-		// push constants
-		VkPushConstantRange range = { VK_SHADER_STAGE_VERTEX_BIT };
-		range.offset = 0;
-		range.size = sizeof(DataUniformModel);
-
 		// pipeline assembly
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO };
 		pipelineLayoutInfo.setLayoutCount = 1;
 		pipelineLayoutInfo.pSetLayouts = &m_handle_descriptor_set_layout;
-		pipelineLayoutInfo.pushConstantRangeCount = 1;
-		pipelineLayoutInfo.pPushConstantRanges = &range;
+		pipelineLayoutInfo.pushConstantRangeCount = 0;
 
 		if (vkCreatePipelineLayout(m_handle_device, &pipelineLayoutInfo, NULL, &m_handle_pipeline_layout) != VK_SUCCESS)
 			CC_LOG(ERROR, "failed to create pipeline layout!");
@@ -146,7 +140,7 @@ namespace vkc {
 
 		pipelineInfo.layout = m_handle_pipeline_layout;
 
-		pipelineInfo.renderPass = m_handle_render_pass;
+		pipelineInfo.renderPass = m_obj_render_pass->get_handle();
 		pipelineInfo.subpass = 0;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
 		pipelineInfo.basePipelineIndex = -1;              // Optional
@@ -193,12 +187,12 @@ namespace vkc {
 	}
 
 	void Pipeline_FX::create_descriptor_set_layout() {
-		VkDescriptorSetLayoutBinding uboLayoutBinding = { 0 };
-		uboLayoutBinding.binding = 0;
-		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		uboLayoutBinding.descriptorCount = 1;
-		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-		uboLayoutBinding.pImmutableSamplers = NULL; // Optional
+		VkDescriptorSetLayoutBinding samplerLayoutBinding_color = { 0 };
+		samplerLayoutBinding_color.binding = 0;
+		samplerLayoutBinding_color.descriptorCount = 1;
+		samplerLayoutBinding_color.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		samplerLayoutBinding_color.pImmutableSamplers = NULL;
+		samplerLayoutBinding_color.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
 		VkDescriptorSetLayoutBinding samplerLayoutBinding = { 0 };
 		samplerLayoutBinding.binding = 1;
@@ -208,7 +202,7 @@ namespace vkc {
 		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
 		VkDescriptorSetLayoutBinding bindings[] = {
-			uboLayoutBinding,
+			samplerLayoutBinding_color,
 			samplerLayoutBinding
 		};
 		static const uint32_t bindingsCount = sizeof(bindings) / sizeof(VkDescriptorSetLayoutBinding);
@@ -228,7 +222,7 @@ namespace vkc {
 		// descriptor pool
 		VkDescriptorPoolSize poolSize[] = {
 		(VkDescriptorPoolSize) {
-			.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+			.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
 			.descriptorCount = num_swapchain_images
 		},
 		(VkDescriptorPoolSize) {
@@ -264,35 +258,34 @@ namespace vkc {
 		}
 
 		for (size_t i = 0; i < num_swapchain_images; i++) {
-			VkDescriptorBufferInfo bufferInfo = { 0 };
-			bufferInfo.buffer = m_uniform_buffers[i];
-			bufferInfo.offset = 0;
-			// TODO if UBO is application-specific, should we pass the size as parameter?
-			bufferInfo.range = sizeof(DataUniformFrame);
-
 			VkDescriptorImageInfo imageInfo = { 0 };
 			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			imageInfo.imageView = Drawcall::get_pipeline_image_view(); // TODO this is a consequence of using unified textures and samplers
+			imageInfo.imageView = Drawcall::get_pipeline_image_view();
+			imageInfo.sampler = m_texture_sampler;
+
+			VkDescriptorImageInfo imageInfo_depth = { 0 };
+			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			imageInfo.imageView = m_obj_render_pass->get_depth_resource();
 			imageInfo.sampler = m_texture_sampler;
 
 			VkWriteDescriptorSet descriptorWrites[] = {
-				(VkWriteDescriptorSet) { // uniforms buffer
+				(VkWriteDescriptorSet) { // texture sampler - color
 					.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 					.dstSet = m_descriptor_sets[i],
 					.dstBinding = 0,
 					.dstArrayElement = 0,
 					.descriptorCount = 1,
-					.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-					.pBufferInfo = &bufferInfo
+					.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+					.pImageInfo = &imageInfo
 				},
-				(VkWriteDescriptorSet) { // texture sampler
+				(VkWriteDescriptorSet) { // texture sampler - depth
 					.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 					.dstSet = m_descriptor_sets[i],
 					.dstBinding = 1,
 					.dstArrayElement = 0,
 					.descriptorCount = 1,
 					.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-					.pImageInfo = &imageInfo
+					.pImageInfo = &imageInfo_depth
 				}
 			};
 			static const uint32_t descriptorWritesCount = sizeof(descriptorWrites) / sizeof(VkWriteDescriptorSet);

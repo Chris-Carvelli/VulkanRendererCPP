@@ -142,6 +142,7 @@ namespace vkc {
 					m_command_buffer,
 					frame_index);
 				obj_curr_pipeline->update_uniform_buffer(ubo, frame_index);
+				obj_curr_pipeline->update_uniform_buffer_material(*drawcall.data_uniform_material, frame_index);
 			}
 
 			Drawcall::ModelDataGPU model_data_gpu = Drawcall::get_model_data(drawcall.idx_data_attributes);
@@ -163,7 +164,7 @@ namespace vkc {
 		// ====================================================================
 
 		// TMP test imgui
-		//vkc::utils::DearImGui::TMP_SingletonInstance->EndFrame(m_command_buffer);
+		vkc::utils::DearImGui::TMP_SingletonInstance->EndFrame(m_command_buffer);
 
 		vkCmdEndRenderPass(m_command_buffer);
 

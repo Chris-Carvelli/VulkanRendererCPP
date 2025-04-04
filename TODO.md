@@ -2,9 +2,10 @@
 	- [x] figure out if we have one framebuffer per swapchain, one per renderpass, or both
 	- [ ] rework file reading (no string, no std)
 	- [ ] set default shader texture as separate image and sampler (see https://docs.vulkan.org/samples/latest/samples/api/separate_image_sampler/README.html)
+		- [ ] actually, now we know that we can update descriptors, so probably not needed
 	- [ ] record draw calls, obtain descriptor sets from rendercontext
-	- [ ] create a pipeline with attachemnts, state and stuff
-	- [ ] submit a pipeline, replicate all needed attachments over all RenderFrames
+	- [x] create a pipeline with attachemnts, state and stuff
+	- [x] submit a pipeline, replicate all needed attachments over all RenderFrames
 	- [ ] resource management (keep texture/mesh data, for mapping later)
 	- [x] proper allocation of all vulkan objects
 		- [x] RenderFrame (TMPs)
@@ -14,39 +15,65 @@
 		- [x] Instance
 		- [x] VKRenderer
 	- [ ] centralize and uniform num frames in flight (`RenderContext` has a const in its constructor, Swapchain gets it from the capabilities, unsure what others do)
-	- [ ] proper cleanup of all vulkan objects
+	- [x] proper cleanup of all vulkan objects
 	- [ ] uniform naming conventions
 		- [ ] rename camel case symbols
 		- [ ] prefix `handle` to all vulkan objects
 		- [ ] prefix `obj` to all vkc object pointers
 	- [ ] use `CC_VK_CHECK` macro on all object (eventually, add an optional log message in case of error if needed)
 	- [ ] fix the super mangled Instance/PhysicalDevice/Surface/Device mess for the graphics queue
-	- [ ] do attachments belong to pipeline or renderpass? (probably renderpass. But it also depends between inputs and outputs?)
+	- [x] do attachments belong to pipeline or renderpass? (probably renderpass. But it also depends between inputs and outputs?)
+		- [x] A: output to renderpass, inputs to pipeline
 	- [ ] implement `findDepthFormat()`
 	- [ ] check if we want/need anisotropy. If so, request and enable it in physical/logical device
 	- [ ] proper handling of indexed meshes
 	- [x] VK objects cleanup
-	- [ ] setup to have one buffer per object, always on GPU
-		- [ ] map all resources on app creation
-		- [ ] rendercalls reference bufers4
-	- [ ] setup to have ono UBO, une VBO and one EBO
+	- [x] setup to have one buffer per object, always on GPU
+		- [x] map all resources on app creation
+		- [x] rendercalls reference bufers4
+	- [ ] setup to have one UBO, one VBO and one EBO
 		- [ ] command buffers for moving data from CPU to GPU
 		- [ ] `drawIndirect`
 	- [ ] compare approaches
 	- [ ] compile assets (png, glTF, glsl are in `res`, compiled version in `out`, get rid of the annoying `currDir` in VS launch config)
+	- [ ] fix tris winding order
+	- [ ] refactor imgui integration
+		- [ ] needs to be called in `RenderFrame`, ugly singleton
+		- [ ] check why it creates/destroys cmb buffer at inappropriate times
+	- [ ] refactor pipelines
+		- [ ] handle multiple uniform buffer and push constants
+		- [ ] number and size of buffer is a creation parameter
+	- [ ] check why adding light color to blinn phong hue shifts (???) the final color
+
+- 04/04/25
+	- [x] shader compile script
+	- [ ] fix pipeline mess
+	- [ ] figure out next steps
+
+- 03/04/25
+	- [x] re-enable imgui
+	- [ ] add forward lighting
+		- [x] add light data to frame UBO
+		- [x] implement blinn-phong
+		- [x] update light data realtime
+		- [x] add light controls to GUI
+		- [ ] ~#include UBOs in vertex and fragment shaders~
+	- [ ] add SS outline
+	- [ ] outline hoveres mesh
+	- [ ] shadow pass
 
 - 29/03/25
 	- [x] rename one of the two `ModelData` (used for both mesh info AND push constants, no good)
-	- [ ] test multiple renderpasses
+	- [x] test multiple renderpasses (pipelines)
 		- [x] create arrays of `BeginRenderPassInfo` and `VkPipeline`
 		- [x] add ids/indices of render pass and pipeline into drawcall
 		- [ ] sort drawcalls
 		- [x] create outline shader
 			- [x] add normals to model data (instead of color)
 			- [x] write shader
-		- [ ] create new pipeline
-			- [ ] shaders as inputs?
-	- [ ] plan next mid-term goal
+		- [x] create new pipeline
+			- [x] shaders as inputs?
+	- [x] plan next mid-term goal
 
 - 28/03/25
 	- [x] `RenderPass` initialized a single `Pipeline`

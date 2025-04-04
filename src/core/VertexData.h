@@ -24,7 +24,20 @@ typedef struct {
 typedef struct {
     glm::mat4 view;
     glm::mat4 proj;
+
+    // lighting
+    glm::vec3 light_ambient;
+    glm::vec3 light_dir;
+    glm::vec3 light_color;
+    float light_intensity;
 } DataUniformFrame;
+
+typedef struct {
+    float ambient;
+    float diffuse;
+    float specular;
+    float specular_exp;
+} DataUniformMaterial;
 
 typedef struct {
     glm::mat4 model;
