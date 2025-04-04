@@ -9,13 +9,19 @@
 
 namespace vkc {
 	namespace Drawcall {
-		typedef struct {
+		struct ModelDataGPU {
 			VkBuffer vertex_buffer;
 			VkDeviceMemory vertexbuffer_memory;
 			VkBuffer index_buffer;
 			VkDeviceMemory index_buffer_memory;
 			uint32_t indices_count;
-		} ModelDataGPU;
+		};
+
+		struct TextureDataGPU {
+			VkImage image;
+			VkDeviceMemory image_memory;
+			VkImageView image_view;
+		};
 
 		struct DrawcallData {
 			vkc::RenderPass* obj_render_pass;
@@ -29,10 +35,10 @@ namespace vkc {
 		const std::vector<DrawcallData>& get_drawcalls();
 		void clear_drawcalls();
 
-		VkImageView get_pipeline_image_view();
+		VkImageView get_texture_image_view(uint32_t id);
 		ModelDataGPU get_model_data(uint32_t index);
 
-		void createTextureImage(TMP_Assets::TextureData& texture_data, VkDevice device, RenderContext* obj_render_context);
+		void createTextureImage(uint32_t texture_id, TMP_Assets::TextureData& texture_data, VkDevice device, vkc::RenderContext* obj_render_context);
 		void createModelBuffers(uint32_t model_index, VkDevice device, vkc::RenderContext* obj_render_context);
 
 		void destroy_resources(VkDevice device);

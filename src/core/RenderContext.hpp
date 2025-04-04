@@ -30,7 +30,7 @@ namespace TMP_Assets {
 		std::vector<unsigned char> data;
 	} TextureData;
 
-	TextureData get_texture_data();
+	TextureData& get_texture_data();
 	MeshData& get_mesh_data(uint32_t index);
 }
 

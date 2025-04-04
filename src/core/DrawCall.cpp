@@ -5,11 +5,8 @@
 
 namespace vkc::Drawcall {
     std::map<uint32_t, ModelDataGPU> model_data_gpu;
+    std::map<uint32_t, TextureDataGPU> texture_data_gpu;
     std::vector<DrawcallData> drawcalls;
-
-    VkImage texture_image;
-    VkDeviceMemory texture_image_memory;
-    VkImageView texture_image_view;
 
     void add_drawcall(DrawcallData data) {
         drawcalls.push_back(data);
@@ -23,8 +20,8 @@ namespace vkc::Drawcall {
         drawcalls.clear();
     }
 
-    VkImageView get_pipeline_image_view() {
-        return texture_image_view;
+    VkImageView get_texture_image_view(uint32_t id) {
+        return texture_data_gpu[id].image_view;
     }
 
     ModelDataGPU get_model_data(uint32_t index) {
@@ -32,7 +29,9 @@ namespace vkc::Drawcall {
     }
 
     // only one texture for now
-    void createTextureImage(TMP_Assets::TextureData& texture_data, VkDevice device, vkc::RenderContext* obj_render_context) {
+    void createTextureImage(uint32_t texture_id, TMP_Assets::TextureData& texture_data, VkDevice device, vkc::RenderContext* obj_render_context) {
+        TextureDataGPU new_gpu_data = { 0 };
+
         VkDeviceSize imageSize = texture_data.width * texture_data.height * 4;
 
         VkBuffer stagingBuffer;
@@ -60,12 +59,12 @@ namespace vkc::Drawcall {
             VK_IMAGE_TILING_OPTIMAL,
             VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-            &texture_image,
-            &texture_image_memory
+            &new_gpu_data.image,
+            &new_gpu_data.image_memory
         );
 
         obj_render_context->transition_image_layout(
-            texture_image,
+            new_gpu_data.image,
             VK_FORMAT_R8G8B8A8_SRGB,
             VK_IMAGE_LAYOUT_UNDEFINED,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
@@ -73,13 +72,13 @@ namespace vkc::Drawcall {
 
         obj_render_context->copy_buffer_to_image(
             stagingBuffer,
-            texture_image,
+            new_gpu_data.image,
             texture_data.width,
             texture_data.height
         );
 
         obj_render_context->transition_image_layout(
-            texture_image,
+            new_gpu_data.image,
             VK_FORMAT_R8G8B8A8_SRGB,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
@@ -89,11 +88,13 @@ namespace vkc::Drawcall {
         vkFreeMemory(device, stagingBufferMemory, NULL);
 
         // view
-        texture_image_view = obj_render_context->create_imge_view(
-            texture_image,
+        new_gpu_data.image_view = obj_render_context->create_imge_view(
+            new_gpu_data.image,
             VK_FORMAT_R8G8B8A8_SRGB,
             VK_IMAGE_ASPECT_COLOR_BIT
         );
+
+        texture_data_gpu[texture_id] = new_gpu_data;
     }
 
     // createIndexBuffers
@@ -181,10 +182,12 @@ namespace vkc::Drawcall {
     }
 
     void destroy_resources(VkDevice device) {
-
-        vkDestroyImageView(device, texture_image_view, NULL);
-        vkDestroyImage(device, texture_image, NULL);
-        vkFreeMemory(device, texture_image_memory, NULL);
+        for (auto& data : texture_data_gpu)
+        {
+            vkDestroyImageView(device, data.second.image_view, NULL);
+            vkDestroyImage(device, data.second.image, NULL);
+            vkFreeMemory(device, data.second.image_memory, NULL);
+        }
 
         for (auto& data : model_data_gpu)
         {

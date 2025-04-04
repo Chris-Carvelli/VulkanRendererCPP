@@ -3,25 +3,23 @@
 #include <VulkanUtils.h>
 #include <core/RenderContext.hpp>
 #include <core/DrawCall.hpp>
-#include <core/VertexData.h>
 
 namespace vkc {
 	Pipeline::Pipeline(
 		VkDevice handle_device,
 		vkc::RenderContext* obj_render_context,
 		VkRenderPass handle_render_pass,
-		const char *vert_path,
-		const char *frag_path,
-		VkCullModeFlags face_culling_mode // TODO config struct
+		PipelineConfig* config
 	)
 		: m_handle_device      { handle_device }
 		, m_handle_render_pass { handle_render_pass }
 		, m_obj_render_context { obj_render_context }
+		, m_config { config }
 	{
 		create_descriptor_set_layout();
 
-		std::vector<char> shaderCodeVert = TMP_VUlkanUtils::read_file_binary(vert_path);
-		std::vector<char> shaderCodeFrag = TMP_VUlkanUtils::read_file_binary(frag_path);
+		std::vector<char> shaderCodeVert = TMP_VUlkanUtils::read_file_binary(config->vert_path);
+		std::vector<char> shaderCodeFrag = TMP_VUlkanUtils::read_file_binary(config->frag_path);
 
 		VkShaderModule shaderModuleVert = create_shader_module(handle_device, shaderCodeVert.data(), shaderCodeVert.size());
 		VkShaderModule shaderModuleFrag = create_shader_module(handle_device, shaderCodeFrag.data(), shaderCodeFrag.size());
@@ -54,10 +52,10 @@ namespace vkc {
 
 		// vertex input
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo = { VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO };
-		vertexInputInfo.vertexBindingDescriptionCount = vertexData_getBindingDescriptionsCount();
-		vertexInputInfo.pVertexBindingDescriptions = vertexData_getBindingDescriptions();
-		vertexInputInfo.vertexAttributeDescriptionCount = vertexData_getAttributeDescriptionsCount();
-		vertexInputInfo.pVertexAttributeDescriptions = vertexData_getAttributeDescriptions();
+		vertexInputInfo.vertexBindingDescriptionCount = config->vertex_binding_descriptors_count;
+		vertexInputInfo.pVertexBindingDescriptions = config->vertex_binding_descriptors;
+		vertexInputInfo.vertexAttributeDescriptionCount = config->vertex_attribute_descriptors_count;
+		vertexInputInfo.pVertexAttributeDescriptions = config->vertex_attribute_descriptors;
 
 		// input assembly
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly = { VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO };
@@ -75,7 +73,7 @@ namespace vkc {
 		// rasterizer.rasterizerDiscardEnable = VK_FALSE; // this should be default false
 		// rasterizer.polygonMode = VK_POLYGON_MODE_FILL; // this should be fill by default
 		rasterizer.lineWidth = 1.0f;
-		rasterizer.cullMode = face_culling_mode;
+		rasterizer.cullMode = config->face_culling_mode;
 		rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
 
@@ -124,7 +122,7 @@ namespace vkc {
 		// push constants
 		VkPushConstantRange range = { VK_SHADER_STAGE_VERTEX_BIT };
 		range.offset = 0;
-		range.size = sizeof(DataUniformModel);
+		range.size = config->size_push_constant_model;
 
 		// pipeline assembly
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO };
@@ -178,16 +176,27 @@ namespace vkc {
 			vkDestroyBuffer(m_handle_device, handle, NULL);
 		for (auto& handle : m_uniform_buffers_memory)
 			vkFreeMemory(m_handle_device, handle, NULL);
+		for (auto& handle : m_uniform_buffers_material)
+			vkDestroyBuffer(m_handle_device, handle, NULL);
+		for (auto& handle : m_uniform_buffers_memory_material)
+			vkFreeMemory(m_handle_device, handle, NULL);
 
 		vkDestroySampler(m_handle_device, m_texture_sampler, NULL);
+
+		// FIXME cleanup config (see below)
+		// pipeline either acquires ALL config arrays, or none
+		// a good idea could be to follow Box2D pattern and just memcpy
+		// config data, so we can take care of all our stuff
+		delete m_config->texture_image_views;
+		delete m_config;
 	}
 
-	void Pipeline::update_uniform_buffer(DataUniformFrame& ubo, uint32_t current_frame) {
-		memcpy(m_uniform_buffers_mapped[current_frame], &ubo, sizeof(ubo));
+	void Pipeline::update_uniform_buffer(void* ubo, uint32_t current_frame) {
+		memcpy(m_uniform_buffers_mapped[current_frame], ubo, m_config->size_uniform_data_frame);
 	}
 
-	void Pipeline::update_uniform_buffer_material(DataUniformMaterial& ubo, uint32_t current_frame) {
-		memcpy(m_uniform_buffers_mapped_material[current_frame], &ubo, sizeof(ubo));
+	void Pipeline::update_uniform_buffer_material(void* ubo, uint32_t current_frame) {
+		memcpy(m_uniform_buffers_mapped_material[current_frame], ubo, m_config->size_uniform_data_material);
 	}
 
 	void Pipeline::bind_descriptor_sets(VkCommandBuffer command_buffer, uint32_t image_index) {
@@ -282,24 +291,26 @@ namespace vkc {
 			CC_LOG(ERROR, "failed to allocate descriptor sets!");
 		}
 
-		for (size_t i = 0; i < num_swapchain_images; i++) {
+
+		for (size_t i = 0; i < num_swapchain_images; ++i) {
+			// hardcoded 2 is
+			// - frame UBO
+			// - material UBO
+			const uint32_t TEXTURE_BINDING_OFFSET = 2;
+
+			std::vector< VkWriteDescriptorSet> descriptor_writes(TEXTURE_BINDING_OFFSET + m_config->texture_image_views_count);
+
 			VkDescriptorBufferInfo bufferInfo_frame = { 0 };
 			bufferInfo_frame.buffer = m_uniform_buffers[i];
 			bufferInfo_frame.offset = 0;
-			bufferInfo_frame.range = sizeof(DataUniformFrame);
+			bufferInfo_frame.range = m_config->size_uniform_data_frame;
 
 			VkDescriptorBufferInfo bufferInfo_material = { 0 };
 			bufferInfo_material.buffer = m_uniform_buffers_material[i];
 			bufferInfo_material.offset = 0;
-			bufferInfo_material.range = sizeof(DataUniformMaterial);
+			bufferInfo_material.range = m_config->size_uniform_data_material;
 
-			VkDescriptorImageInfo imageInfo = { 0 };
-			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			imageInfo.imageView = Drawcall::get_pipeline_image_view(); // TODO this is a consequence of using unified textures and samplers
-			imageInfo.sampler = m_texture_sampler;
-
-			VkWriteDescriptorSet descriptorWrites[] = {
-				(VkWriteDescriptorSet) { // uniforms buffer - frame
+			descriptor_writes[0] = (VkWriteDescriptorSet){ // uniforms buffer - frame
 					.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 					.dstSet = m_descriptor_sets[i],
 					.dstBinding = 0,
@@ -307,8 +318,9 @@ namespace vkc {
 					.descriptorCount = 1,
 					.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
 					.pBufferInfo = &bufferInfo_frame
-				},
-				(VkWriteDescriptorSet) { // uniforms buffer - material
+			};
+
+			descriptor_writes[1] = (VkWriteDescriptorSet){ // uniforms buffer - material
 					.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 					.dstSet = m_descriptor_sets[i],
 					.dstBinding = 1,
@@ -316,26 +328,36 @@ namespace vkc {
 					.descriptorCount = 1,
 					.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
 					.pBufferInfo = &bufferInfo_material
-				},
-				(VkWriteDescriptorSet) { // texture sampler
+			};
+
+
+
+			for (int j = 0; j < m_config->texture_image_views_count; ++j)
+			{
+				VkDescriptorImageInfo imageInfo = { 0 };
+				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				imageInfo.imageView = m_config->texture_image_views[j];
+				imageInfo.sampler = m_texture_sampler;
+
+				descriptor_writes[TEXTURE_BINDING_OFFSET + j] = (VkWriteDescriptorSet){ // texture sampler
 					.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 					.dstSet = m_descriptor_sets[i],
-					.dstBinding = 2,
+					.dstBinding = TEXTURE_BINDING_OFFSET + j,
 					.dstArrayElement = 0,
 					.descriptorCount = 1,
 					.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
 					.pImageInfo = &imageInfo
-				}
-			};
-			static const uint32_t descriptorWritesCount = sizeof(descriptorWrites) / sizeof(VkWriteDescriptorSet);
-			vkUpdateDescriptorSets(m_handle_device, descriptorWritesCount, descriptorWrites, 0, NULL);
+				};
+			}
+
+			vkUpdateDescriptorSets(m_handle_device, descriptor_writes.size(), descriptor_writes.data(), 0, NULL);
 		}
 	}
 
 	void Pipeline::create_uniform_buffers() {
 		// frame data
 		{
-			VkDeviceSize bufferSize = sizeof(DataUniformFrame);
+			VkDeviceSize bufferSize = m_config->size_uniform_data_frame;
 			uint8_t num_swapchain_images = m_obj_render_context->get_num_render_frames();
 
 			m_uniform_buffers.resize(num_swapchain_images);
@@ -356,7 +378,7 @@ namespace vkc {
 
 		// material data
 		{
-			VkDeviceSize bufferSize = sizeof(DataUniformMaterial);
+			VkDeviceSize bufferSize = m_config->size_uniform_data_material;
 			uint8_t num_swapchain_images = m_obj_render_context->get_num_render_frames();
 
 			m_uniform_buffers_material.resize(num_swapchain_images);

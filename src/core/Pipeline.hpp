@@ -8,6 +8,28 @@
 namespace vkc {
 	class RenderContext;
 
+
+	struct PipelineConfig {
+		const char* vert_path;
+		const char* frag_path;
+
+		const VkVertexInputBindingDescription* vertex_binding_descriptors;
+		const VkVertexInputAttributeDescription* vertex_attribute_descriptors;
+		const VkImageView* texture_image_views;
+
+		const uint32_t size_uniform_data_frame;
+		const uint32_t size_uniform_data_material;
+
+		const uint32_t size_push_constant_model;
+		const uint32_t vertex_binding_descriptors_count;
+
+		const uint32_t vertex_attribute_descriptors_count;
+		const uint32_t texture_image_views_count;
+
+		// fixed pipeline config
+		const VkCullModeFlags face_culling_mode = VK_CULL_MODE_FRONT_BIT;
+	};
+
 	class Pipeline {
 	protected:
 		Pipeline()
@@ -22,18 +44,16 @@ namespace vkc {
 			VkDevice handle_device,
 			vkc::RenderContext* obj_render_context,
 			VkRenderPass handle_render_pass,
-			const char* vert_path,
-			const char* frag_path,
-			VkCullModeFlags face_culling_mode = VK_CULL_MODE_BACK_BIT
+			PipelineConfig* config
 		);
-		virtual ~Pipeline();
+		~Pipeline();
 
-		virtual VkPipeline get_handle() const { return m_handle; };
-		virtual VkPipelineLayout get_layout() const{ return m_handle_pipeline_layout; };
+		VkPipeline get_handle() const { return m_handle; };
+		VkPipelineLayout get_layout() const{ return m_handle_pipeline_layout; };
 
-		virtual void update_uniform_buffer(DataUniformFrame& ubo, uint32_t current_frame);
-		virtual void update_uniform_buffer_material(DataUniformMaterial& ubo, uint32_t current_frame);
-		virtual void bind_descriptor_sets(VkCommandBuffer command_buffer, uint32_t image_index);
+		void update_uniform_buffer(void* ubo, uint32_t current_frame);
+		void update_uniform_buffer_material(void* ubo, uint32_t current_frame);
+		void bind_descriptor_sets(VkCommandBuffer command_buffer, uint32_t image_index);
 
 	private:
 		void create_descriptor_set_layout();
@@ -56,11 +76,14 @@ namespace vkc {
 		// owned references
 		VkPipelineLayout m_handle_pipeline_layout;
 		VkPipeline m_handle;
-		// TODO create automatically from shader
 		VkDescriptorSetLayout m_handle_descriptor_set_layout;
 
-		// one of those per frame-in-flight
+		// config
+		PipelineConfig* m_config;
+		
 		VkDescriptorPool m_descriptor_pool;
+
+		// one of those per frame-in-flight
 		std::vector<VkDescriptorSet>	m_descriptor_sets;
 
 		// frame data
@@ -73,20 +96,6 @@ namespace vkc {
 		std::vector<VkDeviceMemory>		m_uniform_buffers_memory_material;
 		std::vector<void*>				m_uniform_buffers_mapped_material;
 
-		// data
-		// eventually we want to split image from sampler. It depends on how the VkWriteDescriptorSet is set up
-		// see https://docs.vulkan.org/samples/latest/samples/api/separate_image_sampler/README.html
-		// what we want is
-		// - pipeline: VkSampler only
-		// - application
-		//    - VkImage
-		//    - VkDeviceMemory
-		//    - VkImageView
-		// this requires different shaders too (separate setup uses two uniforms)
-		// Default is probably split, but there are images that makes sense to keep unified
-		// - shadow/light maps
-		// - noise textures
-		// - ...
 		VkSampler m_texture_sampler;
 	};
 }

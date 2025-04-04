@@ -32,8 +32,8 @@ namespace TMP_Assets {
     std::map<uint32_t, TextureData> texture_data;
 
     // only one texture for now
-    TextureData get_texture_data() {
-        return texture_data[0];
+    TextureData& get_texture_data(uint32_t index) {
+        return texture_data[index];
     }
 
     MeshData& get_mesh_data(uint32_t index) {
@@ -257,7 +257,9 @@ namespace vkc {
 
         for(auto& data : TMP_Assets::mesh_data)
             Drawcall::createModelBuffers(data.first, device, this);
-        Drawcall::createTextureImage(TMP_Assets::texture_data[0], device, this);
+
+        for (auto& data : TMP_Assets::texture_data)
+            Drawcall::createTextureImage(data.first, data.second, device, this);
 
         // only one renderpass for now
         m_render_passes.resize(1);

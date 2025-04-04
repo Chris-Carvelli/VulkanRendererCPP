@@ -50,7 +50,14 @@
 	- [x] shader compile script
 	- [x] fixed imgui errors
 	- [ ] fix pipeline mess
-	- [ ] figure out next steps
+		- [x] pipeline config
+		- [x] pipeline vertex input + descriptors
+		- [ ] set update descriptor bindings
+	- [x] figure out next steps
+	- [ ] store image textures
+		- [ ] map of <id, { image, memory, view }>
+	- [ ] pass image views to `PipelineConfig`
+	- [ ] add option to specify sampling info in a par-texture basis in `Pipeline`
 
 - 03/04/25
 	- [x] re-enable imgui

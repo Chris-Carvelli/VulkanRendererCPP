@@ -141,8 +141,8 @@ namespace vkc {
 				obj_curr_pipeline->bind_descriptor_sets(
 					m_command_buffer,
 					frame_index);
-				obj_curr_pipeline->update_uniform_buffer(ubo, frame_index);
-				obj_curr_pipeline->update_uniform_buffer_material(*drawcall.data_uniform_material, frame_index);
+				obj_curr_pipeline->update_uniform_buffer(&ubo, frame_index);
+				obj_curr_pipeline->update_uniform_buffer_material(drawcall.data_uniform_material, frame_index);
 			}
 
 			Drawcall::ModelDataGPU model_data_gpu = Drawcall::get_model_data(drawcall.idx_data_attributes);

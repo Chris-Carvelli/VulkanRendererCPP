@@ -2,8 +2,9 @@
 
 #include <VulkanUtils.h>
 #include <core/RenderContext.hpp>
+#include <core/DrawCall.hpp>
 
-#include <core/Pipeline_FX.hpp>
+#include <core/VertexData.h>
 
 namespace vkc {
 	RenderPass::RenderPass(VkDevice device, RenderContext* obj_render_context)
@@ -175,9 +176,22 @@ namespace vkc {
 			m_handle_device,
 			m_obj_render_context,
 			m_handle,
-			"res/shaders/shader_base.vert.spv",
-			"res/shaders/shader_base.frag.spv",
-			VK_CULL_MODE_BACK_BIT
+			new PipelineConfig{
+				.vert_path = "res/shaders/shader_base.vert.spv",
+				.frag_path = "res/shaders/shader_base.frag.spv",
+				.size_uniform_data_frame = sizeof(DataUniformFrame),
+				.size_uniform_data_material = sizeof(DataUniformMaterial),
+				.size_push_constant_model = sizeof(DataUniformModel),
+				.vertex_binding_descriptors = vertexData_getBindingDescriptions(),
+				.vertex_binding_descriptors_count = vertexData_getBindingDescriptionsCount(),
+				.vertex_attribute_descriptors = vertexData_getAttributeDescriptions(),
+				.vertex_attribute_descriptors_count = vertexData_getAttributeDescriptionsCount(),
+				.texture_image_views = new VkImageView[] {
+					Drawcall::get_texture_image_view(0)
+				},
+				.texture_image_views_count = 1,
+				.face_culling_mode = VK_CULL_MODE_BACK_BIT
+			}
 		);
 
 		//// outlines
