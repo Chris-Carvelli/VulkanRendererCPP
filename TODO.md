@@ -41,9 +41,9 @@
 		- [ ] needs to be called in `RenderFrame`, ugly singleton
 		- [x] check why it creates/destroys cmb buffer at inappropriate times
 				(SOLUTION: one of ImGui's Init parameters is `imageCount`, which stands for SWAPCHAIN image count. That was not set correctly)
-	- [ ] refactor pipelines
-		- [ ] handle multiple uniform buffer and push constants
-		- [ ] number and size of buffer is a creation parameter
+	- [x] refactor pipelines
+		- [ ] ~handle multiple uniform buffer and push constants~
+		- [x] number and size of buffer is a creation parameter
 	- [ ] check why adding light color to blinn phong hue shifts (???) the final color
 
 - 04/04/25
@@ -54,10 +54,12 @@
 		- [x] pipeline vertex input + descriptors
 		- [ ] set update descriptor bindings
 	- [x] figure out next steps
-	- [ ] store image textures
-		- [ ] map of <id, { image, memory, view }>
+	- [x] store image textures
+		- [x] map of <id, { image, memory, view }>
 	- [ ] pass image views to `PipelineConfig`
 	- [ ] add option to specify sampling info in a par-texture basis in `Pipeline`
+	- [ ] ~add option to manually update `Pipeline`'s bindings (needed for render textures)~
+			(would need multiple renderpasses, with the ability to customize the framebuffer creation AND handle render textures resizing with swapchain. out of Scope)
 
 - 03/04/25
 	- [x] re-enable imgui

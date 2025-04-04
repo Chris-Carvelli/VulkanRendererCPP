@@ -292,14 +292,6 @@ namespace vkc {
                 TMP_Update::model_data[i],
                 i % TMP_Assets::num_mesh_assets)
             );
-            //// outline drawcall
-            //Drawcall::add_drawcall(Drawcall::DrawcallData(
-            //    obj_render_pass,
-            //    obj_render_pass->get_pipeline_ptr(1),
-            //    &TMP_Update::tmp_material,
-            //    TMP_Update::model_data[i],
-            //    i % TMP_Assets::num_mesh_assets)
-            //);
         }
     }
 

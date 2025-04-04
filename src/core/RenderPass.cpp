@@ -175,7 +175,7 @@ namespace vkc {
 		m_pipelines[0] = std::make_unique<vkc::Pipeline>(
 			m_handle_device,
 			m_obj_render_context,
-			m_handle,
+			this,
 			new PipelineConfig{
 				.vert_path = "res/shaders/shader_base.vert.spv",
 				.frag_path = "res/shaders/shader_base.frag.spv",
@@ -194,14 +194,32 @@ namespace vkc {
 			}
 		);
 
+		// // TODO
+		// // 1. RenderPass must be created with custom framebuffers
+		// // 2. render textures must be resized with swapchain recreation
 		//// outlines
-		//m_pipelines[1] = std::make_unique<vkc::Pipeline_FX>(
+		//m_pipelines[1] = std::make_unique<vkc::Pipeline>(
 		//	m_handle_device,
 		//	m_obj_render_context,
-		//	this,
-		//	"res/shaders/fx_shader_fullscreen.vert.spv",
-		//	"res/shaders/fx_shader.frag.spv",
-		//	VK_CULL_MODE_FRONT_BIT
+		//	m_handle,
+		//	new PipelineConfig{
+		//		"res/shaders/fx_shader_fullscreen.vert.spv",
+		//		"res/shaders/fx_shader.frag.spv",
+		//		.size_uniform_data_frame = 0,
+		//		.size_uniform_data_material = 0,
+		//		.size_push_constant_model = 0,
+		//		.vertex_binding_descriptors = vertexData_getBindingDescriptions(),
+		//		.vertex_binding_descriptors_count = vertexData_getBindingDescriptionsCount(),
+		//		// FIXME check `vertexDataFX_getAttributeDescriptions` definition
+		//		.vertex_attribute_descriptors = vertexDataFX_getAttributeDescriptions(),
+		//		.vertex_attribute_descriptors_count = 1,
+		//		.texture_image_views = new VkImageView[] {
+		//			m_colo
+		//			m_depth_image_view
+		//		},
+		//		.texture_image_views_count = 2,
+		//		.face_culling_mode = VK_CULL_MODE_FRONT_BIT
+		//	}
 		//);
 	}
 

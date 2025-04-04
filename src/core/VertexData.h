@@ -96,3 +96,15 @@ inline const VkVertexInputAttributeDescription* vertexData_getAttributeDescripti
 inline const uint32_t vertexData_getAttributeDescriptionsCount() {
     return attributeDescriptionsCount;
 }
+
+// FIXME create descriptors based on what we need. Either:
+//    - create them on the fly
+//    - specify few meaninful sets, WITH PROPER NAMES
+inline const VkVertexInputAttributeDescription* vertexDataFX_getAttributeDescriptions() {
+    static VkVertexInputAttributeDescription ret = (VkVertexInputAttributeDescription){
+        .location = 0,
+        .binding = 0,
+        .format = VK_FORMAT_R32G32B32_SFLOAT,
+    };
+    return &ret;
+}

@@ -8,11 +8,11 @@ namespace vkc {
 	Pipeline::Pipeline(
 		VkDevice handle_device,
 		vkc::RenderContext* obj_render_context,
-		VkRenderPass handle_render_pass,
+		vkc::RenderPass* obj_render_pass,
 		PipelineConfig* config
 	)
 		: m_handle_device      { handle_device }
-		, m_handle_render_pass { handle_render_pass }
+		, m_obj_render_pass { obj_render_pass }
 		, m_obj_render_context { obj_render_context }
 		, m_config { config }
 	{
@@ -148,7 +148,7 @@ namespace vkc {
 
 		pipelineInfo.layout = m_handle_pipeline_layout;
 
-		pipelineInfo.renderPass = m_handle_render_pass;
+		pipelineInfo.renderPass = m_obj_render_pass->get_handle();
 		pipelineInfo.subpass = 0;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
 		pipelineInfo.basePipelineIndex = -1;              // Optional

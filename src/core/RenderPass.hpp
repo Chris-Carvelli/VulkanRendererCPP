@@ -45,6 +45,7 @@ namespace vkc {
 		VkRenderPass m_handle;
 		std::vector<VkFramebuffer> m_handle_framebuffers;
 		std::vector<std::unique_ptr<Pipeline>> m_pipelines;
+
 		VkImage			m_depth_image;
 		VkDeviceMemory	m_depth_image_memory;
 		VkImageView		m_depth_image_view;
