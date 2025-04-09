@@ -5,6 +5,7 @@
 #include <vector>
 
 namespace vkc {
+
 	class Window {
 	public:
 		Window(const char* title, int width, int height);

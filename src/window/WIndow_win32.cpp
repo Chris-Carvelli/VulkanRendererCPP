@@ -1,5 +1,7 @@
 #include "Window.hpp"
 
+#include <VulkanUtils.h>
+
 // windows only for now
 // CANNOT INCLUDE CC_LOGGER, VERBOSE IS TAKEN...
 #include <stdio.h>
@@ -20,6 +22,7 @@ inline void TMP_CC_LOG_SYS_ERROR() {
 #include <windef.h>
 #include <vulkan/vulkan_win32.h>
 #include <imgui_impl_win32.h>
+#include <windowsx.h> // GET_X_LPARAM(), GET_Y_LPARAM()
 
 #pragma comment(lib,"user32.lib")
 
@@ -37,8 +40,7 @@ namespace {
     // this is the main message handler for the program
     LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
-        if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
-            return true;
+        ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam);
 
         if (message == WM_DESTROY)
         {
@@ -88,10 +90,44 @@ namespace vkc {
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
-        }
 
-        if (msg.message == WM_QUIT)
-            this->m_should_quit = true;
+            switch (msg.message)
+            {
+            /*case WM_SYSKEYDOWN:
+                CC_LOG(LOG, "WM_SYSKEYDOWN: 0x%x\n", msg.wParam);
+                break;
+
+            case WM_SYSCHAR:
+                CC_LOG(LOG, "WM_SYSCHAR: %c\n", (wchar_t)msg.wParam);
+                break;
+
+            case WM_SYSKEYUP:
+                CC_LOG(LOG, "WM_SYSKEYUP: 0x%x\n", msg.wParam);
+                break;
+
+            case WM_KEYDOWN:
+                CC_LOG(LOG, "WM_KEYDOWN: 0x%x\n", msg.wParam);
+                break;
+
+            case WM_KEYUP:
+                CC_LOG(LOG, "WM_KEYUP: 0x%x\n", msg.wParam);
+                break;
+
+            case WM_CHAR:
+                CC_LOG(LOG, "WM_CHAR: %c\n", (wchar_t)msg.wParam);
+                break;*/
+
+            //case WM_NCMOUSEMOVE:
+            //    POINT mouse_pos = { (LONG)GET_X_LPARAM(msg.lParam), (LONG)GET_Y_LPARAM(msg.lParam) };
+            //    if (ScreenToClient(msg.hwnd, &mouse_pos) == FALSE) // WM_NCMOUSEMOVE are provided in absolute coordinates.
+            //        continue;
+
+            //    break;
+            case WM_QUIT:
+                this->m_should_quit = true;
+                break;
+            }
+        }
     }
 
     std::vector<const char*> Window::get_platform_extensions() {

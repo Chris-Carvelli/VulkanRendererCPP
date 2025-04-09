@@ -22,6 +22,8 @@
 
 // TMP_Update includes
 #include <imgui.h>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 namespace TMP_Assets {
     int num_mesh_assets;
@@ -118,10 +120,45 @@ namespace TMP_Assets {
         return ret;
     }
 }
+namespace TMP_Math {
+    glm::vec3 ExtractTranslation(const glm::mat4& mat)
+    {
+        // Keep only 3x3 rotation part of the matrix
+        glm::mat3 transposed = glm::transpose(mat);
 
+        glm::vec3 inverseTranslation = mat[3];
+
+        return transposed * -inverseTranslation;
+    }
+
+    glm::vec3 ExtractRotation(const glm::mat4& mat)
+    {
+        // Columns should be divided by scale first, but scale is (1, 1, 1) 
+        glm::vec3 rotation(0.0f);
+        float f = mat[1][2];
+        if (std::abs(std::abs(f) - 1.0f) < 0.00001f)
+        {
+            rotation.x = -f * glm::pi<float>() * 0.5f;
+            rotation.y = std::atan2(-f * mat[0][1], -f * mat[0][0]);
+            rotation.z = 0.0f;
+        }
+        else
+        {
+            rotation.x = -std::asin(f);
+            float cosX = std::cos(rotation.x);
+            rotation.y = std::atan2(mat[0][2] / cosX, mat[2][2] / cosX);
+            rotation.z = std::atan2(mat[1][0] / cosX, mat[1][1] / cosX);
+        }
+        return rotation;
+    }
+}
 namespace TMP_Update {
-    glm::mat4 perspective_projection;
-    static float x = 0.0f;
+    // camera
+    glm::mat4 camera_proj;
+    glm::mat4 camera_view;
+    glm::vec3 camera_pos;
+    glm::vec3 camera_rot;
+
     DataUniformFrame ubo = (DataUniformFrame){
         .light_ambient = glm::vec3(0.3f, 0.3f, 0.3f),
         .light_dir = glm::vec3(1, 1, 1),
@@ -139,12 +176,12 @@ namespace TMP_Update {
     const uint32_t drawcall_cout = 20;
     std::vector<DataUniformModel> model_data;
 
-    void TMP_update_gui() {
+    void TMP_update_gui(VkExtent2D swapchain_extent) {
         ImGui::Begin("tmp_update_info");
 
         ImGui::SeparatorText("Frame data");
-        ImGui::ColorPicker3("Light Color Ambient", &ubo.light_ambient.x);
-        ImGui::ColorPicker3("Light Color Light", &ubo.light_color.x);
+        ImGui::DragFloat3("Light Color Ambient", &ubo.light_ambient.x);
+        ImGui::DragFloat3("Light Color Light", &ubo.light_color.x);
         ImGui::DragFloat3("Light Direction", &ubo.light_dir.x);
         ImGui::DragFloat("Light Intensity", &ubo.light_intensity);
 
@@ -154,6 +191,56 @@ namespace TMP_Update {
         ImGui::DragFloat("Specular", &tmp_material.specular);
         ImGui::DragFloat("Specular Exponent", &tmp_material.specular_exp);
 
+        ImGui::SeparatorText("Camera");
+
+
+        bool dirty = false;
+        dirty  = ImGui::DragFloat3("Position", &camera_pos.x);
+        dirty |= ImGui::DragFloat3("Rotation", &camera_rot.x);
+
+        // TODO use own input system
+        const float SPEED_PAN = 10.0f;
+        const float SPEED_MOV = 0.1f;
+        const float SPEED_ROT = 0.1f;
+        const float THRESHOLD_PAN = 0.2f;
+        const float THRESHOLD_ROT = 0.1f;
+
+        // TODO FIXME split matrices camera view and camera world
+        auto& io = ImGui::GetIO();
+        if (io.MouseDown[1]) {
+            if (io.KeyAlt)
+            {                if (abs(io.MouseDelta.x) > THRESHOLD_PAN) camera_pos.x += (SPEED_PAN * io.MouseDelta.x) / swapchain_extent.width;
+                if (abs(io.MouseDelta.y) > THRESHOLD_PAN) camera_pos.y -= (SPEED_PAN * io.MouseDelta.y) / swapchain_extent.height;
+            }
+            else
+            {
+                if (abs(io.MouseDelta.y) > THRESHOLD_ROT) camera_rot.x += io.MouseDelta.y * SPEED_ROT;
+                if (abs(io.MouseDelta.x) > THRESHOLD_ROT) camera_rot.z += io.MouseDelta.x * SPEED_ROT;
+            }
+            dirty = true;
+        }
+
+        if (ImGui::IsKeyDown(ImGuiKey_W)) { camera_pos.z += SPEED_MOV; dirty = true; }
+        if (ImGui::IsKeyDown(ImGuiKey_S)) { camera_pos.z -= SPEED_MOV; dirty = true; }
+        if (ImGui::IsKeyDown(ImGuiKey_A)) { camera_pos.x += SPEED_MOV; dirty = true; }
+        if (ImGui::IsKeyDown(ImGuiKey_D)) { camera_pos.x -= SPEED_MOV; dirty = true; }
+        if (ImGui::IsKeyDown(ImGuiKey_Q)) { camera_pos.y += SPEED_MOV; dirty = true; }
+        if (ImGui::IsKeyDown(ImGuiKey_E)) { camera_pos.y -= SPEED_MOV; dirty = true; }
+
+        if(dirty)
+        {
+            glm::vec3 rot = glm::radians(camera_rot);
+            glm::mat4 rot_matrix = glm::identity<glm::mat4>();
+
+            const glm::vec3 FORWARD = glm::vec3(0, 0, -1);
+            const glm::vec3 UP = glm::vec3(0, 1, 0);
+            rot_matrix = glm::rotate(rot_matrix, rot.y, glm::vec3(0, 1, 0));
+            rot_matrix = glm::rotate(rot_matrix, rot.x, glm::vec3(1, 0, 0));
+            rot_matrix = glm::rotate(rot_matrix, rot.z, glm::vec3(0, 0, 1));
+
+            glm::mat4 translate_matrix = glm::translate(glm::identity<glm::mat4>(), camera_pos);
+            camera_view = translate_matrix * rot_matrix;
+        }
         ImGui::End();
     }
 
@@ -162,21 +249,11 @@ namespace TMP_Update {
         float l = glm::sqrt(drawcall_cout);
         //float l = 2;
         float fow = (float)swapchain_extent.width / swapchain_extent.height;
-        perspective_projection = glm::perspective(glm::radians(45.0f), fow, 0.1f, (float)drawcall_cout);
+        camera_proj = glm::perspective(glm::radians(45.0f), fow, 0.1f, (float)drawcall_cout);
         //perspective_projection = glm::perspective(glm::radians(45.0f), fow, 0.1f, 10.0f);
 
-        // TODO calculate deltaTime
-        const float time = 1.0f / 60.0f;
-        const float offset = 1.0f;
-        x += time;
-
-
-        const glm::vec3 dir_up = (glm::vec3){ 0, 0, 1 };
-        const glm::vec3 pos_camera = glm::rotate(glm::mat4(1.0f), x, dir_up) * (glm::vec4) { l, l, l, 1 };
-        const glm::vec3 pos_target = (glm::vec3){ 0, 0, 0 };
-
-        ubo.view = glm::lookAt(pos_camera, pos_target, dir_up);
-        ubo.proj = perspective_projection;
+        ubo.view = camera_view;
+        ubo.proj = camera_proj;
 
         // invert up axis
         ubo.proj[1][1] *= -1;
@@ -279,7 +356,7 @@ namespace vkc {
         //clear previous drawcalls
         Drawcall::clear_drawcalls();
         // make up some drawcalls for testing
-        TMP_Update::TMP_update_gui();
+        TMP_Update::TMP_update_gui(m_swapchain->get_extent());
         TMP_Update::updateUniformBuffer(m_swapchain->get_extent());
         vkc::RenderPass* obj_render_pass = m_render_passes[0].get();
         for (uint32_t i = 0; i < TMP_Update::drawcall_cout; ++i)

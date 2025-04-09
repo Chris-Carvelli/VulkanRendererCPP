@@ -46,6 +46,13 @@
 		- [x] number and size of buffer is a creation parameter
 	- [ ] check why adding light color to blinn phong hue shifts (???) the final color
 
+
+- 09/04/25
+	- [x] improve "editor" camera
+	- [ ] basic bounding boxes
+	- [ ] raycast from mouse to boxes
+	- [ ] space partitioning
+
 - 04/04/25
 	- [x] shader compile script
 	- [x] fixed imgui errors

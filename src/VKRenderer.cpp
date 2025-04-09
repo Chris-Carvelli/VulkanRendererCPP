@@ -16,7 +16,9 @@ void VKRenderer::run() {
 		m_render_context->render_begin();
 
 		render();
+
 		gui_record();
+
 		m_render_context->render_finalize();
 		auto time_end = std::chrono::high_resolution_clock::now();
 		auto x = std::chrono::duration_cast<std::chrono::milliseconds>(time_end - time_start);
