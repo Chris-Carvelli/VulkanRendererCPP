@@ -7,6 +7,7 @@ layout(binding = 0) uniform UniformBufferObject_Frame {
 
 layout(push_constant) uniform ModelData {
     mat4 model;
+    vec3 color;
 } data_model;
 
 layout(location = 0) in vec3 inPosition;

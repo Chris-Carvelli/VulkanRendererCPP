@@ -70,13 +70,12 @@ namespace vkc {
 		// ======================================================================
 
 		struct DebugDrawcallData {
-			DataUniformModel data_uniform_model;
-			glm::vec3 size;
+			DataUniformModelDebug data_uniform_model;
 			uint32_t idx_data_attributes;
 		};
 
 		void init_debug_meshes(VkDevice device, vkc::RenderContext* obj_render_context);
-		void add_debug_cube(glm::vec3 pos, glm::vec3 rot, glm::vec3 size);
+		void add_debug_cube(glm::vec3 pos, glm::vec3 rot, glm::vec3 size, glm::vec3 color);
 		const std::vector<DebugDrawcallData>& get_debug_drawcalls();
 		void clear_debug_drawcalls();
 	}

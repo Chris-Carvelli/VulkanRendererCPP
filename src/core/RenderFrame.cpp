@@ -186,7 +186,7 @@ namespace vkc {
 			vkCmdPushConstants(
 				m_command_buffer,
 				obj_debug_pipeline->get_layout(),
-				VK_SHADER_STAGE_VERTEX_BIT,
+				VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
 				0,
 				sizeof(drawcall.data_uniform_model),
 				&drawcall.data_uniform_model

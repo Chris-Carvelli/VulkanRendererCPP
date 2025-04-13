@@ -126,6 +126,11 @@ typedef struct {
     glm::mat4 viewProj;
 } DataUniformFrameDebug;
 
+typedef struct {
+    glm::mat4 model;
+    glm::vec3 color;
+} DataUniformModelDebug;
+
 // FIXME create descriptors based on what we need. Either:
 //    - create them on the fly
 //    - specify few meaninful sets, WITH PROPER NAMES

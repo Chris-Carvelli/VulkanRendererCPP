@@ -212,9 +212,6 @@ namespace vkc {
 			}
 		);
 
-		CC_LOG(IMPORTANT, "pipeline:		%p", m_pipelines[0]->get_handle());
-		CC_LOG(IMPORTANT, "debug pipeline:	%p", m_debug_pipelines[0]->get_handle());
-
 		// // TODO
 		// // 1. RenderPass must be created with custom framebuffers
 		// // 2. render textures must be resized with swapchain recreation

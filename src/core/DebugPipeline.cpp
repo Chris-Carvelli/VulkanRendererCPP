@@ -120,9 +120,9 @@ namespace vkc {
 		colorBlending.blendConstants[3] = 0.0f; // Optional
 
 		// push constants
-		VkPushConstantRange range = { VK_SHADER_STAGE_VERTEX_BIT };
+		VkPushConstantRange range = { VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT };
 		range.offset = 0;
-		range.size = sizeof(DataUniformModel);
+		range.size = sizeof(DataUniformModelDebug);
 
 		// pipeline assembly
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO };

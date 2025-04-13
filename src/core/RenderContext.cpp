@@ -381,7 +381,19 @@ namespace vkc {
             );
         }
 
-        Drawcall::add_debug_cube(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+        Drawcall::add_debug_cube(
+            glm::vec3(0.0f, 0.0f, 0.0f), 
+            glm::vec3(0.0f, 0.0f, 0.0f), 
+            glm::vec3(1.0f, 1.0f, 1.0f),
+            glm::vec3(0.0f, 1.0f, 0.0f)
+        );
+
+        Drawcall::add_debug_cube(
+            glm::vec3(2.0f, 2.0f, 2.0f),
+            glm::radians(glm::vec3(45.0f, 45.0f, 45.0f)),
+            glm::vec3(2.0f, 3.0f, 4.0f),
+            glm::vec3(0.0f, 0.0f, 1.0f)
+        );
     }
 
     void RenderContext::render_finalize() {

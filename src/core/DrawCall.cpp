@@ -1,5 +1,8 @@
 #include "DrawCall.hpp"
 
+#include <glm/gtx/euler_angles.hpp>
+#include <glm/gtx/transform.hpp>
+
 #include <vector>
 #include <map>
 
@@ -288,11 +291,11 @@ namespace vkc::Drawcall {
             sizeof(debug_cube_index_data),device, obj_render_context
         );
     }
-    void add_debug_cube(glm::vec3 pos, glm::vec3 rot, glm::vec3 size) {
+    void add_debug_cube(glm::vec3 pos, glm::vec3 rot, glm::vec3 size, glm::vec3 color) {
+        glm::mat4 mtx = glm::translate(pos) * glm::eulerAngleXYZ(rot.x, rot.y, rot.z) * glm::scale(size);
         DebugDrawcallData data = {
-            .data_uniform_model = {.model = glm::mat4(1.0f) },
+            .data_uniform_model = {.model = mtx, .color = color},
             .idx_data_attributes = IDX_DEBUG_CUBE,
-            .size = size
         };
         debug_drawcalls.push_back(data);
     }
