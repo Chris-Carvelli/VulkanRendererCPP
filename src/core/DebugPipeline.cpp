@@ -1,25 +1,25 @@
-#include "Pipeline.hpp"
+#include "DebugPipeline.hpp"
 
 #include <VulkanUtils.h>
 #include <core/RenderContext.hpp>
 #include <core/DrawCall.hpp>
 
 namespace vkc {
-	Pipeline::Pipeline(
+	DebugPipeline::DebugPipeline(
 		VkDevice handle_device,
 		vkc::RenderContext* obj_render_context,
 		vkc::RenderPass* obj_render_pass,
-		PipelineConfig* config
+		DebugPipelineConfig* config
 	)
 		: m_handle_device      { handle_device }
 		, m_obj_render_pass { obj_render_pass }
 		, m_obj_render_context { obj_render_context }
-		, m_config { config }
+		, m_config{ config }
 	{
 		create_descriptor_set_layout();
 
-		std::vector<char> shaderCodeVert = TMP_VUlkanUtils::read_file_binary(config->vert_path);
-		std::vector<char> shaderCodeFrag = TMP_VUlkanUtils::read_file_binary(config->frag_path);
+		std::vector<char> shaderCodeVert = TMP_VUlkanUtils::read_file_binary("res/shaders/shader_debug.vert.spv");
+		std::vector<char> shaderCodeFrag = TMP_VUlkanUtils::read_file_binary("res/shaders/shader_debug.frag.spv"); // TODO custom debug fragment shader
 
 		VkShaderModule shaderModuleVert = create_shader_module(handle_device, shaderCodeVert.data(), shaderCodeVert.size());
 		VkShaderModule shaderModuleFrag = create_shader_module(handle_device, shaderCodeFrag.data(), shaderCodeFrag.size());
@@ -52,10 +52,10 @@ namespace vkc {
 
 		// vertex input
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo = { VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO };
-		vertexInputInfo.vertexBindingDescriptionCount = config->vertex_binding_descriptors_count;
-		vertexInputInfo.pVertexBindingDescriptions = config->vertex_binding_descriptors;
-		vertexInputInfo.vertexAttributeDescriptionCount = config->vertex_attribute_descriptors_count;
-		vertexInputInfo.pVertexAttributeDescriptions = config->vertex_attribute_descriptors;
+		vertexInputInfo.vertexBindingDescriptionCount = 1;
+		vertexInputInfo.pVertexBindingDescriptions = vertexDebug_getBindingDescriptions();
+		vertexInputInfo.vertexAttributeDescriptionCount = 1;
+		vertexInputInfo.pVertexAttributeDescriptions = vertexDebug_getAttributeDescriptions();
 
 		// input assembly
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly = { VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO };
@@ -71,9 +71,9 @@ namespace vkc {
 		VkPipelineRasterizationStateCreateInfo rasterizer = { VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO };
 		rasterizer.depthClampEnable = VK_FALSE;
 		// rasterizer.rasterizerDiscardEnable = VK_FALSE; // this should be default false
-		// rasterizer.polygonMode = VK_POLYGON_MODE_FILL; // this should be fill by default
+		//rasterizer.polygonMode = VK_POLYGON_MODE_LINE; // this should be fill by default
 		rasterizer.lineWidth = 1.0f;
-		rasterizer.cullMode = config->face_culling_mode;
+		rasterizer.cullMode = VK_CULL_MODE_NONE;
 		rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
 
@@ -122,7 +122,7 @@ namespace vkc {
 		// push constants
 		VkPushConstantRange range = { VK_SHADER_STAGE_VERTEX_BIT };
 		range.offset = 0;
-		range.size = config->size_push_constant_model;
+		range.size = sizeof(DataUniformModel);
 
 		// pipeline assembly
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO };
@@ -161,11 +161,10 @@ namespace vkc {
 		vkDestroyShaderModule(m_handle_device, shaderModuleVert, NULL);
 
 		create_uniform_buffers();
-		create_texture_samplers();
 		create_descriptor_sets();
 	}
 
-	Pipeline::~Pipeline() {
+	DebugPipeline::~DebugPipeline() {
 		if (m_handle == VK_NULL_HANDLE)
 			return;
 		vkDestroyPipelineLayout(m_handle_device, m_handle_pipeline_layout, NULL);
@@ -176,30 +175,20 @@ namespace vkc {
 			vkDestroyBuffer(m_handle_device, handle, NULL);
 		for (auto& handle : m_uniform_buffers_memory)
 			vkFreeMemory(m_handle_device, handle, NULL);
-		for (auto& handle : m_uniform_buffers_material)
-			vkDestroyBuffer(m_handle_device, handle, NULL);
-		for (auto& handle : m_uniform_buffers_memory_material)
-			vkFreeMemory(m_handle_device, handle, NULL);
 
-		vkDestroySampler(m_handle_device, m_texture_sampler, NULL);
 
 		// FIXME cleanup config (see below)
 		// pipeline either acquires ALL config arrays, or none
 		// a good idea could be to follow Box2D pattern and just memcpy
 		// config data, so we can take care of all our stuff
-		delete m_config->texture_image_views;
 		delete m_config;
 	}
 
-	void Pipeline::update_uniform_buffer(void* ubo, uint32_t current_frame) {
-		memcpy(m_uniform_buffers_mapped[current_frame], ubo, m_config->size_uniform_data_frame);
+	void DebugPipeline::update_uniform_buffer(void* ubo, uint32_t current_frame) {
+		memcpy(m_uniform_buffers_mapped[current_frame], ubo, sizeof(DataUniformFrameDebug));
 	}
 
-	void Pipeline::update_uniform_buffer_material(void* ubo, uint32_t current_frame) {
-		memcpy(m_uniform_buffers_mapped_material[current_frame], ubo, m_config->size_uniform_data_material);
-	}
-
-	void Pipeline::bind_descriptor_sets(VkCommandBuffer command_buffer, uint32_t image_index) {
+	void DebugPipeline::bind_descriptor_sets(VkCommandBuffer command_buffer, uint32_t image_index) {
 		vkCmdBindDescriptorSets(
 			command_buffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
@@ -211,29 +200,15 @@ namespace vkc {
 		);
 	}
 
-	void Pipeline::create_descriptor_set_layout() {
+	void DebugPipeline::create_descriptor_set_layout() {
 		VkDescriptorSetLayoutBinding uboLayoutBinding_frame = { 0 };
 		uboLayoutBinding_frame.binding = 0;
 		uboLayoutBinding_frame.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		uboLayoutBinding_frame.descriptorCount = 1;
 		uboLayoutBinding_frame.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
-		VkDescriptorSetLayoutBinding uboLayoutBinding_material = { 0 };
-		uboLayoutBinding_material.binding = 1;
-		uboLayoutBinding_material.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		uboLayoutBinding_material.descriptorCount = 1;
-		uboLayoutBinding_material.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-		VkDescriptorSetLayoutBinding samplerLayoutBinding = { 0 };
-		samplerLayoutBinding.binding = 2;
-		samplerLayoutBinding.descriptorCount = 1;
-		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
 		VkDescriptorSetLayoutBinding bindings[] = {
-			uboLayoutBinding_frame,
-			uboLayoutBinding_material,
-			samplerLayoutBinding
+			uboLayoutBinding_frame
 		};
 		static const uint32_t bindingsCount = sizeof(bindings) / sizeof(VkDescriptorSetLayoutBinding);
 		VkDescriptorSetLayoutCreateInfo layoutInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO };
@@ -246,21 +221,13 @@ namespace vkc {
 	}
 
 	// TODO should this be automatically read from pipeline info?
-	void Pipeline::create_descriptor_sets() {
+	void DebugPipeline::create_descriptor_sets() {
 		uint8_t num_swapchain_images = m_obj_render_context->get_num_render_frames();
 
 		// descriptor pool
 		VkDescriptorPoolSize poolSize[] = {
 		(VkDescriptorPoolSize) {
 			.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-			.descriptorCount = num_swapchain_images
-		},
-			(VkDescriptorPoolSize) {
-			.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-			.descriptorCount = num_swapchain_images
-		},
-		(VkDescriptorPoolSize) {
-			.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
 			.descriptorCount = num_swapchain_images
 		}
 		};
@@ -293,22 +260,12 @@ namespace vkc {
 
 
 		for (size_t i = 0; i < num_swapchain_images; ++i) {
-			// hardcoded 2 is
-			// - frame UBO
-			// - material UBO
-			const uint32_t TEXTURE_BINDING_OFFSET = 2;
-
-			std::vector< VkWriteDescriptorSet> descriptor_writes(TEXTURE_BINDING_OFFSET + m_config->texture_image_views_count);
+			std::vector< VkWriteDescriptorSet> descriptor_writes(1);
 
 			VkDescriptorBufferInfo bufferInfo_frame = { 0 };
 			bufferInfo_frame.buffer = m_uniform_buffers[i];
 			bufferInfo_frame.offset = 0;
-			bufferInfo_frame.range = m_config->size_uniform_data_frame;
-
-			VkDescriptorBufferInfo bufferInfo_material = { 0 };
-			bufferInfo_material.buffer = m_uniform_buffers_material[i];
-			bufferInfo_material.offset = 0;
-			bufferInfo_material.range = m_config->size_uniform_data_material;
+			bufferInfo_frame.range = sizeof(DataUniformFrameDebug);
 
 			descriptor_writes[0] = (VkWriteDescriptorSet){ // uniforms buffer - frame
 					.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
@@ -320,44 +277,14 @@ namespace vkc {
 					.pBufferInfo = &bufferInfo_frame
 			};
 
-			descriptor_writes[1] = (VkWriteDescriptorSet){ // uniforms buffer - material
-					.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-					.dstSet = m_descriptor_sets[i],
-					.dstBinding = 1,
-					.dstArrayElement = 0,
-					.descriptorCount = 1,
-					.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-					.pBufferInfo = &bufferInfo_material
-			};
-
-
-
-			for (int j = 0; j < m_config->texture_image_views_count; ++j)
-			{
-				VkDescriptorImageInfo imageInfo = { 0 };
-				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				imageInfo.imageView = m_config->texture_image_views[j];
-				imageInfo.sampler = m_texture_sampler;
-
-				descriptor_writes[TEXTURE_BINDING_OFFSET + j] = (VkWriteDescriptorSet){ // texture sampler
-					.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-					.dstSet = m_descriptor_sets[i],
-					.dstBinding = TEXTURE_BINDING_OFFSET + j,
-					.dstArrayElement = 0,
-					.descriptorCount = 1,
-					.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-					.pImageInfo = &imageInfo
-				};
-			}
-
 			vkUpdateDescriptorSets(m_handle_device, descriptor_writes.size(), descriptor_writes.data(), 0, NULL);
 		}
 	}
 
-	void Pipeline::create_uniform_buffers() {
+	void DebugPipeline::create_uniform_buffers() {
 		// frame data
 		{
-			VkDeviceSize bufferSize = m_config->size_uniform_data_frame;
+			VkDeviceSize bufferSize = sizeof(DataUniformFrameDebug);
 			uint8_t num_swapchain_images = m_obj_render_context->get_num_render_frames();
 
 			m_uniform_buffers.resize(num_swapchain_images);
@@ -375,55 +302,9 @@ namespace vkc {
 				vkMapMemory(m_handle_device, m_uniform_buffers_memory[i], 0, bufferSize, 0, &m_uniform_buffers_mapped[i]);
 			}
 		}
-
-		// material data
-		{
-			VkDeviceSize bufferSize = m_config->size_uniform_data_material;
-			uint8_t num_swapchain_images = m_obj_render_context->get_num_render_frames();
-
-			m_uniform_buffers_material.resize(num_swapchain_images);
-			m_uniform_buffers_memory_material.resize(num_swapchain_images);
-			m_uniform_buffers_mapped_material.resize(num_swapchain_images);
-
-			for (size_t i = 0; i < num_swapchain_images; ++i) {
-				m_obj_render_context->createBuffer(
-					bufferSize,
-					VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-					VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-					&m_uniform_buffers_material[i],
-					&m_uniform_buffers_memory_material[i]
-				);
-				vkMapMemory(m_handle_device, m_uniform_buffers_memory_material[i], 0, bufferSize, 0, &m_uniform_buffers_mapped_material[i]);
-			}
-		}
 	}
 
-	void Pipeline::create_texture_samplers() {
-		VkSamplerCreateInfo samplerInfo = { VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO };
-		samplerInfo.magFilter = VK_FILTER_LINEAR;
-		samplerInfo.minFilter = VK_FILTER_LINEAR;
-		samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		samplerInfo.anisotropyEnable = VK_FALSE; // ATM we are not requesting/enabling it in physical/logical device
-		samplerInfo.maxAnisotropy = m_obj_render_context->get_physical_device_properties().limits.maxSamplerAnisotropy;
-		samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-		samplerInfo.unnormalizedCoordinates = VK_FALSE;
-		// percentage-closer filtering (shadow mapping)
-		samplerInfo.compareEnable = VK_FALSE;
-		samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-		// mipmapping
-		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-		samplerInfo.mipLodBias = 0.0f;
-		samplerInfo.minLod = 0.0f;
-		samplerInfo.maxLod = 0.0f;
-
-		if (vkCreateSampler(m_handle_device, &samplerInfo, NULL, &m_texture_sampler) != VK_SUCCESS) {
-			CC_LOG(ERROR, "failed to create texture sampler!");
-		}
-	}
-
-	VkShaderModule Pipeline::create_shader_module(VkDevice device, const char* code, const size_t codeSize) {
+	VkShaderModule DebugPipeline::create_shader_module(VkDevice device, const char* code, const size_t codeSize) {
 		VkShaderModuleCreateInfo createInfo = { VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO };
 		createInfo.codeSize = codeSize;
 		createInfo.pCode = (const uint32_t*)code;

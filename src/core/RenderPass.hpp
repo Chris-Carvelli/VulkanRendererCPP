@@ -3,6 +3,7 @@
 #include <vulkan/vulkan.h>
 
 #include <core/Pipeline.hpp>
+#include <core/DebugPipeline.hpp>
 
 #include <vector>
 #include <memory>
@@ -24,6 +25,7 @@ namespace vkc {
 
 		// NOT THREAD SAFE!
 		vkc::Pipeline* get_pipeline_ptr(uint8_t i);
+		vkc::DebugPipeline* get_debug_pipeline_ptr(uint8_t i);
 
 		// TODO framebuffer only cares about swaphacin recreation
 		void handle_swapchain_recreation();
@@ -45,6 +47,7 @@ namespace vkc {
 		VkRenderPass m_handle;
 		std::vector<VkFramebuffer> m_handle_framebuffers;
 		std::vector<std::unique_ptr<Pipeline>> m_pipelines;
+		std::vector<std::unique_ptr<DebugPipeline>> m_debug_pipelines;
 
 		VkImage			m_depth_image;
 		VkDeviceMemory	m_depth_image_memory;

@@ -12,6 +12,7 @@ namespace vkc {
 
 	namespace Drawcall {
 		struct DrawcallData;
+		struct DebugDrawcallData;
 	}
 
 	class RenderFrame {
@@ -30,7 +31,8 @@ namespace vkc {
 			uint32_t frame_index,
 			VkExtent2D swapchain_extent,
 			DataUniformFrame ubo,
-			const std::vector<Drawcall::DrawcallData>& drawcalls
+			const std::vector<Drawcall::DrawcallData>& drawcalls,
+			const std::vector<Drawcall::DebugDrawcallData>& debug_drawcalls
 		);
 
 	private:

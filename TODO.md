@@ -1,4 +1,6 @@
-- long term
+IMPORTANT: FAVOR NON-INTERLEAVED VERTEX DATA LAYOUT, EASIER TO STORE DATA IN A PIPELINE-INDEPENDET STORAGE
+
+- [ ] - long term
 	- [x] figure out if we have one framebuffer per swapchain, one per renderpass, or both
 	- [ ] rework file reading (no string, no std)
 	- [ ] set default shader texture as separate image and sampler (see https://docs.vulkan.org/samples/latest/samples/api/separate_image_sampler/README.html)
@@ -46,6 +48,8 @@
 		- [x] number and size of buffer is a creation parameter
 	- [ ] check why adding light color to blinn phong hue shifts (???) the final color
 
+- next time
+	- [ ] figure out why `DebugRenderPipeline` tries to unterpret vertex buffer as full `VertexData`, instead of `glm::vec3`
 
 - 09/04/25
 	- [x] improve "editor" camera

@@ -119,6 +119,12 @@ namespace vkc {
 		return m_pipelines[i].get();
 	}
 
+
+	vkc::DebugPipeline* RenderPass::get_debug_pipeline_ptr(uint8_t i) {
+		assert(i >= 0 && i < m_debug_pipelines.size());
+		return m_debug_pipelines[i].get();
+	}
+
 	void RenderPass::create_framebuffers() {
 		VkExtent2D extents = m_obj_render_context->get_swapchain_extent();
 		int num_render_frames = m_obj_render_context->get_num_render_frames();
@@ -193,6 +199,21 @@ namespace vkc {
 				.face_culling_mode = VK_CULL_MODE_BACK_BIT
 			}
 		);
+
+		m_debug_pipelines.resize(1);
+
+		// debug volumes
+		m_debug_pipelines[0] = std::make_unique<vkc::DebugPipeline>(
+			m_handle_device,
+			m_obj_render_context,
+			this,
+			new DebugPipelineConfig{
+				.topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST
+			}
+		);
+
+		CC_LOG(IMPORTANT, "pipeline:		%p", m_pipelines[0]->get_handle());
+		CC_LOG(IMPORTANT, "debug pipeline:	%p", m_debug_pipelines[0]->get_handle());
 
 		// // TODO
 		// // 1. RenderPass must be created with custom framebuffers

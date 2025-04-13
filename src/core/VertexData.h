@@ -13,6 +13,9 @@
 
 #include <glm/glm.hpp>
 
+// =================================================================
+// base forward pass
+// =================================================================
 typedef struct {
     glm::vec3 position;
     glm::vec3 color;
@@ -97,6 +100,11 @@ inline const uint32_t vertexData_getAttributeDescriptionsCount() {
     return attributeDescriptionsCount;
 }
 
+
+// =================================================================
+// VFX
+// =================================================================
+
 // FIXME create descriptors based on what we need. Either:
 //    - create them on the fly
 //    - specify few meaninful sets, WITH PROPER NAMES
@@ -105,6 +113,37 @@ inline const VkVertexInputAttributeDescription* vertexDataFX_getAttributeDescrip
         .location = 0,
         .binding = 0,
         .format = VK_FORMAT_R32G32B32_SFLOAT,
+        .offset = 0
+    };
+    return &ret;
+}
+
+// =================================================================
+// Debug
+// =================================================================
+
+typedef struct {
+    glm::mat4 viewProj;
+} DataUniformFrameDebug;
+
+// FIXME create descriptors based on what we need. Either:
+//    - create them on the fly
+//    - specify few meaninful sets, WITH PROPER NAMES
+inline const VkVertexInputBindingDescription* vertexDebug_getBindingDescriptions() {
+    static VkVertexInputBindingDescription ret = (VkVertexInputBindingDescription){
+        .binding = 0,
+        .stride = sizeof(glm::vec3),
+        .inputRate = VK_VERTEX_INPUT_RATE_VERTEX
+    };
+    return &ret;
+}
+
+inline const VkVertexInputAttributeDescription* vertexDebug_getAttributeDescriptions() {
+    static VkVertexInputAttributeDescription ret = (VkVertexInputAttributeDescription){
+        .location = 0,
+        .binding = 0,
+        .format = VK_FORMAT_R32G32B32_SFLOAT,
+        .offset = offsetof(DataUniformFrameDebug, viewProj)
     };
     return &ret;
 }

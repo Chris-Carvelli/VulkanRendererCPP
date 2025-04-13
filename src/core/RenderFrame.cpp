@@ -51,7 +51,8 @@ namespace vkc {
 		uint32_t frame_index,
 		VkExtent2D swapchain_extent,
 		DataUniformFrame ubo,
-		const std::vector<Drawcall::DrawcallData>& drawcalls
+		const std::vector<Drawcall::DrawcallData>& drawcalls,
+		const std::vector<Drawcall::DebugDrawcallData>& debug_drawcalls
 	) {
 		vkWaitForFences(m_device, 1, &m_fence_in_flight, VK_TRUE, UINT64_MAX);
 
@@ -162,7 +163,46 @@ namespace vkc {
 			vkCmdDrawIndexed(m_command_buffer, model_data_gpu.indices_count, 1, 0, 0, 0);
 		}
 		// ====================================================================
+		
+		// debug draw call ====================================================
+		// TMP only one renderpass, debug drawcall hardcoded at idx 1
+		auto obj_debug_pipeline = obj_curr_render_pass->get_debug_pipeline_ptr(0);
+		vkCmdBindPipeline(
+			m_command_buffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			obj_debug_pipeline->get_handle()
+		);
+		obj_debug_pipeline->bind_descriptor_sets(
+			m_command_buffer,
+			frame_index
+		);
 
+		glm::mat4 viewProj = ubo.proj * ubo.view;
+		obj_debug_pipeline->update_uniform_buffer(&viewProj, frame_index);
+
+		// TODO IMMEDIATE bind pipeline and execute draw calls
+		for (const auto& drawcall : debug_drawcalls)
+		{
+			vkCmdPushConstants(
+				m_command_buffer,
+				obj_debug_pipeline->get_layout(),
+				VK_SHADER_STAGE_VERTEX_BIT,
+				0,
+				sizeof(drawcall.data_uniform_model),
+				&drawcall.data_uniform_model
+			);
+
+
+			Drawcall::ModelDataGPU model_data_gpu = Drawcall::get_model_data(drawcall.idx_data_attributes);
+			VkBuffer vertexBuffers[] = { model_data_gpu.vertex_buffer };
+			VkDeviceSize offsets[] = { 0 };
+			vkCmdBindVertexBuffers(m_command_buffer, 0, 1, vertexBuffers, offsets);
+			vkCmdBindIndexBuffer(m_command_buffer, model_data_gpu.index_buffer, 0, VK_INDEX_TYPE_UINT32);
+
+			vkCmdDrawIndexed(m_command_buffer, model_data_gpu.indices_count, 1, 0, 0, 0);
+		}
+		// ====================================================================
+		
 		// TMP test imgui
 		vkc::utils::DearImGui::TMP_SingletonInstance->EndFrame(m_command_buffer);
 

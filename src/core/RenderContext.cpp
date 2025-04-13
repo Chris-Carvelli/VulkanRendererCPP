@@ -341,6 +341,10 @@ namespace vkc {
         // only one renderpass for now
         m_render_passes.resize(1);
         m_render_passes[0] = std::make_unique<vkc::RenderPass>(device, this);
+
+
+        // TMP
+        Drawcall::init_debug_meshes(device, this);
     }
 
     RenderContext::~RenderContext() {
@@ -355,11 +359,17 @@ namespace vkc {
     void RenderContext::render_begin() {
         //clear previous drawcalls
         Drawcall::clear_drawcalls();
+        Drawcall::clear_debug_drawcalls();
+
         // make up some drawcalls for testing
         TMP_Update::TMP_update_gui(m_swapchain->get_extent());
         TMP_Update::updateUniformBuffer(m_swapchain->get_extent());
         vkc::RenderPass* obj_render_pass = m_render_passes[0].get();
-        for (uint32_t i = 0; i < TMP_Update::drawcall_cout; ++i)
+
+
+        //for (uint32_t i = 1; i < TMP_Update::drawcall_cout; ++i)
+        for (uint32_t i = 1; i < 2; ++i)
+
         {
             // base drawcall
             Drawcall::add_drawcall(Drawcall::DrawcallData(
@@ -370,6 +380,8 @@ namespace vkc {
                 i % TMP_Assets::num_mesh_assets)
             );
         }
+
+        Drawcall::add_debug_cube(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
     }
 
     void RenderContext::render_finalize() {
@@ -380,7 +392,8 @@ namespace vkc {
             m_active_frame_index,
             m_swapchain->get_extent(),
             TMP_Update::ubo,
-            Drawcall::get_drawcalls()
+            Drawcall::get_drawcalls(),
+            Drawcall::get_debug_drawcalls()
         );
 
         m_active_frame_index = (m_active_frame_index + 1) % get_num_render_frames();
