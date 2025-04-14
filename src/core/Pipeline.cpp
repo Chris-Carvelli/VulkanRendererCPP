@@ -74,7 +74,7 @@ namespace vkc {
 		// rasterizer.polygonMode = VK_POLYGON_MODE_FILL; // this should be fill by default
 		rasterizer.lineWidth = 1.0f;
 		rasterizer.cullMode = config->face_culling_mode;
-		rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+		rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
 
 		// multisampling

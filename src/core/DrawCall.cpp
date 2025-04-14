@@ -240,8 +240,21 @@ namespace vkc::Drawcall {
     // debug drawcalls
     // ======================================================================
 
+    //// filled cube with triangle topology
+    /*static uint32_t debug_cube_index_data[] = {
+        0, 1, 2, 2, 3, 0,
+        0, 1, 2, 2, 3, 0,
+        0, 1, 5, 5, 4, 0,
+        1, 2, 6, 6, 5, 1,
+        2, 3, 7, 7, 6, 2,
+        3, 0, 4, 4, 7, 3
+    };*/
+
+
     // TODO better indices for mesh and texture assets (separated from debug/builtin ones)
     static uint32_t IDX_DEBUG_CUBE;
+    static uint32_t IDX_DEBUG_RAY;
+
     static glm::vec3 debug_cube_vertex_data[] = {
         glm::vec3(-0.5f, -0.5f, -0.5f),
         glm::vec3(0.5f, -0.5f, -0.5f),
@@ -252,33 +265,21 @@ namespace vkc::Drawcall {
         glm::vec3(0.5f,  0.5f,  0.5f),
         glm::vec3(-0.5f,  0.5f,  0.5f),
     };
-    /*static glm::vec3 debug_cube_vertex_data[] = {
-        glm::vec3(0.0001f, 0.0002f, 0.0003f),
-        glm::vec3(0.001f, 0.002f, 0.003f),
-        glm::vec3(0.01f, 0.02f, 0.03f),
-        glm::vec3(0.1f, 0.2f, 0.3f),
-        glm::vec3(10.0f, 20.0f, 30.0f),
-        glm::vec3(100.0f, 200.0f, 300.0f),
-        glm::vec3(1000.0f, 2000.0f, 3000.0f),
-        glm::vec3(10000.0f, 20000.0f, 30000.0f),
-    };*/
 
-    //// triangle indices
-    //static uint32_t debug_cube_index_data[] = {
-    //    0, 1, 2, 2, 3, 0,
-    //    0, 1, 2, 2, 3, 0,
-    //    0, 1, 5, 5, 4, 0,
-    //    1, 2, 6, 6, 5, 1,
-    //    2, 3, 7, 7, 6, 2,
-    //    3, 0, 4, 4, 7, 3
-    //};
-
-    // lines indices
+    // indices for line topology
     static uint32_t debug_cube_index_data[] = {
         0, 1, 1, 2, 2, 3, 3, 0, // bottom
         4, 5, 5, 6, 6, 7, 7, 4, // top
         0, 4, 1, 5, 2, 6, 3, 7  // sides
     };
+
+    static glm::vec3 debug_ray_vertex_data[] = {
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 1.0f),
+    };
+
+    // indices for line topology
+    static uint32_t debug_ray_index_data[] = { 0, 1 };
 
 
     std::vector<DebugDrawcallData> debug_drawcalls;
@@ -288,9 +289,21 @@ namespace vkc::Drawcall {
             debug_cube_vertex_data,
             sizeof(debug_cube_vertex_data),
             debug_cube_index_data,
-            sizeof(debug_cube_index_data),device, obj_render_context
+            sizeof(debug_cube_index_data),
+            device,
+            obj_render_context
+        );
+
+        IDX_DEBUG_RAY = createModelBuffers(
+            debug_ray_vertex_data,
+            sizeof(debug_ray_vertex_data),
+            debug_ray_index_data,
+            sizeof(debug_ray_index_data),
+            device,
+            obj_render_context
         );
     }
+
     void add_debug_cube(glm::vec3 pos, glm::vec3 rot, glm::vec3 size, glm::vec3 color) {
         glm::mat4 mtx = glm::translate(pos) * glm::eulerAngleXYZ(rot.x, rot.y, rot.z) * glm::scale(size);
         DebugDrawcallData data = {
@@ -299,6 +312,25 @@ namespace vkc::Drawcall {
         };
         debug_drawcalls.push_back(data);
     }
+
+    void add_debug_ray(glm::vec3 pos, glm::vec3 dir, float length, glm::vec3 color) {
+        const glm::vec3 UP = glm::vec3(0.0f, 1.0f, 0.0f);
+
+        /*glm::mat4 mtx =
+            glm::translate(pos) *
+            glm::lookAt(
+                glm::vec3(0.0f),
+                dir,
+                dir == UP || dir == DOWN ? LEFT : UP
+            ) * glm::scale(glm::vec3(length, length, length));*/
+        glm::mat4 mtx = glm::lookAt(pos + dir, pos, UP);
+        DebugDrawcallData data = {
+            .data_uniform_model = {.model = mtx, .color = color},
+            .idx_data_attributes = IDX_DEBUG_RAY,
+        };
+        debug_drawcalls.push_back(data);
+    }
+
 
     const std::vector<DebugDrawcallData>& get_debug_drawcalls() {
         return debug_drawcalls;

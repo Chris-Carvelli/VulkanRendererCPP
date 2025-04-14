@@ -42,6 +42,9 @@ namespace TMP_Assets {
         return mesh_data[index];
     }
 
+    // flipp X and Y to match Kenney assets orientation
+    // (prob. default blender)
+    // this should probably be an import util + cooking anyway
     MeshData load_mesh(const char* path, bool invert_x_y=false) {
         int offset_x = 0;
         int offset_y = invert_x_y ? 2 : 1;
@@ -67,9 +70,6 @@ namespace TMP_Assets {
         for (const auto& shape : shapes)
             for (const auto& index : shape.mesh.indices) {
                 ret.indices[i] = i;
-                // flipped X and Y to match Kenney assets orientation
-                // (prob. default blender)
-                // this should probably be an import util + cooking anyway
                 ret.vertices[i].position = glm::vec3(
                     attrib.vertices[3 * index.vertex_index + offset_x],
                     attrib.vertices[3 * index.vertex_index + offset_y],
@@ -154,6 +154,7 @@ namespace TMP_Math {
 }
 namespace TMP_Update {
     // camera
+    glm::mat4 camera_world;
     glm::mat4 camera_proj;
     glm::mat4 camera_view;
     glm::vec3 camera_pos;
@@ -205,27 +206,31 @@ namespace TMP_Update {
         const float THRESHOLD_PAN = 0.2f;
         const float THRESHOLD_ROT = 0.1f;
 
+        glm::vec3 local_camera_pos = glm::vec3(0.0f);
+        glm::vec3 local_camera_rot = glm::vec3(0.0f);
+
         // TODO FIXME split matrices camera view and camera world
         auto& io = ImGui::GetIO();
         if (io.MouseDown[1]) {
             if (io.KeyAlt)
-            {                if (abs(io.MouseDelta.x) > THRESHOLD_PAN) camera_pos.x += (SPEED_PAN * io.MouseDelta.x) / swapchain_extent.width;
-                if (abs(io.MouseDelta.y) > THRESHOLD_PAN) camera_pos.y -= (SPEED_PAN * io.MouseDelta.y) / swapchain_extent.height;
+            {
+                if (abs(io.MouseDelta.x) > THRESHOLD_PAN) local_camera_pos.x += (SPEED_PAN * io.MouseDelta.x) / swapchain_extent.width;
+                if (abs(io.MouseDelta.y) > THRESHOLD_PAN) local_camera_pos.y -= (SPEED_PAN * io.MouseDelta.y) / swapchain_extent.height;
             }
             else
             {
                 if (abs(io.MouseDelta.y) > THRESHOLD_ROT) camera_rot.x += io.MouseDelta.y * SPEED_ROT;
-                if (abs(io.MouseDelta.x) > THRESHOLD_ROT) camera_rot.z += io.MouseDelta.x * SPEED_ROT;
+                if (abs(io.MouseDelta.x) > THRESHOLD_ROT) camera_rot.y += io.MouseDelta.x * SPEED_ROT;
             }
             dirty = true;
         }
 
-        if (ImGui::IsKeyDown(ImGuiKey_W)) { camera_pos.z += SPEED_MOV; dirty = true; }
-        if (ImGui::IsKeyDown(ImGuiKey_S)) { camera_pos.z -= SPEED_MOV; dirty = true; }
-        if (ImGui::IsKeyDown(ImGuiKey_A)) { camera_pos.x += SPEED_MOV; dirty = true; }
-        if (ImGui::IsKeyDown(ImGuiKey_D)) { camera_pos.x -= SPEED_MOV; dirty = true; }
-        if (ImGui::IsKeyDown(ImGuiKey_Q)) { camera_pos.y += SPEED_MOV; dirty = true; }
-        if (ImGui::IsKeyDown(ImGuiKey_E)) { camera_pos.y -= SPEED_MOV; dirty = true; }
+        if (ImGui::IsKeyDown(ImGuiKey_W)) { local_camera_pos.z -= SPEED_MOV; dirty = true; }
+        if (ImGui::IsKeyDown(ImGuiKey_S)) { local_camera_pos.z += SPEED_MOV; dirty = true; }
+        if (ImGui::IsKeyDown(ImGuiKey_A)) { local_camera_pos.x -= SPEED_MOV; dirty = true; }
+        if (ImGui::IsKeyDown(ImGuiKey_D)) { local_camera_pos.x += SPEED_MOV; dirty = true; }
+        if (ImGui::IsKeyDown(ImGuiKey_Q)) { local_camera_pos.y -= SPEED_MOV; dirty = true; }
+        if (ImGui::IsKeyDown(ImGuiKey_E)) { local_camera_pos.y += SPEED_MOV; dirty = true; }
 
         if(dirty)
         {
@@ -238,8 +243,12 @@ namespace TMP_Update {
             rot_matrix = glm::rotate(rot_matrix, rot.x, glm::vec3(1, 0, 0));
             rot_matrix = glm::rotate(rot_matrix, rot.z, glm::vec3(0, 0, 1));
 
+            glm::vec3 global_camera_pos = glm::vec3((rot_matrix) * glm::vec4(local_camera_pos, 1.0f));
+
+            camera_pos += global_camera_pos;
             glm::mat4 translate_matrix = glm::translate(glm::identity<glm::mat4>(), camera_pos);
-            camera_view = translate_matrix * rot_matrix;
+            camera_world = translate_matrix * rot_matrix;
+            camera_view = glm::inverse(camera_world);
         }
         ImGui::End();
     }
@@ -320,7 +329,7 @@ namespace vkc {
         TMP_Assets::num_mesh_assets = 0;
         for (const auto& entry : std::filesystem::directory_iterator("res/models/pack_prototype"))
         {
-            TMP_Assets::mesh_data[TMP_Assets::num_mesh_assets++] = TMP_Assets::load_mesh(entry.path().string().c_str(), true);
+            TMP_Assets::mesh_data[TMP_Assets::num_mesh_assets++] = TMP_Assets::load_mesh(entry.path().string().c_str(), false);
         }
         //TMP_Assets::mesh_data[TMP_Assets::num_mesh_assets++] = TMP_Assets::load_mesh("res/models/viking_room.obj");
         TMP_Assets::texture_data[0] = TMP_Assets::load_texture("res/textures/colormap.png", TMP_Assets::TEX_CHANNELS_RGB_A);
@@ -330,7 +339,7 @@ namespace vkc {
         TMP_Update::model_data.resize(TMP_Update::drawcall_cout);
         int l = glm::sqrt(TMP_Update::drawcall_cout);
         for (int i = 0; i < TMP_Update::drawcall_cout; ++i)
-            TMP_Update::model_data[i] = DataUniformModel{ .model = glm::translate(glm::mat4(1.0f), glm::vec3(i % l - l/2, i / l - l/2, 0)) };
+            TMP_Update::model_data[i] = DataUniformModel{ .model = glm::translate(glm::mat4(1.0f), glm::vec3(i % l - l/2, 0, i / l - l / 2)) };
 
         for(auto& data : TMP_Assets::mesh_data)
             Drawcall::createModelBuffers(data.first, device, this);
@@ -367,8 +376,8 @@ namespace vkc {
         vkc::RenderPass* obj_render_pass = m_render_passes[0].get();
 
 
-        //for (uint32_t i = 1; i < TMP_Update::drawcall_cout; ++i)
-        for (uint32_t i = 1; i < 2; ++i)
+        for (uint32_t i = 1; i < TMP_Update::drawcall_cout; ++i)
+        //for (uint32_t i = 1; i < 2; ++i)
 
         {
             // base drawcall
@@ -381,18 +390,43 @@ namespace vkc {
             );
         }
 
+        // center
         Drawcall::add_debug_cube(
             glm::vec3(0.0f, 0.0f, 0.0f), 
             glm::vec3(0.0f, 0.0f, 0.0f), 
-            glm::vec3(1.0f, 1.0f, 1.0f),
+            glm::vec3(0.1f, 0.1f, 0.1f),
+            glm::vec3(1.0f, 1.0f, 1.0f)
+        );
+
+        // right
+        Drawcall::add_debug_cube(
+            glm::vec3(1.0f, 0.0f, 0.0f),
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(0.1f, 0.1f, 0.1f),
+            glm::vec3(1.0f, 0.0f, 0.0f)
+        );
+
+        // up
+        Drawcall::add_debug_cube(
+            glm::vec3(0.0f, 1.0f, 0.0f),
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(0.1f, 0.1f, 0.1f),
             glm::vec3(0.0f, 1.0f, 0.0f)
         );
 
+        // forward
         Drawcall::add_debug_cube(
-            glm::vec3(2.0f, 2.0f, 2.0f),
-            glm::radians(glm::vec3(45.0f, 45.0f, 45.0f)),
-            glm::vec3(2.0f, 3.0f, 4.0f),
+            glm::vec3(0.0f, 0.0f, -1.0f),
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(0.1f, 0.1f, 0.1f),
             glm::vec3(0.0f, 0.0f, 1.0f)
+        );
+
+        Drawcall::add_debug_ray(
+            glm::vec3(5.0f, 0.0f, 0.0f),
+            glm::vec3(-1.0f, 0.0f, 0.0f),
+            5.0f,
+            glm::vec3(1.0f, 0.0f, 0.0f)
         );
     }
 

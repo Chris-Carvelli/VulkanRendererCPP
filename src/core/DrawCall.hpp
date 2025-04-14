@@ -76,6 +76,7 @@ namespace vkc {
 
 		void init_debug_meshes(VkDevice device, vkc::RenderContext* obj_render_context);
 		void add_debug_cube(glm::vec3 pos, glm::vec3 rot, glm::vec3 size, glm::vec3 color);
+		void add_debug_ray(glm::vec3 pos, glm::vec3 dir, float length, glm::vec3 color);
 		const std::vector<DebugDrawcallData>& get_debug_drawcalls();
 		void clear_debug_drawcalls();
 	}

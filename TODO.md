@@ -48,12 +48,26 @@ IMPORTANT: FAVOR NON-INTERLEAVED VERTEX DATA LAYOUT, EASIER TO STORE DATA IN A P
 		- [x] number and size of buffer is a creation parameter
 	- [ ] check why adding light color to blinn phong hue shifts (???) the final color
 
-- next time
-	- [ ] figure out why `DebugRenderPipeline` tries to unterpret vertex buffer as full `VertexData`, instead of `glm::vec3`
+
+
+- 14/04/25
+	- [ ] mouse hovering models
+		- [ ] implement `add_debug_ray()`
+		- [ ] change color of box when ray intersects it
+		- [ ] cast ray from mouse posiyion
+	- [ ] create bounding boxes for each mesh
+	- [ ] add outline to hovered mesh
+	- [ ] fix `TMP_Assets` namespace
+	- [ ] fix `TMP_Update` namespace
+	- [ ] design and implement surface API
+
+- 13/04/25
+	- [x] figure out why `DebugRenderPipeline` tries to unterpret vertex buffer as full `VertexData`, instead of `glm::vec3`
+		  (A: it's because the binding descriptors specify the stride, and we were using `sizeof(VertexData)`)
 
 - 09/04/25
 	- [x] improve "editor" camera
-	- [ ] basic bounding boxes
+	- [x] basic bounding boxes
 	- [ ] raycast from mouse to boxes
 	- [ ] space partitioning
 
