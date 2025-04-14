@@ -174,7 +174,7 @@ namespace TMP_Update {
         .specular_exp = 200,
     };
 
-    const uint32_t drawcall_cout = 20;
+    const uint32_t drawcall_cout = 1;
     std::vector<DataUniformModel> model_data;
 
     void TMP_update_gui(VkExtent2D swapchain_extent) {
@@ -258,7 +258,7 @@ namespace TMP_Update {
         float l = glm::sqrt(drawcall_cout);
         //float l = 2;
         float fow = (float)swapchain_extent.width / swapchain_extent.height;
-        camera_proj = glm::perspective(glm::radians(45.0f), fow, 0.1f, (float)drawcall_cout);
+        camera_proj = glm::perspective(glm::radians(45.0f), fow, 0.1f, 100.0f);
         //perspective_projection = glm::perspective(glm::radians(45.0f), fow, 0.1f, 10.0f);
 
         ubo.view = camera_view;
@@ -376,9 +376,8 @@ namespace vkc {
         vkc::RenderPass* obj_render_pass = m_render_passes[0].get();
 
 
-        for (uint32_t i = 1; i < TMP_Update::drawcall_cout; ++i)
-        //for (uint32_t i = 1; i < 2; ++i)
-
+        //for (uint32_t i = 1; i < TMP_Update::drawcall_cout; ++i)
+        for (uint32_t i = 0; i < 1; ++i)
         {
             // base drawcall
             Drawcall::add_drawcall(Drawcall::DrawcallData(
@@ -386,7 +385,8 @@ namespace vkc {
                 obj_render_pass->get_pipeline_ptr(0),
                 &TMP_Update::tmp_material,
                 TMP_Update::model_data[i],
-                i % TMP_Assets::num_mesh_assets)
+                // skip debug primitives. We will have a mesh ID
+                (i % TMP_Assets::num_mesh_assets) + 2)
             );
         }
 
@@ -416,17 +416,31 @@ namespace vkc {
 
         // forward
         Drawcall::add_debug_cube(
-            glm::vec3(0.0f, 0.0f, -1.0f),
+            glm::vec3(0.0f, 0.0f, 1.0f),
             glm::vec3(0.0f, 0.0f, 0.0f),
             glm::vec3(0.1f, 0.1f, 0.1f),
             glm::vec3(0.0f, 0.0f, 1.0f)
         );
 
         Drawcall::add_debug_ray(
-            glm::vec3(5.0f, 0.0f, 0.0f),
+            glm::vec3(1.0f, 0.0f, 0.0f),
             glm::vec3(-1.0f, 0.0f, 0.0f),
-            5.0f,
+            1.0f,
             glm::vec3(1.0f, 0.0f, 0.0f)
+        );
+
+        Drawcall::add_debug_ray(
+            glm::vec3(0.0f, 1.0f, 0.0f),
+            glm::vec3(0.0f, -1.0f, 0.0f),
+            1.0f,
+            glm::vec3(0.0f, 1.0f, 0.0f)
+        );
+
+        Drawcall::add_debug_ray(
+            glm::vec3(0.0f, 0.0f, 1.0f),
+            glm::vec3(0.0f, 0.0f, -1.0f),
+            1.0f,
+            glm::vec3(0.0f, 0.0f, 1.0f)
         );
     }
 

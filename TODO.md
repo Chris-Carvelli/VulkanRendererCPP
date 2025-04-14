@@ -52,9 +52,10 @@ IMPORTANT: FAVOR NON-INTERLEAVED VERTEX DATA LAYOUT, EASIER TO STORE DATA IN A P
 
 - 14/04/25
 	- [ ] mouse hovering models
-		- [ ] implement `add_debug_ray()`
+		- [x] implement `add_debug_ray()`
 		- [ ] change color of box when ray intersects it
 		- [ ] cast ray from mouse posiyion
+	- [x] fix camera controls
 	- [ ] create bounding boxes for each mesh
 	- [ ] add outline to hovered mesh
 	- [ ] fix `TMP_Assets` namespace

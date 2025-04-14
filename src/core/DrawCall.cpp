@@ -314,16 +314,23 @@ namespace vkc::Drawcall {
     }
 
     void add_debug_ray(glm::vec3 pos, glm::vec3 dir, float length, glm::vec3 color) {
-        const glm::vec3 UP = glm::vec3(0.0f, 1.0f, 0.0f);
+        glm::vec3 u = glm::vec3(0, -pos.z, pos.y);
+        glm::vec3 w = glm::cross(pos, u);
+        glm::mat4 mtx = glm::mat4(0.0f);
+        mtx[0] = glm::vec4(u, 0.0f);
+        mtx[1] = glm::vec4(w, 0.0f);
+        mtx[2] = glm::vec4(dir, 0.0f);
+        mtx[3] = glm::vec4(pos, 1.0f);
 
-        /*glm::mat4 mtx =
-            glm::translate(pos) *
-            glm::lookAt(
-                glm::vec3(0.0f),
-                dir,
-                dir == UP || dir == DOWN ? LEFT : UP
-            ) * glm::scale(glm::vec3(length, length, length));*/
-        glm::mat4 mtx = glm::lookAt(pos + dir, pos, UP);
+
+        /*glm::mat4 mtx_rot = glm::lookAt(
+            glm::vec3(0.0f),
+            dir,
+            cross ? RIGHT : UP
+        );*/
+        /*glm::mat4 mtx_rot = glm::mat4_cast(glm::angleAxis(glm::radians(90.0f), dir));
+        glm::mat4 mtx = glm::translate(pos) * mtx_rot * glm::scale(glm::vec3(length, length, length));*/
+        //glm::mat4 mtx = glm::inverse(glm::lookAt(pos, pos - dir, UP));
         DebugDrawcallData data = {
             .data_uniform_model = {.model = mtx, .color = color},
             .idx_data_attributes = IDX_DEBUG_RAY,

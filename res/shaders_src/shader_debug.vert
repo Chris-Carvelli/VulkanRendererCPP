@@ -13,6 +13,5 @@ layout(push_constant) uniform ModelData {
 layout(location = 0) in vec3 inPosition;
 
 void main() {
-    vec4 world_pos = data_model.model * vec4(inPosition, 1.0);
-    gl_Position = data_frame.viewProj * world_pos;
+    gl_Position = data_frame.viewProj * data_model.model * vec4(inPosition, 1.0);
 }
