@@ -314,8 +314,9 @@ namespace vkc::Drawcall {
     }
 
     void add_debug_ray(glm::vec3 pos, glm::vec3 dir, float length, glm::vec3 color) {
-        glm::vec3 u = glm::vec3(0, -pos.z, pos.y);
-        glm::vec3 w = glm::cross(pos, u);
+        dir = glm::normalize(dir) * length;
+        glm::vec3 u = glm::vec3(0, -dir.z, dir.y);
+        glm::vec3 w = glm::cross(dir, u);
         glm::mat4 mtx = glm::mat4(0.0f);
         mtx[0] = glm::vec4(u, 0.0f);
         mtx[1] = glm::vec4(w, 0.0f);
