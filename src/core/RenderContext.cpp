@@ -7,119 +7,16 @@
 
 #include <core/VertexData.h>
 
+#include <assets/AssetManager.hpp>
+
 // TMP_Update includes
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
-// TMP_Assets includes
-#define TINYOBJLOADER_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
-#include <tiny_obj_loader.h>
-#include <stb_image.h>
-#include <map>
-#include <filesystem>
-#include <string.h>
-
-// TMP_Update includes
 #include <imgui.h>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
-
-namespace TMP_Assets {
-    int num_mesh_assets;
-
-    //int num_mesh_assets = sizeof(model_paths) / sizeof(model_paths[0]);
-
-    std::map<uint32_t, MeshData> mesh_data;
-    std::map<uint32_t, TextureData> texture_data;
-
-    // only one texture for now
-    TextureData& get_texture_data(uint32_t index) {
-        return texture_data[index];
-    }
-
-    MeshData& get_mesh_data(uint32_t index) {
-        return mesh_data[index];
-    }
-
-    // flipp X and Y to match Kenney assets orientation
-    // (prob. default blender)
-    // this should probably be an import util + cooking anyway
-    MeshData load_mesh(const char* path, bool invert_x_y=false) {
-        int offset_x = 0;
-        int offset_y = invert_x_y ? 2 : 1;
-        int offset_z = invert_x_y ? 1 : 2;
-        tinyobj::attrib_t attrib;
-        std::vector<tinyobj::shape_t> shapes;
-        std::vector<tinyobj::material_t> materials;
-        std::string err;
-        std::string warn;
-
-        assert(tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path));
-
-        MeshData ret;
-        int n_indices = 0;
-        // cunt indices (vertices will be the same number because we're cutting corners)
-        for (const auto& shape : shapes)
-            n_indices += shape.mesh.indices.size();
-
-        ret.vertices.resize(n_indices);
-        ret.indices.resize(n_indices);
-
-        int i = 0;
-        for (const auto& shape : shapes)
-            for (const auto& index : shape.mesh.indices) {
-                ret.indices[i] = i;
-                ret.vertices[i].position = glm::vec3(
-                    attrib.vertices[3 * index.vertex_index + offset_x],
-                    attrib.vertices[3 * index.vertex_index + offset_y],
-                    attrib.vertices[3 * index.vertex_index + offset_z]
-                );
-
-                ret.vertices[i].color = glm::vec3(1.0f);
-
-                ret.vertices[i].normal = glm::vec3(
-                    attrib.normals[3 * index.normal_index + offset_x],
-                    attrib.normals[3 * index.normal_index + offset_y],
-                    attrib.normals[3 * index.normal_index + offset_z]
-                );
-
-                ret.vertices[i].texCoords = glm::vec2(
-                    attrib.texcoords[2 * index.texcoord_index + 0],
-                    1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
-                );
-                ++i;
-            }
-
-        return ret;
-    }
-
-    MeshData load_meshes(const char** paths) {
-        return {}; // TODO
-    }
-
-    TextureData load_texture(const char* path, TexChannelTypes channels) {
-        int texWidth = 0;
-        int texHeight = 0;
-        int texChannels = 0;
-        stbi_uc* pixels = stbi_load(path, &texWidth, &texHeight, &texChannels, channels);
-        assert(pixels != nullptr);
-
-        // TODO get number of ACTUAL channels based on requested channels (`channels` parameter)
-        size_t size = texWidth * texHeight * 4;
-
-        TextureData ret;
-        ret.width = (uint16_t)texWidth;
-        ret.height = (uint16_t)texHeight;
-        ret.channelsCount = (uint8_t)texChannels;
-        ret.channels = channels;
-        ret.data.resize(size);
-        memcpy(ret.data.data(), pixels, size);
-
-        stbi_image_free(pixels);
-        return ret;
-    }
-}
+#include <cstdlib>
+#include <string>
 
 
 namespace TMP_Update {
@@ -147,8 +44,32 @@ namespace TMP_Update {
     const uint32_t drawcall_cout = 1;
     std::vector<DataUniformModel> model_data;
 
+    std::vector<std::string> TMP_mesh_names;
+    std::vector<vkc::Assets::IdAssetMesh> TMP_mesh_idxs;
+    int TMP_object_curr_idx = 0;
+
+
     void TMP_update_gui(VkExtent2D swapchain_extent) {
         ImGui::Begin("tmp_update_info");
+        ImGui::SeparatorText("Object data");
+        const char* current_item = TMP_mesh_names[TMP_object_curr_idx].c_str();
+
+        if (ImGui::BeginCombo("##combo", current_item)) // The second parameter is the label previewed before opening the combo.
+        {
+            for (int n = 0; n < TMP_mesh_names.size(); n++)
+            {
+                const char* entry_item = TMP_mesh_names[n].c_str();
+                bool is_selected = (current_item == entry_item); // You can store your selection however you want, outside or inside your objects
+                if (ImGui::Selectable(TMP_mesh_names[n].c_str(), is_selected))
+                {
+                    current_item = entry_item;
+                    TMP_object_curr_idx = n;
+                }
+                if (is_selected)
+                    ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+            }
+            ImGui::EndCombo();
+        }
 
         ImGui::SeparatorText("Frame data");
         ImGui::DragFloat3("Light Color Ambient", &ubo.light_ambient.x);
@@ -240,6 +161,7 @@ namespace TMP_Update {
 }
 
 namespace vkc {
+
     // TODO fix these long constructor? (dependency injection good I guess, not sure about this)
     RenderContext::RenderContext(
         const PhysicalDevice *physical_device,
@@ -247,6 +169,10 @@ namespace vkc {
         VkSurfaceKHR surface,
         Window* window
     ) {
+        // TMP where to do this appropriately?
+        Assets::asset_manager_init();
+
+
         assert(window != nullptr);
 
         m_window = window;
@@ -296,14 +222,9 @@ namespace vkc {
                 command_buffers[i]
             );
 
-        TMP_Assets::num_mesh_assets = 0;
-        for (const auto& entry : std::filesystem::directory_iterator("res/models/pack_prototype"))
-        {
-            TMP_Assets::mesh_data[TMP_Assets::num_mesh_assets++] = TMP_Assets::load_mesh(entry.path().string().c_str(), false);
-        }
-        //TMP_Assets::mesh_data[TMP_Assets::num_mesh_assets++] = TMP_Assets::load_mesh("res/models/viking_room.obj");
-        TMP_Assets::texture_data[0] = TMP_Assets::load_texture("res/textures/colormap.png", TMP_Assets::TEX_CHANNELS_RGB_A);
-        //TMP_Assets::texture_data[0] = TMP_Assets::load_texture("res/textures/viking_room.png", TMP_Assets::TEX_CHANNELS_RGB_A);
+        TMP_Update::TMP_mesh_idxs = Assets::load_meshes_from_folder("res/models/pack_prototype");
+        auto TMP_texture_idx = load_texture("res/textures/colormap.png", Assets::TEX_CHANNELS_RGB_A);
+
 
 
         TMP_Update::model_data.resize(TMP_Update::drawcall_cout);
@@ -311,19 +232,17 @@ namespace vkc {
         for (int i = 0; i < TMP_Update::drawcall_cout; ++i)
             TMP_Update::model_data[i] = DataUniformModel{ .model = glm::translate(glm::mat4(1.0f), glm::vec3(i % l - l/2, 0, i / l - l / 2)) };
 
-        for(auto& data : TMP_Assets::mesh_data)
-            Drawcall::createModelBuffers(data.first, device, this);
+        // TMP deploy to GPU
+        Drawcall::createModelBuffers(Assets::BuiltinPrimitives::IDX_DEBUG_CUBE, device, this);
+        Drawcall::createModelBuffers(Assets::BuiltinPrimitives::IDX_DEBUG_RAY, device, this);
+        for(auto& idx : TMP_Update::TMP_mesh_idxs)
+            Drawcall::createModelBuffers(idx, device, this);
 
-        for (auto& data : TMP_Assets::texture_data)
-            Drawcall::createTextureImage(data.first, data.second, device, this);
+        Drawcall::createTextureImage(TMP_texture_idx, device, this);
 
         // only one renderpass for now
         m_render_passes.resize(1);
         m_render_passes[0] = std::make_unique<vkc::RenderPass>(device, this);
-
-
-        // TMP
-        Drawcall::init_debug_meshes(device, this);
     }
 
     RenderContext::~RenderContext() {
@@ -347,17 +266,18 @@ namespace vkc {
 
 
         //for (uint32_t i = 1; i < TMP_Update::drawcall_cout; ++i)
-        for (uint32_t i = 0; i < 1; ++i)
+        //for (uint32_t i = 0; i < 1; ++i)
         {
             // base drawcall
             Drawcall::add_drawcall(Drawcall::DrawcallData(
                 obj_render_pass,
                 obj_render_pass->get_pipeline_ptr(0),
                 &TMP_Update::tmp_material,
-                TMP_Update::model_data[i],
-                // skip debug primitives. We will have a mesh ID
-                (i % TMP_Assets::num_mesh_assets) + 2)
-            );
+                TMP_Update::model_data[0],
+                // // skip debug primitives. We will have a mesh ID
+                // i + 2
+                TMP_Update::TMP_mesh_idxs[TMP_Update::TMP_object_curr_idx]
+            ));
         }
 
         // center

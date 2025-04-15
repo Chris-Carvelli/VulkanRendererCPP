@@ -1,5 +1,43 @@
-IMPORTANT: FAVOR NON-INTERLEAVED VERTEX DATA LAYOUT, EASIER TO STORE DATA IN A PIPELINE-INDEPENDET STORAGE
+## Notes
+- FAVOR NON-INTERLEAVED VERTEX DATA LAYOUT, EASIER TO STORE DATA IN A PIPELINE-INDEPENDET STORAGE
+- `IdAsset` and `IdGPUData` do no necessarily match (we have on the fly GPU data like procedural and debug meshes)
 
+```c++
+// format-independent MeshData
+enum VertexAttrib : uint8_t {
+	POSITION,
+	NORMAL,
+	TANGENT,
+	COLOR_0,
+	COLOR_1,
+	COLOR_2,
+	COLOR_3,
+	COLOR_4,
+	COLOR_5,
+	COLOR_6,
+	COLOR_7,
+	TEX_COORDS_0,
+	TEX_COORDS_1,
+	TEX_COORDS_2,
+	TEX_COORDS_3,
+	TEX_COORDS_4,
+	TEX_COORDS_5,
+	TEX_COORDS_6,
+	TEX_COORDS_7
+}
+
+struct MeshData {
+	void*			vertex_data;
+	uint32_t		vertex_count;
+	VertexAttrib*	vertex_attributes
+	uint32_t		vertex_attributes_count
+	uint32_t*		index_data
+	uint32_t		index_count
+	// [optional]	enum for contiguous ot interlieaved vertex data storage
+}
+```
+
+## TODO
 - [ ] - long term
 	- [x] figure out if we have one framebuffer per swapchain, one per renderpass, or both
 	- [ ] rework file reading (no string, no std)
@@ -51,7 +89,7 @@ IMPORTANT: FAVOR NON-INTERLEAVED VERTEX DATA LAYOUT, EASIER TO STORE DATA IN A P
 
 - 15/04/25
 	- [x] remove `TMP_Math` namespace
-	- [ ] fix `TMP_Assets` namespace
+	- [x] fix `TMP_Assets` namespace
 	- [ ] fix `TMP_Update` namespace
 
 - 14/04/25

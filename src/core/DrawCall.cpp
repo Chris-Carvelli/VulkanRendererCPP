@@ -1,5 +1,8 @@
 #include "DrawCall.hpp"
 
+#include <assets/AssetManager.hpp>
+
+// debug draw calls includes
 #include <glm/gtx/euler_angles.hpp>
 #include <glm/gtx/transform.hpp>
 
@@ -32,7 +35,9 @@ namespace vkc::Drawcall {
     }
 
     // only one texture for now
-    void createTextureImage(uint32_t texture_id, TMP_Assets::TextureData& texture_data, VkDevice device, vkc::RenderContext* obj_render_context) {
+    void createTextureImage(Assets::IdAssetTexture texture_id, VkDevice device, vkc::RenderContext* obj_render_context) {
+        const Assets::TextureData& texture_data = Assets::get_texture_data(texture_id);
+
         TextureDataGPU new_gpu_data = { 0 };
 
         VkDeviceSize imageSize = texture_data.width * texture_data.height * 4;
@@ -200,21 +205,21 @@ namespace vkc::Drawcall {
         return model_index;
     }
 
-    uint32_t createModelBuffers(TMP_Assets::MeshData& mesh_data, VkDevice device, vkc::RenderContext* obj_render_context) {
-        assert(mesh_data.vertices.size() > 0);
+    uint32_t createModelBuffers(Assets::MeshData& mesh_data, VkDevice device, vkc::RenderContext* obj_render_context) {
+        assert(mesh_data.vertex_count > 0);
 
         return createModelBuffers(
-            mesh_data.vertices.data(),
-            mesh_data.vertices.size() * sizeof(mesh_data.vertices[0]),
-            mesh_data.indices.data(),
-            mesh_data.indices.size() * sizeof(uint32_t),
+            mesh_data.vertex_data,
+            mesh_data.vertex_count * mesh_data.vertex_data_size,
+            mesh_data.index_data,
+            mesh_data.index_count * sizeof(uint32_t),
             device,
             obj_render_context
         );
     }
 
     uint32_t createModelBuffers(uint32_t model_index, VkDevice device, vkc::RenderContext* obj_render_context) {
-        TMP_Assets::MeshData& mesh_data = TMP_Assets::get_mesh_data(model_index);
+        Assets::MeshData& mesh_data = Assets::get_mesh_data(model_index);
         return createModelBuffers(mesh_data, device, obj_render_context);
     }
 
@@ -240,75 +245,13 @@ namespace vkc::Drawcall {
     // debug drawcalls
     // ======================================================================
 
-    //// filled cube with triangle topology
-    /*static uint32_t debug_cube_index_data[] = {
-        0, 1, 2, 2, 3, 0,
-        0, 1, 2, 2, 3, 0,
-        0, 1, 5, 5, 4, 0,
-        1, 2, 6, 6, 5, 1,
-        2, 3, 7, 7, 6, 2,
-        3, 0, 4, 4, 7, 3
-    };*/
-
-
-    // TODO better indices for mesh and texture assets (separated from debug/builtin ones)
-    static uint32_t IDX_DEBUG_CUBE;
-    static uint32_t IDX_DEBUG_RAY;
-
-    static glm::vec3 debug_cube_vertex_data[] = {
-        glm::vec3(-0.5f, -0.5f, -0.5f),
-        glm::vec3(0.5f, -0.5f, -0.5f),
-        glm::vec3(0.5f, -0.5f,  0.5f),
-        glm::vec3(-0.5f, -0.5f,  0.5f),
-        glm::vec3(-0.5f,  0.5f, -0.5f),
-        glm::vec3(0.5f,  0.5f, -0.5f),
-        glm::vec3(0.5f,  0.5f,  0.5f),
-        glm::vec3(-0.5f,  0.5f,  0.5f),
-    };
-
-    // indices for line topology
-    static uint32_t debug_cube_index_data[] = {
-        0, 1, 1, 2, 2, 3, 3, 0, // bottom
-        4, 5, 5, 6, 6, 7, 7, 4, // top
-        0, 4, 1, 5, 2, 6, 3, 7  // sides
-    };
-
-    static glm::vec3 debug_ray_vertex_data[] = {
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 0.0f, 1.0f),
-    };
-
-    // indices for line topology
-    static uint32_t debug_ray_index_data[] = { 0, 1 };
-
-
     std::vector<DebugDrawcallData> debug_drawcalls;
-
-    void init_debug_meshes(VkDevice device, vkc::RenderContext* obj_render_context) {
-        IDX_DEBUG_CUBE = createModelBuffers(
-            debug_cube_vertex_data,
-            sizeof(debug_cube_vertex_data),
-            debug_cube_index_data,
-            sizeof(debug_cube_index_data),
-            device,
-            obj_render_context
-        );
-
-        IDX_DEBUG_RAY = createModelBuffers(
-            debug_ray_vertex_data,
-            sizeof(debug_ray_vertex_data),
-            debug_ray_index_data,
-            sizeof(debug_ray_index_data),
-            device,
-            obj_render_context
-        );
-    }
 
     void add_debug_cube(glm::vec3 pos, glm::vec3 rot, glm::vec3 size, glm::vec3 color) {
         glm::mat4 mtx = glm::translate(pos) * glm::eulerAngleXYZ(rot.x, rot.y, rot.z) * glm::scale(size);
         DebugDrawcallData data = {
             .data_uniform_model = {.model = mtx, .color = color},
-            .idx_data_attributes = IDX_DEBUG_CUBE,
+            .idx_data_attributes = Assets::BuiltinPrimitives::IDX_DEBUG_CUBE,
         };
         debug_drawcalls.push_back(data);
     }
@@ -323,18 +266,9 @@ namespace vkc::Drawcall {
         mtx[2] = glm::vec4(dir, 0.0f);
         mtx[3] = glm::vec4(pos, 1.0f);
 
-
-        /*glm::mat4 mtx_rot = glm::lookAt(
-            glm::vec3(0.0f),
-            dir,
-            cross ? RIGHT : UP
-        );*/
-        /*glm::mat4 mtx_rot = glm::mat4_cast(glm::angleAxis(glm::radians(90.0f), dir));
-        glm::mat4 mtx = glm::translate(pos) * mtx_rot * glm::scale(glm::vec3(length, length, length));*/
-        //glm::mat4 mtx = glm::inverse(glm::lookAt(pos, pos - dir, UP));
         DebugDrawcallData data = {
             .data_uniform_model = {.model = mtx, .color = color},
-            .idx_data_attributes = IDX_DEBUG_RAY,
+            .idx_data_attributes = Assets::BuiltinPrimitives::IDX_DEBUG_RAY,
         };
         debug_drawcalls.push_back(data);
     }

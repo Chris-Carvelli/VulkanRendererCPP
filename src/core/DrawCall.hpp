@@ -2,6 +2,7 @@
 
 #include <vulkan/vulkan.h>
 
+#include <assets/AssetManager.hpp>
 #include <core/RenderContext.hpp>
 #include <core/VertexData.h>
 
@@ -39,8 +40,7 @@ namespace vkc {
 		ModelDataGPU get_model_data(uint32_t index);
 
 		void createTextureImage(
-			uint32_t texture_id,
-			TMP_Assets::TextureData& texture_data,
+			Assets::IdAssetTexture texture_id,
 			VkDevice device,
 			vkc::RenderContext* obj_render_context
 		);
@@ -53,12 +53,12 @@ namespace vkc {
 			vkc::RenderContext* obj_render_context
 		);
 		uint32_t createModelBuffers(
-			uint32_t model_index,
+			Assets::MeshData& mesh_data,
 			VkDevice device,
 			vkc::RenderContext* obj_render_context
 		);
 		uint32_t createModelBuffers(
-			TMP_Assets::MeshData& mesh_data,
+			uint32_t model_index,
 			VkDevice device,
 			vkc::RenderContext* obj_render_context
 		);
@@ -74,7 +74,6 @@ namespace vkc {
 			uint32_t idx_data_attributes;
 		};
 
-		void init_debug_meshes(VkDevice device, vkc::RenderContext* obj_render_context);
 		void add_debug_cube(glm::vec3 pos, glm::vec3 rot, glm::vec3 size, glm::vec3 color);
 		void add_debug_ray(glm::vec3 pos, glm::vec3 dir, float length, glm::vec3 color);
 		const std::vector<DebugDrawcallData>& get_debug_drawcalls();

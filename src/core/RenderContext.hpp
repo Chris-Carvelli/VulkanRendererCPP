@@ -8,32 +8,6 @@
 
 #include <memory>
 
-namespace TMP_Assets {
-	typedef enum : uint8_t {
-		TEX_CHANNELS_NONE = 0x0,
-		TEX_CHANNELS_GREY = 0x1,
-		TEX_CHANNELS_GREY_A = 0x2,
-		TEX_CHANNELS_RGB = 0x3,
-		TEX_CHANNELS_RGB_A = 0x4
-	} TexChannelTypes;
-
-	typedef struct {
-		std::vector<VertexData> vertices;
-		std::vector<uint32_t> indices;
-	} MeshData;
-
-	typedef struct {
-		uint16_t width;
-		uint16_t height;
-		uint8_t channelsCount;
-		TexChannelTypes channels;
-		std::vector<unsigned char> data;
-	} TextureData;
-
-	TextureData& get_texture_data();
-	MeshData& get_mesh_data(uint32_t index);
-}
-
 namespace vkc {
 	class Window;
 	class PhysicalDevice;
