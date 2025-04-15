@@ -27,6 +27,8 @@ namespace vkc {
 		vkc::Pipeline* get_pipeline_ptr(uint8_t i);
 		vkc::DebugPipeline* get_debug_pipeline_ptr(uint8_t i);
 
+		uint32_t add_pipeline(PipelineConfig* config);
+
 		// TODO framebuffer only cares about swaphacin recreation
 		void handle_swapchain_recreation();
 

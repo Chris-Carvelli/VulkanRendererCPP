@@ -1,5 +1,7 @@
 #include <VKRenderer.hpp>
 
+#include <core/DrawCall.hpp>
+
 #include <imgui.h>
 
 #include <chrono>
@@ -8,16 +10,28 @@ void VKRenderer::run() {
 	init_base();
 	init();
 
+	// force upload of assets to GPU
+	TMP_force_gpu_upload_all();
+	TMP_create_renderpasses();
+
 	while (!m_window->should_quit())
 	{
 		auto time_start = std::chrono::high_resolution_clock::now();
 
-		vkc::utils::DearImGui::TMP_SingletonInstance->BeginFrame();
+		update_base();
+		update();
+
 		m_render_context->render_begin();
 
 		render();
 
-		gui_record();
+
+		// ideally, begind and end frame would encompass GUI recording only
+		// ATM, some GUI is recoded in render_begin(), so we can't yet
+		vkc::utils::DearImGui::TMP_SingletonInstance->BeginFrame();
+		gui_base();
+		gui();
+		vkc::utils::DearImGui::TMP_SingletonInstance->EndFrame();
 
 		m_render_context->render_finalize();
 		auto time_end = std::chrono::high_resolution_clock::now();
@@ -31,6 +45,58 @@ void VKRenderer::run() {
 
 	// wait for queues to be done before cleanup
 	vkDeviceWaitIdle(m_device->get_handle());
+}
+
+void VKRenderer::drawcall_add(
+	vkc::Assets::IdAssetMesh id_mesh,
+	vkc::Assets::IdAssetMaterial id_material,
+	void* uniform_data_model
+) {
+	vkc::Assets::MaterialData& material = vkc::Assets::get_material_data(id_material);
+
+	auto obj_renderpass = m_render_context->get_renderpass(material.id_render_pass);
+	auto obj_pipeline = obj_renderpass->get_pipeline_ptr(material.id_pipeline);
+
+	// TODO fix this mess
+	// - ATM renderContext cares about renderpasses and pipeline, let it create the drawcall data
+	// - idx_data_attributes should be of type `IdAssetMesh`
+	// - avoid unecessary casts (we will probably just move them down the call stack, but they make no sense here)
+	vkc::Drawcall::add_drawcall(vkc::Drawcall::DrawcallData{
+		.obj_render_pass = obj_renderpass,
+		.obj_pipeline = obj_pipeline,
+		.idx_data_attributes = id_mesh,
+		.data_uniform_material = (DataUniformMaterial*)material.uniform_data_material,
+		.data_uniform_model = *(DataUniformModel*)uniform_data_model
+	});
+}
+
+void VKRenderer::TMP_force_gpu_upload_all() {
+	for (int i = 0; i < vkc::Assets::get_num_mesh_assets(); ++i)
+		vkc::Drawcall::createModelBuffers(i, m_device->get_handle(), m_render_context.get());
+
+	for (int i = 0; i < vkc::Assets::get_num_texture_assets(); ++i)
+		vkc::Drawcall::createTextureImage(i, m_device->get_handle(), m_render_context.get());
+}
+
+void VKRenderer::TMP_create_renderpasses() {
+
+	// TODO configure renderpass and pipelines
+	uint32_t default_pipeline = m_render_context->get_renderpass(0)->add_pipeline(new vkc::PipelineConfig{
+				.vert_path = "res/shaders/shader_base.vert.spv",
+				.frag_path = "res/shaders/shader_base.frag.spv",
+				.size_uniform_data_frame = sizeof(DataUniformFrame),
+				.size_uniform_data_material = sizeof(DataUniformMaterial),
+				.size_push_constant_model = sizeof(DataUniformModel),
+				.vertex_binding_descriptors = vertexData_getBindingDescriptions(),
+				.vertex_binding_descriptors_count = vertexData_getBindingDescriptionsCount(),
+				.vertex_attribute_descriptors = vertexData_getAttributeDescriptions(),
+				.vertex_attribute_descriptors_count = vertexData_getAttributeDescriptionsCount(),
+				.texture_image_views = new VkImageView[] {
+					vkc::Drawcall::get_texture_image_view(0)
+				},
+				.texture_image_views_count = 1,
+				.face_culling_mode = VK_CULL_MODE_BACK_BIT
+		});
 }
 
 void VKRenderer::init_base()
@@ -72,10 +138,17 @@ void VKRenderer::init_base()
 		m_render_context->get_renderpass(0)->get_handle(),
 		m_render_context->get_num_render_frames()
 	);
+
+	vkc::Assets::asset_manager_init();
 }
 
+void VKRenderer::update_base() {
+	auto extents = m_window->get_current_extent();
+	m_window_size.width = extents.width;
+	m_window_size.height = extents.height;
+}
 
-void VKRenderer::gui_record() {
+void VKRenderer::gui_base() {
 	float smoothed_fps = 0;
 	for (int i = 0; i < AppStats::FPS_SMOOTH_WINDOW_SIZE; ++i)
 		smoothed_fps += m_app_stats.fps[i];

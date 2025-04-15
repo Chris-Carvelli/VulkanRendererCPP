@@ -103,11 +103,9 @@ namespace vkc {
             ImGui::NewFrame();
         }
 
-        void DearImGui::EndFrame(VkCommandBuffer cmd_buffer)
+        void DearImGui::EndFrame()
         {
             ImGui::Render();
-            // TODO check if RenderDrawData's third parameter (VkPipeline, default to nullptr) is needed
-            ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmd_buffer);
         }
 	}
 }

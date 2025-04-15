@@ -32,7 +32,16 @@ namespace vkc {
 		void render_finalize();
 		void recreate_swapchain();
 
+		// TODO renderpass id, rendepass parameters
+		uint32_t add_renderpass() {
+			uint32_t ret = m_render_passes.size();
+			m_render_passes.push_back(std::make_unique<vkc::RenderPass>(m_device, this));
+
+			return ret;
+		}
+
 		RenderPass* get_renderpass(uint32_t i) const { return m_render_passes[i].get(); };
+		DataUniformFrame& get_ubo_reference() { return m_ubo; };
 
 		// memory utils
 		void copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size);
@@ -94,5 +103,16 @@ namespace vkc {
 
 		/// Current active frame index
 		uint32_t m_active_frame_index{ 0 };
+
+		// TMP UBO
+		// someone needs to take care of this, the problem is that
+		// 1. contains stuff that pertains different domains (lights, camera, and more)
+		// 2. not every shader uses all of this data
+		DataUniformFrame m_ubo = (DataUniformFrame){
+			.light_ambient = glm::vec3(0.3f, 0.3f, 0.3f),
+			.light_dir = glm::vec3(1, 1, 1),
+			.light_color = glm::vec3(1, 1, 1),
+			.light_intensity = 1
+		};
 	};
 }

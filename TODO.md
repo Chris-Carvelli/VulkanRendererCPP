@@ -86,11 +86,19 @@ struct MeshData {
 		- [x] number and size of buffer is a creation parameter
 	- [ ] check why adding light color to blinn phong hue shifts (???) the final color
 
+- next time
+	- [ ] main application can create renderpasses
+	- [ ] main application can create pipelines
+		- [ ] `PipelineConfig` should contain `IdAssetTexture` rather than texture view
 
 - 15/04/25
 	- [x] remove `TMP_Math` namespace
 	- [x] fix `TMP_Assets` namespace
-	- [ ] fix `TMP_Update` namespace
+	- [x] fix `TMP_Update` namespace
+		- [x] fix ImGui singleton (still a singleton, but less intrusive)
+		- [x] add light controls
+		- [x] add camera controls
+		- [x] record GUI changes in appropriate place
 
 - 14/04/25
 	- [ ] mouse hovering models

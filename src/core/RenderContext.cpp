@@ -9,157 +9,6 @@
 
 #include <assets/AssetManager.hpp>
 
-// TMP_Update includes
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <imgui.h>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtx/euler_angles.hpp>
-#include <cstdlib>
-#include <string>
-
-
-namespace TMP_Update {
-    // camera
-    glm::mat4 camera_world;
-    glm::mat4 camera_proj;
-    glm::mat4 camera_view;
-    glm::vec3 camera_pos;
-    glm::vec3 camera_rot;
-
-    DataUniformFrame ubo = (DataUniformFrame){
-        .light_ambient = glm::vec3(0.3f, 0.3f, 0.3f),
-        .light_dir = glm::vec3(1, 1, 1),
-        .light_color = glm::vec3(1, 1, 1),
-        .light_intensity = 1
-    };
-
-    DataUniformMaterial tmp_material = (DataUniformMaterial){
-        .ambient = 1,
-        .diffuse = 1,
-        .specular = 1,
-        .specular_exp = 200,
-    };
-
-    const uint32_t drawcall_cout = 1;
-    std::vector<DataUniformModel> model_data;
-
-    std::vector<std::string> TMP_mesh_names;
-    std::vector<vkc::Assets::IdAssetMesh> TMP_mesh_idxs;
-    int TMP_object_curr_idx = 0;
-
-
-    void TMP_update_gui(VkExtent2D swapchain_extent) {
-        ImGui::Begin("tmp_update_info");
-        ImGui::SeparatorText("Object data");
-        const char* current_item = TMP_mesh_names[TMP_object_curr_idx].c_str();
-
-        if (ImGui::BeginCombo("##combo", current_item)) // The second parameter is the label previewed before opening the combo.
-        {
-            for (int n = 0; n < TMP_mesh_names.size(); n++)
-            {
-                const char* entry_item = TMP_mesh_names[n].c_str();
-                bool is_selected = (current_item == entry_item); // You can store your selection however you want, outside or inside your objects
-                if (ImGui::Selectable(TMP_mesh_names[n].c_str(), is_selected))
-                {
-                    current_item = entry_item;
-                    TMP_object_curr_idx = n;
-                }
-                if (is_selected)
-                    ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
-            }
-            ImGui::EndCombo();
-        }
-
-        ImGui::SeparatorText("Frame data");
-        ImGui::DragFloat3("Light Color Ambient", &ubo.light_ambient.x);
-        ImGui::DragFloat3("Light Color Light", &ubo.light_color.x);
-        ImGui::DragFloat3("Light Direction", &ubo.light_dir.x);
-        ImGui::DragFloat("Light Intensity", &ubo.light_intensity);
-
-        ImGui::SeparatorText("Material Data");
-        ImGui::DragFloat("Ambient", &tmp_material.ambient);
-        ImGui::DragFloat("Diffuse", &tmp_material.diffuse);
-        ImGui::DragFloat("Specular", &tmp_material.specular);
-        ImGui::DragFloat("Specular Exponent", &tmp_material.specular_exp);
-
-        ImGui::SeparatorText("Camera");
-
-
-        bool dirty = false;
-        dirty  = ImGui::DragFloat3("Position", &camera_pos.x);
-        dirty |= ImGui::DragFloat3("Rotation", &camera_rot.x);
-
-        // TODO use own input system
-        const float SPEED_PAN = 10.0f;
-        const float SPEED_MOV = 0.1f;
-        const float SPEED_ROT = 0.1f;
-        const float THRESHOLD_PAN = 0.2f;
-        const float THRESHOLD_ROT = 0.1f;
-
-        glm::vec3 local_camera_pos = glm::vec3(0.0f);
-        glm::vec3 local_camera_rot = glm::vec3(0.0f);
-
-        // TODO FIXME split matrices camera view and camera world
-        auto& io = ImGui::GetIO();
-        if (io.MouseDown[1]) {
-            if (io.KeyAlt)
-            {
-                if (abs(io.MouseDelta.x) > THRESHOLD_PAN) local_camera_pos.x += (SPEED_PAN * io.MouseDelta.x) / swapchain_extent.width;
-                if (abs(io.MouseDelta.y) > THRESHOLD_PAN) local_camera_pos.y -= (SPEED_PAN * io.MouseDelta.y) / swapchain_extent.height;
-            }
-            else
-            {
-                if (abs(io.MouseDelta.y) > THRESHOLD_ROT) camera_rot.x += io.MouseDelta.y * SPEED_ROT;
-                if (abs(io.MouseDelta.x) > THRESHOLD_ROT) camera_rot.y += io.MouseDelta.x * SPEED_ROT;
-            }
-            dirty = true;
-        }
-
-        if (ImGui::IsKeyDown(ImGuiKey_W)) { local_camera_pos.z -= SPEED_MOV; dirty = true; }
-        if (ImGui::IsKeyDown(ImGuiKey_S)) { local_camera_pos.z += SPEED_MOV; dirty = true; }
-        if (ImGui::IsKeyDown(ImGuiKey_A)) { local_camera_pos.x -= SPEED_MOV; dirty = true; }
-        if (ImGui::IsKeyDown(ImGuiKey_D)) { local_camera_pos.x += SPEED_MOV; dirty = true; }
-        if (ImGui::IsKeyDown(ImGuiKey_Q)) { local_camera_pos.y -= SPEED_MOV; dirty = true; }
-        if (ImGui::IsKeyDown(ImGuiKey_E)) { local_camera_pos.y += SPEED_MOV; dirty = true; }
-
-        if(dirty)
-        {
-            glm::vec3 rot = glm::radians(camera_rot);
-            glm::mat4 rot_matrix = glm::identity<glm::mat4>();
-
-            const glm::vec3 FORWARD = glm::vec3(0, 0, -1);
-            const glm::vec3 UP = glm::vec3(0, 1, 0);
-            rot_matrix = glm::rotate(rot_matrix, rot.y, glm::vec3(0, 1, 0));
-            rot_matrix = glm::rotate(rot_matrix, rot.x, glm::vec3(1, 0, 0));
-            rot_matrix = glm::rotate(rot_matrix, rot.z, glm::vec3(0, 0, 1));
-
-            glm::vec3 global_camera_pos = glm::vec3((rot_matrix) * glm::vec4(local_camera_pos, 1.0f));
-
-            camera_pos += global_camera_pos;
-            glm::mat4 translate_matrix = glm::translate(glm::identity<glm::mat4>(), camera_pos);
-            camera_world = translate_matrix * rot_matrix;
-            camera_view = glm::inverse(camera_world);
-        }
-        ImGui::End();
-    }
-
-    void updateUniformBuffer(VkExtent2D swapchain_extent) {
-        // zoom out depending on loaded objects
-        float l = glm::sqrt(drawcall_cout);
-        //float l = 2;
-        float fow = (float)swapchain_extent.width / swapchain_extent.height;
-        camera_proj = glm::perspective(glm::radians(45.0f), fow, 0.1f, 100.0f);
-        //perspective_projection = glm::perspective(glm::radians(45.0f), fow, 0.1f, 10.0f);
-
-        ubo.view = camera_view;
-        ubo.proj = camera_proj;
-
-        // invert up axis
-        ubo.proj[1][1] *= -1;
-    }
-}
-
 namespace vkc {
 
     // TODO fix these long constructor? (dependency injection good I guess, not sure about this)
@@ -169,10 +18,6 @@ namespace vkc {
         VkSurfaceKHR surface,
         Window* window
     ) {
-        // TMP where to do this appropriately?
-        Assets::asset_manager_init();
-
-
         assert(window != nullptr);
 
         m_window = window;
@@ -222,27 +67,8 @@ namespace vkc {
                 command_buffers[i]
             );
 
-        TMP_Update::TMP_mesh_idxs = Assets::load_meshes_from_folder("res/models/pack_prototype");
-        auto TMP_texture_idx = load_texture("res/textures/colormap.png", Assets::TEX_CHANNELS_RGB_A);
-
-
-
-        TMP_Update::model_data.resize(TMP_Update::drawcall_cout);
-        int l = glm::sqrt(TMP_Update::drawcall_cout);
-        for (int i = 0; i < TMP_Update::drawcall_cout; ++i)
-            TMP_Update::model_data[i] = DataUniformModel{ .model = glm::translate(glm::mat4(1.0f), glm::vec3(i % l - l/2, 0, i / l - l / 2)) };
-
-        // TMP deploy to GPU
-        Drawcall::createModelBuffers(Assets::BuiltinPrimitives::IDX_DEBUG_CUBE, device, this);
-        Drawcall::createModelBuffers(Assets::BuiltinPrimitives::IDX_DEBUG_RAY, device, this);
-        for(auto& idx : TMP_Update::TMP_mesh_idxs)
-            Drawcall::createModelBuffers(idx, device, this);
-
-        Drawcall::createTextureImage(TMP_texture_idx, device, this);
-
-        // only one renderpass for now
-        m_render_passes.resize(1);
-        m_render_passes[0] = std::make_unique<vkc::RenderPass>(device, this);
+        // create defulta renderpass
+        add_renderpass();
     }
 
     RenderContext::~RenderContext() {
@@ -260,25 +86,7 @@ namespace vkc {
         Drawcall::clear_debug_drawcalls();
 
         // make up some drawcalls for testing
-        TMP_Update::TMP_update_gui(m_swapchain->get_extent());
-        TMP_Update::updateUniformBuffer(m_swapchain->get_extent());
         vkc::RenderPass* obj_render_pass = m_render_passes[0].get();
-
-
-        //for (uint32_t i = 1; i < TMP_Update::drawcall_cout; ++i)
-        //for (uint32_t i = 0; i < 1; ++i)
-        {
-            // base drawcall
-            Drawcall::add_drawcall(Drawcall::DrawcallData(
-                obj_render_pass,
-                obj_render_pass->get_pipeline_ptr(0),
-                &TMP_Update::tmp_material,
-                TMP_Update::model_data[0],
-                // // skip debug primitives. We will have a mesh ID
-                // i + 2
-                TMP_Update::TMP_mesh_idxs[TMP_Update::TMP_object_curr_idx]
-            ));
-        }
 
         // center
         Drawcall::add_debug_cube(
@@ -341,7 +149,7 @@ namespace vkc {
             m_queue_present,
             m_active_frame_index,
             m_swapchain->get_extent(),
-            TMP_Update::ubo,
+            m_ubo,
             Drawcall::get_drawcalls(),
             Drawcall::get_debug_drawcalls()
         );

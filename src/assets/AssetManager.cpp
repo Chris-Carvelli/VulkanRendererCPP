@@ -69,9 +69,11 @@ namespace vkc::Assets {
 
     uint32_t num_mesh_assets = 0;
     uint32_t num_texture_assets = 0;
+    uint32_t num_material_assets = 0;
 
     std::map<IdAssetMesh, MeshData> mesh_data;
     std::map<IdAssetTexture, TextureData> texture_data;
+    std::map<IdAssetMaterial, MaterialData> material_data;
 
     void asset_manager_init() {
         // create assets on CPU
@@ -79,12 +81,24 @@ namespace vkc::Assets {
         create_mesh(BuiltinPrimitives::DEBUG_RAY_MESH_DATA);
     }
 
-    TextureData& get_texture_data(IdAssetTexture id) {
-        return texture_data[id];
+    uint32_t get_num_mesh_assets() {
+        return num_mesh_assets;
+    }
+
+    uint32_t get_num_texture_assets() {
+        return num_texture_assets;
     }
 
     MeshData& get_mesh_data(IdAssetMesh id) {
         return mesh_data[id];
+    }
+
+    TextureData& get_texture_data(IdAssetTexture id) {
+        return texture_data[id];
+    }
+
+    MaterialData& get_material_data(IdAssetMaterial id) {
+        return material_data[id];
     }
 
     // flipp X and Y to match Kenney assets orientation
@@ -197,5 +211,11 @@ namespace vkc::Assets {
         IdAssetMesh mesh_idx = num_mesh_assets++;
         mesh_data[mesh_idx] = data;
         return mesh_idx;
+    }
+
+    IdAssetMaterial create_material(MaterialData data) {
+        IdAssetMaterial material_idx = num_material_assets++;
+        material_data[material_idx] = data;
+        return material_idx;
     }
 }

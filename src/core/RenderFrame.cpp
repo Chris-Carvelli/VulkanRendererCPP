@@ -10,6 +10,7 @@
 
 // TMP test imgui
 #include <imgui.h>
+#include <imgui_impl_vulkan.h>
 #include <utils/DearImGui.hpp>
 
 namespace vkc {
@@ -157,6 +158,7 @@ namespace vkc {
 				sizeof(drawcall.data_uniform_model),
 				&drawcall.data_uniform_model
 			);
+
 			vkCmdBindVertexBuffers(m_command_buffer, 0, 1, vertexBuffers, offsets);
 			vkCmdBindIndexBuffer(m_command_buffer, model_data_gpu.index_buffer, 0, VK_INDEX_TYPE_UINT32);
 
@@ -204,7 +206,9 @@ namespace vkc {
 		// ====================================================================
 		
 		// TMP test imgui
-		vkc::utils::DearImGui::TMP_SingletonInstance->EndFrame(m_command_buffer);
+
+		// TODO check if RenderDrawData's third parameter (VkPipeline, default to nullptr) is needed
+		ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), m_command_buffer);
 
 		vkCmdEndRenderPass(m_command_buffer);
 

@@ -27,7 +27,7 @@ namespace vkc {
             void Cleanup();
 
             void BeginFrame();
-            void EndFrame(VkCommandBuffer cmd_buffer);
+            void EndFrame();
             
         private:
             VkDevice m_device;

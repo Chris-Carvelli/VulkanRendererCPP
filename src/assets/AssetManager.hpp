@@ -35,8 +35,12 @@ namespace vkc::Assets {
 		TEX_CHANNELS_RGB_A = 0x4
 	} TexChannelTypes;
 
+	// TODO fix ids for serialization
+	//      ATM, ids are simple incrementail counters. We already have maps to store assets,
+	//      what we need is a fast and safe way to get a new free id
 	typedef uint32_t IdAssetMesh;
 	typedef uint32_t IdAssetTexture;
+	typedef uint32_t IdAssetMaterial;
 
 	namespace BuiltinPrimitives {
 		// TODO better indices for mesh and texture assets (separated from debug/builtin ones)
@@ -61,10 +65,21 @@ namespace vkc::Assets {
 		std::vector<unsigned char> data;
 	};
 
+	struct MaterialData {
+		// TODO replace with IdRenderPass and IdPipeline
+		uint32_t id_render_pass;
+		uint32_t id_pipeline;
+		void* uniform_data_material;
+	};
+
 	void asset_manager_init();
+
+	uint32_t get_num_mesh_assets();
+	uint32_t get_num_texture_assets();
 
 	MeshData& get_mesh_data(IdAssetMesh id);
 	TextureData& get_texture_data(IdAssetTexture id);
+	MaterialData& get_material_data(IdAssetMaterial id);
 
 	// ===================================================================================
 	// load
@@ -81,4 +96,7 @@ namespace vkc::Assets {
 
 	// resources inside MeshData will be acquired by the Asset Manager system
 	IdAssetMesh create_mesh(MeshData data);
+
+	// resources inside MaterialData will be acquired by the Asset Manager system
+	IdAssetMaterial create_material(MaterialData data);
 }

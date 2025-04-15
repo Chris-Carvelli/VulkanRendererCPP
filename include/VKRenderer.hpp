@@ -2,17 +2,18 @@
 
 #include <vulkan/vulkan.h>
 
-
 #include <VulkanUtils.h>
+#include <assets/AssetManager.hpp>
+#include <core/DataStructures.hpp>
 #include <core/Instance.hpp>
 #include <core/Device.hpp>
 #include <core/RenderContext.hpp>
 #include <core/RenderPass.hpp>
 #include <window/Window.hpp>
+
 #include <utils/DearImGui.hpp>
 
 #include <memory>
-
 class VKRenderer {
 	struct AppStats {
 		static const int FPS_SMOOTH_WINDOW_SIZE = 8;
@@ -43,12 +44,38 @@ public:
 protected:
 	// these could probably be pure virtual
 	virtual void init()   { }
+	virtual void update() { }
 	virtual void render() { }
+	virtual void gui()    { }
+
+	// set state
+	void drawcall_add(
+		vkc::Assets::IdAssetMesh id_mesh,
+		vkc::Assets::IdAssetMaterial id_material,
+		void* uniform_data_model
+	);
+	DataUniformFrame& get_ubo_reference() { return m_render_context->get_ubo_reference(); };
+
+	// upload ALL buffers to GPU, without checking if already done
+	void TMP_force_gpu_upload_all();
+
+	// temporary method to create default renderpasses and pipelines
+	// needed because with combined texture samples we can't create pipelines
+	// before we create the textures, pipeline creation is baked in with the entire render context,
+	// and we can't create textures without render context
+	// possible solutions:
+	// 1. use split textures and samplers
+	// 2. textures as variable pipeline context?
+	// 3. split `VKRenderer::init_base()` in pre-init and post-init, to do before and after application init
+	void TMP_create_renderpasses();
+	
+	// retrieve info
+	vkc::Rect2DI get_window_size() const { return m_window_size; };
 
 private:
 	void init_base();
-
-	void gui_record();
+	void update_base();
+	void gui_base();
 private:
 	std::unique_ptr<vkc::Instance> m_instance;
 	std::unique_ptr<vkc::Window>   m_window;
@@ -60,4 +87,7 @@ private:
 	VkSurfaceKHR m_surface;
 
 	AppStats m_app_stats;
+
+	// internal state
+	vkc::Rect2DI m_window_size;
 };
