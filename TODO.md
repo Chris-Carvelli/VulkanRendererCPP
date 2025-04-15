@@ -49,6 +49,10 @@ IMPORTANT: FAVOR NON-INTERLEAVED VERTEX DATA LAYOUT, EASIER TO STORE DATA IN A P
 	- [ ] check why adding light color to blinn phong hue shifts (???) the final color
 
 
+- 15/04/25
+	- [x] remove `TMP_Math` namespace
+	- [ ] fix `TMP_Assets` namespace
+	- [ ] fix `TMP_Update` namespace
 
 - 14/04/25
 	- [ ] mouse hovering models

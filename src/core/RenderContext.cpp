@@ -120,38 +120,8 @@ namespace TMP_Assets {
         return ret;
     }
 }
-namespace TMP_Math {
-    glm::vec3 ExtractTranslation(const glm::mat4& mat)
-    {
-        // Keep only 3x3 rotation part of the matrix
-        glm::mat3 transposed = glm::transpose(mat);
 
-        glm::vec3 inverseTranslation = mat[3];
 
-        return transposed * -inverseTranslation;
-    }
-
-    glm::vec3 ExtractRotation(const glm::mat4& mat)
-    {
-        // Columns should be divided by scale first, but scale is (1, 1, 1) 
-        glm::vec3 rotation(0.0f);
-        float f = mat[1][2];
-        if (std::abs(std::abs(f) - 1.0f) < 0.00001f)
-        {
-            rotation.x = -f * glm::pi<float>() * 0.5f;
-            rotation.y = std::atan2(-f * mat[0][1], -f * mat[0][0]);
-            rotation.z = 0.0f;
-        }
-        else
-        {
-            rotation.x = -std::asin(f);
-            float cosX = std::cos(rotation.x);
-            rotation.y = std::atan2(mat[0][2] / cosX, mat[2][2] / cosX);
-            rotation.z = std::atan2(mat[1][0] / cosX, mat[1][1] / cosX);
-        }
-        return rotation;
-    }
-}
 namespace TMP_Update {
     // camera
     glm::mat4 camera_world;
