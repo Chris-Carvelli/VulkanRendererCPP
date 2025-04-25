@@ -130,6 +130,24 @@ namespace TMP_Update {
             dirty = true;
         }
 
+        if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_1)) {
+            camera_pos = glm::vec3(0.0f, 10.0f, 0.0f);
+            camera_rot = glm::vec3(-90.0f, 0.0f, 0.0f);
+            dirty = true;
+        }
+
+        if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_2)) {
+            camera_pos = glm::vec3(0.0f, 0.0f, 10.0f);
+            camera_rot = glm::vec3(0.0f, 0.0f, 0.0f);
+            dirty = true;
+        }
+
+        if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_3)) {
+            camera_pos = glm::vec3(10.0f, 0.0f, 0.0f);
+            camera_rot = glm::vec3(0.0f, 90.0f, 0.0f);
+            dirty = true;
+        }
+
         if (ImGui::IsKeyDown(ImGuiKey_W)) { local_camera_pos.z -= SPEED_MOV; dirty = true; }
         if (ImGui::IsKeyDown(ImGuiKey_S)) { local_camera_pos.z += SPEED_MOV; dirty = true; }
         if (ImGui::IsKeyDown(ImGuiKey_A)) { local_camera_pos.x -= SPEED_MOV; dirty = true; }
@@ -266,15 +284,44 @@ class TestRenderer : public VKRenderer {
         if (get_current_frame() % 2 != 0)
             return;
         for (int i = TMP_Update::trail_size - 1; i > 0; --i)
-        {
             TMP_Update::vertex_data_trail[i].position = TMP_Update::vertex_data_trail[i - 1].position;
-        }
         TMP_Update::vertex_data_trail[0].position = TMP_Update::model_data[0].model[3];
+        for (int i = 0; i < TMP_Update::trail_size - 1; ++i)
+            TMP_Update::vertex_data_trail[i].normal = glm::normalize(TMP_Update::vertex_data_trail[i + 1].position - TMP_Update::vertex_data_trail[i].position);
+
+        /*printf("%3.4f, %3.4f, %3.4f\n", TMP_Update::vertex_data_trail[0].normal.x, TMP_Update::vertex_data_trail[0].normal.y, TMP_Update::vertex_data_trail[0].normal.z);
+        printf("%3.4f, %3.4f, %3.4f\n", TMP_Update::vertex_data_trail[0].position.x, TMP_Update::vertex_data_trail[0].position.y, TMP_Update::vertex_data_trail[0].position.z);
+        printf("%3.4f, %3.4f, %3.4f\n", TMP_Update::vertex_data_trail[1].position.x, TMP_Update::vertex_data_trail[1].position.y, TMP_Update::vertex_data_trail[1].position.z);
+        printf("==========================");*/
         TMP_Update::trail_data.radius = 0.1f;
         TMP_Update::trail_data.viewport_half_width = get_window_size().width / 2.0f;
         TMP_Update::trail_data.viewport_half_height = get_window_size().height / 2.0f;
 
         get_render_context_obj()->update_mesh_vertex_data(TMP_Update::trail_mesh_id, TMP_Update::vertex_data_trail, sizeof(TMP_Update::vertex_data_trail));
+
+        auto screen_normal = (glm::vec4(TMP_Update::vertex_data_trail[0].normal, 0.0f));
+        auto screen_up = (TMP_Update::camera_view[2]);
+        auto screen_offset = (glm::cross(static_cast<glm::vec3>(screen_normal), static_cast<glm::vec3>(screen_up)));
+        vkc::Drawcall::add_debug_ray(
+            TMP_Update::vertex_data_trail[0].position,
+            screen_normal,
+            glm::length(screen_normal),
+            glm::vec3(1.0f, 0.0f, 0.0f)
+        );
+
+        vkc::Drawcall::add_debug_ray(
+            TMP_Update::vertex_data_trail[0].position,
+            screen_up,
+            glm::length(screen_up),
+            glm::vec3(0.0f, 1.0f, 0.0f)
+        );
+
+        vkc::Drawcall::add_debug_ray(
+            TMP_Update::vertex_data_trail[0].position,
+            screen_offset,
+            glm::length(screen_offset),
+            glm::vec3(1.0f, 1.0f, 1.0f)
+        );
     }
 
     void render() override {

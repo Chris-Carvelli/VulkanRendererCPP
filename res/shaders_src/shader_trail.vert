@@ -34,26 +34,22 @@ void main() {
         1.0f
     );
 
-    mat4 billboarded_view = data_frame.view;
-    billboarded_view[0][0] = 1;
-    billboarded_view[0][1] = 0;
-    billboarded_view[0][2] = 0;
-    billboarded_view[1][0] = 0;
-    billboarded_view[1][1] = 1;
-    billboarded_view[1][2] = 0;
-    billboarded_view[2][0] = 0;
-    billboarded_view[2][1] = 0;
-    billboarded_view[2][2] = 1;
-
     float f = data_model.radius * ((gl_VertexIndex % 2) * 2 - 1);
-    world_pos.y += f;
 
-    vec4 screen_coords = data_frame.view * world_pos;
-    
-    gl_Position = data_frame.proj * screen_coords;
+//    // FIXME billboarded trail
+//    vec3 screen_up = vec3(0.0, 0.0, 1.0);
+//    vec4 screen_normal = transpose(data_frame.view) * vec4((inNormal), 0.0);
+//    vec4 screen_offset = vec4((cross(screen_normal.xyz, screen_up.xyz)), 0.0);
+//    vec4 screen_coords = data_frame.proj * data_frame.view * world_pos;
+//    screen_coords += screen_offset * f;
+//    gl_Position =  screen_coords;
+
+    // world trail
+    world_pos.xyz += cross(inNormal, vec3(0.0, 1.0, 0.0)) * f;
+    gl_Position =  data_frame.proj * data_frame.view * world_pos;
 
     fragPosition = world_pos.xyz;
-    fragColor = inColor;
+    fragColor = (gl_VertexIndex % 2) == 0 ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 1.0, 0.0);
     fragNormal = inNormal;
     fragTexCoord = inTexCoord;
 }
