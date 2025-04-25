@@ -1,5 +1,6 @@
 #include <VKRenderer.hpp>
 
+#include <core/DrawCall.hpp>
 #include <assets/AssetManager.hpp>
 
 // TMP_Update includes
@@ -11,6 +12,22 @@
 #include <cstdlib>
 #include <string>
 
+namespace TMP_Utils {
+    inline glm::vec3 global_to_local_dir(glm::vec3 global, glm::mat4 m) {
+        auto ret = glm::vec3(m * glm::vec4(global, 0.0f));
+        return ret;
+    }
+
+    inline glm::vec3 global_to_local_point(glm::vec3 global, glm::mat4 m) {
+        return glm::vec3(m * glm::vec4(global, 1.0f));
+    }
+
+    inline glm::vec3 local_to_global_dir(glm::vec3 global, glm::mat4 m) {
+        auto ret = glm::vec3(glm::inverse(m) * glm::vec4(global, 0.0f));
+        printf("%.3f   %.3f   %.3f\n", ret.x, ret.y, ret.z);
+        return ret;
+    }
+}
 namespace TMP_Update {
     // camera
     glm::mat4 camera_world;
@@ -176,6 +193,25 @@ class TestRenderer : public VKRenderer {
             get_window_size(),
             get_ubo_reference()
         );
+
+        // move model
+        const glm::vec3 UP(0.0f, 1.0f, 0.0f);
+        const float char_speed_mov = 1.0f;
+        const float char_speed_rot = 1.0f;
+        auto& io = ImGui::GetIO();
+        glm::vec3 char_mov(0.0f);
+        float char_rot = 0;
+        if (ImGui::IsKeyDown(ImGuiKey_UpArrow))    char_mov.z += 1.0f;
+        if (ImGui::IsKeyDown(ImGuiKey_DownArrow))  char_mov.z -= 1.0f;
+        if (ImGui::IsKeyDown(ImGuiKey_RightArrow)) char_rot -= 1.0f;
+        if (ImGui::IsKeyDown(ImGuiKey_LeftArrow))  char_rot += 1.0f;
+
+        float delta = get_delta_time();
+
+        auto mtx_rot = glm::eulerAngleXYZ(0.0f, char_rot * char_speed_rot * delta, 0.0f);
+        auto mtx_mov = glm::translate(TMP_Utils::global_to_local_dir(char_mov * char_speed_mov * delta, TMP_Update::model_data[0].model));
+
+        TMP_Update::model_data[0].model = mtx_mov * TMP_Update::model_data[0].model * mtx_rot;
     }
 
     void render() override {

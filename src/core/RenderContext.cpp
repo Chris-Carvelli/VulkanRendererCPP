@@ -81,10 +81,6 @@ namespace vkc {
     }
 
     void RenderContext::render_begin() {
-        //clear previous drawcalls
-        Drawcall::clear_drawcalls();
-        Drawcall::clear_debug_drawcalls();
-
         // make up some drawcalls for testing
         vkc::RenderPass* obj_render_pass = m_render_passes[0].get();
 
@@ -155,6 +151,10 @@ namespace vkc {
         );
 
         m_active_frame_index = (m_active_frame_index + 1) % get_num_render_frames();
+
+        //clear drawcalls
+        Drawcall::clear_drawcalls();
+        Drawcall::clear_debug_drawcalls();
     }
 
     void RenderContext::recreate_swapchain() {

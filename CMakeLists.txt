@@ -11,6 +11,8 @@ set(CMAKE_CXX_STANDARD "20")
 # no stdlib
 # set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -nostdlib")
 
+SET (CMAKE_CXX_FLAGS_DEBUG_INIT          "-g -O0")
+
 set(ENABLE_VALID_LAYERS ON CACHE BOOL "Enable Validation Layers")
 
 add_compile_definitions($<$<CONFIG:DEBUG>:VKC_DEBUG>)

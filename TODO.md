@@ -86,7 +86,9 @@ struct MeshData {
 		- [x] number and size of buffer is a creation parameter
 	- [ ] check why adding light color to blinn phong hue shifts (???) the final color
 
-- next time
+- 25/04/25
+	- [x] move character
+	- [ ] draw trail
 	- [ ] main application can create renderpasses
 	- [ ] main application can create pipelines
 		- [ ] `PipelineConfig` should contain `IdAssetTexture` rather than texture view

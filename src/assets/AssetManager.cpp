@@ -101,13 +101,13 @@ namespace vkc::Assets {
         return material_data[id];
     }
 
-    // flipp X and Y to match Kenney assets orientation
+    // flipp X and Z to match Kenney assets orientation
     // (prob. default blender)
     // this should probably be an import util + cooking anyway
     IdAssetMesh load_mesh(const char* path) {
-        const int offset_x = 0;
+        const int offset_x = 2;
         const int offset_y = 1;
-        const int offset_z = 2;
+        const int offset_z = 0;
 
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
@@ -148,7 +148,7 @@ namespace vkc::Assets {
                 p_vertex_data[i].position = glm::vec3(
                     attrib.vertices[3 * index.vertex_index + offset_x],
                     attrib.vertices[3 * index.vertex_index + offset_y],
-                    attrib.vertices[3 * index.vertex_index + offset_z]
+                    -attrib.vertices[3 * index.vertex_index + offset_z]
                 );
 
                 p_vertex_data[i].color = glm::vec3(1.0f);

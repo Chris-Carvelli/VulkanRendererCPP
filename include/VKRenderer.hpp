@@ -13,13 +13,18 @@
 
 #include <utils/DearImGui.hpp>
 
+#include <chrono>
 #include <memory>
+
 class VKRenderer {
 	struct AppStats {
 		static const int FPS_SMOOTH_WINDOW_SIZE = 8;
 
 		float fps[FPS_SMOOTH_WINDOW_SIZE] = { 0 };
 		int curr_frame = 0;
+
+		std::chrono::steady_clock::time_point curr_time;
+		float delta_time;
 	};
 
 public:
@@ -71,6 +76,7 @@ protected:
 	
 	// retrieve info
 	vkc::Rect2DI get_window_size() const { return m_window_size; };
+	float get_delta_time() const { return m_app_stats.delta_time; };
 
 private:
 	void init_base();

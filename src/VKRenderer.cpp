@@ -39,6 +39,9 @@ void VKRenderer::run() {
 
 		m_app_stats.fps[m_app_stats.curr_frame % AppStats::FPS_SMOOTH_WINDOW_SIZE] = 1000.0f / x.count();
 		m_app_stats.curr_frame++;
+		m_app_stats.delta_time = std::chrono::duration_cast<std::chrono::milliseconds>(time_end - m_app_stats.curr_time).count() / 1000.0f;
+		m_app_stats.curr_time = time_end;
+
 
 		m_window->collect_input();
 	}
@@ -140,6 +143,11 @@ void VKRenderer::init_base()
 	);
 
 	vkc::Assets::asset_manager_init();
+
+	// init app data
+	m_app_stats.curr_frame = 0;
+	m_app_stats.curr_time = std::chrono::high_resolution_clock::now();
+	m_app_stats.delta_time = 0;
 }
 
 void VKRenderer::update_base() {
@@ -154,5 +162,6 @@ void VKRenderer::gui_base() {
 		smoothed_fps += m_app_stats.fps[i];
 	ImGui::Begin("App Info");
 	ImGui::LabelText("FPS", "%3.0f", smoothed_fps / AppStats::FPS_SMOOTH_WINDOW_SIZE);
+	ImGui::LabelText("Delta", "%3.4f", m_app_stats.delta_time);
 	ImGui::End();
 }
