@@ -53,7 +53,8 @@ void VKRenderer::run() {
 void VKRenderer::drawcall_add(
 	vkc::Assets::IdAssetMesh id_mesh,
 	vkc::Assets::IdAssetMaterial id_material,
-	void* uniform_data_model
+	void* uniform_data_model,
+	uint32_t uniform_data_model_size
 ) {
 	vkc::Assets::MaterialData& material = vkc::Assets::get_material_data(id_material);
 
@@ -69,7 +70,8 @@ void VKRenderer::drawcall_add(
 		.obj_pipeline = obj_pipeline,
 		.idx_data_attributes = id_mesh,
 		.data_uniform_material = (DataUniformMaterial*)material.uniform_data_material,
-		.data_uniform_model = *(DataUniformModel*)uniform_data_model
+		.data_uniform_model = uniform_data_model,
+		.data_uniform_model_size = uniform_data_model_size
 	});
 }
 
@@ -100,6 +102,36 @@ void VKRenderer::TMP_create_renderpasses() {
 				.texture_image_views_count = 1,
 				.face_culling_mode = VK_CULL_MODE_BACK_BIT
 		});
+	vkc::Instance::TMP_get_singleton_instance()->add_object_debug_name(
+		(uint64_t)m_render_context->get_renderpass(0)->get_pipeline_handle(default_pipeline),
+		VK_OBJECT_TYPE_PIPELINE,
+		m_device->get_handle(),
+		"default pipeline"
+	);
+
+	uint32_t trail_pipeline = m_render_context->get_renderpass(0)->add_pipeline(new vkc::PipelineConfig{
+				.vert_path = "res/shaders/shader_trail.vert.spv",
+				.frag_path = "res/shaders/shader_trail.frag.spv",
+				.size_uniform_data_frame = sizeof(DataUniformFrame),
+				.size_uniform_data_material = sizeof(DataUniformMaterial),
+				.size_push_constant_model = sizeof(DataUniformTrail),
+				.vertex_binding_descriptors = vertexData_getBindingDescriptions(),
+				.vertex_binding_descriptors_count = vertexData_getBindingDescriptionsCount(),
+				.vertex_attribute_descriptors = vertexData_getAttributeDescriptions(),
+				.vertex_attribute_descriptors_count = vertexData_getAttributeDescriptionsCount(),
+				.texture_image_views = new VkImageView[] {
+					//vkc::Drawcall::get_texture_image_view(1)
+				},
+				.texture_image_views_count = 0,
+				.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,
+				.face_culling_mode = VK_CULL_MODE_NONE
+		});
+	vkc::Instance::TMP_get_singleton_instance()->add_object_debug_name(
+		(uint64_t)m_render_context->get_renderpass(0)->get_pipeline_handle(trail_pipeline),
+		VK_OBJECT_TYPE_PIPELINE,
+		m_device->get_handle(),
+		"trail pipeline"
+	);
 }
 
 void VKRenderer::init_base()

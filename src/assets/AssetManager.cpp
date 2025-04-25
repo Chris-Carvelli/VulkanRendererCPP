@@ -177,7 +177,11 @@ namespace vkc::Assets {
     std::vector<IdAssetMesh> load_meshes_from_folder(const char* folder_path) {
         std::vector<IdAssetMesh> ret = std::vector<IdAssetMesh>();
         for (const auto& entry : std::filesystem::directory_iterator(folder_path))
+        {
             ret.push_back(load_mesh(entry.path().string().c_str()));
+            // TMP
+            break;
+        }
 
         return ret;
     }

@@ -13,8 +13,11 @@ namespace vkc {
 	class Instance {
 	private:
 		const uint32_t API_VERSION = VK_API_VERSION_1_0;
+		static Instance* TMP_singleton_instance;
 
 	public:
+		static Instance* TMP_get_singleton_instance() { return TMP_singleton_instance; };
+
 		Instance(
 			const char* application_name,
 			std::vector<const char*> extensions_requested,
@@ -44,6 +47,8 @@ namespace vkc {
 		};
 
 		vkc::PhysicalDevice& get_selected_gpu() const;
+		void add_object_debug_name(uint64_t object, VkObjectType object_type, VkDevice device, const char* debug_name);
+		void add_buffer_util_label(VkCommandBuffer buffer, const char* debug_name);
 
 	private:
 		void query_gpus();

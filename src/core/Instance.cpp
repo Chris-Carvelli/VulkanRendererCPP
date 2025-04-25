@@ -13,6 +13,8 @@ namespace vkc {
 		PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT;
 		PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT;
 		PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT;
+		PFN_vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT;
+		PFN_vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT;
 
 		// manual load of necessary function addresses
 		void loadVkFuncAddr(VkInstance instance) {
@@ -20,6 +22,8 @@ namespace vkc {
 			vkCreateDebugReportCallbackEXT = reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT"));
 			vkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT"));
 			vkDestroyDebugReportCallbackEXT = reinterpret_cast<PFN_vkDestroyDebugReportCallbackEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT"));
+			vkSetDebugUtilsObjectNameEXT = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetInstanceProcAddr(instance, "vkSetDebugUtilsObjectNameEXT"));
+			vkCmdInsertDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdInsertDebugUtilsLabelEXT>(vkGetInstanceProcAddr(instance, "vkCmdInsertDebugUtilsLabelEXT"));
 		}
 	}
 	
@@ -170,6 +174,8 @@ namespace vkc {
 		}
 	}        // namespace
 
+	Instance* Instance::TMP_singleton_instance = nullptr;
+
 	Instance::Instance(
 		const char* application_name,
 		std::vector<const char*> extensions_requested,
@@ -179,6 +185,9 @@ namespace vkc {
 		std::vector<VkLayerSettingEXT> layer_settings_required
 	)
 	{
+		assert(TMP_singleton_instance == nullptr);
+		TMP_singleton_instance = this;
+
 		// TODO error handling
 		uint32_t instance_extension_count;
 
@@ -350,5 +359,19 @@ namespace vkc {
 		CC_ASSERT(!m_gpus.empty(), "No available gpu");
 		return *m_gpus[0];
 	};
+
+	void Instance::add_object_debug_name(uint64_t object, VkObjectType object_type, VkDevice device, const char* debug_name) {
+		VkDebugUtilsObjectNameInfoEXT name_info = { VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT };
+		name_info.objectType = object_type;
+		name_info.objectHandle = object;
+		name_info.pObjectName = debug_name;
+		CC_VK_CHECK(vkSetDebugUtilsObjectNameEXT(device, &name_info));
+	}
+
+	void Instance::add_buffer_util_label(VkCommandBuffer buffer, const char* debug_name) {
+		VkDebugUtilsLabelEXT name_info = { VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT };
+		name_info.pLabelName = debug_name;
+		vkCmdInsertDebugUtilsLabelEXT(buffer, &name_info);
+	}
 }
  

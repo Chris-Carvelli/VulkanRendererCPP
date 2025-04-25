@@ -157,6 +157,10 @@ namespace vkc {
         Drawcall::clear_debug_drawcalls();
     }
 
+    void RenderContext::update_mesh_vertex_data(uint32_t mesh_index, void* vertex_data, uint32_t vertex_data_size) {
+        vkc::Drawcall::updateModelVertexBuffer(mesh_index, vertex_data, vertex_data_size, m_device, this);
+    }
+
     void RenderContext::recreate_swapchain() {
         assert(m_window != nullptr);
         m_swapchain->recreate(m_window->get_current_extent());

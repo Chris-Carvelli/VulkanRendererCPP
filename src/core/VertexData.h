@@ -152,3 +152,13 @@ inline const VkVertexInputAttributeDescription* vertexDebug_getAttributeDescript
     };
     return &ret;
 }
+
+// =================================================================
+// Trail
+// =================================================================
+
+struct DataUniformTrail {
+    float radius;
+    float viewport_half_width;
+    float viewport_half_height;
+};

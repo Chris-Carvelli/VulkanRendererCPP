@@ -50,7 +50,18 @@ namespace TMP_Update {
     std::vector<vkc::Assets::IdAssetMesh> TMP_mesh_idxs;
     int TMP_object_curr_idx = 0;
 
-    vkc::Assets::IdAssetMaterial idMaterial;
+    vkc::Assets::IdAssetMaterial idMaterialModels;
+
+    // trail
+    const int trail_size = 64;
+    std::vector<glm::vec3> trail_positions(trail_size);
+    vkc::Assets::IdAssetMaterial idMaterialTrail;
+    DataUniformTrail trail_data;
+    uint32_t trail_mesh_id;
+
+    VertexData vertex_data_trail[TMP_Update::trail_size];
+    uint32_t indices[TMP_Update::trail_size];;
+    vkc::Assets::MeshData trail_mesh;
 
     void TMP_update_gui(vkc::Rect2DI window_size, DataUniformFrame& ubo) {
         ImGui::Begin("tmp_update_info");
@@ -181,11 +192,49 @@ class TestRenderer : public VKRenderer {
         for (int i = 0; i < TMP_Update::TMP_mesh_idxs.size(); ++i)
             TMP_Update::TMP_mesh_names[i] = std::to_string(TMP_Update::TMP_mesh_idxs[i]);
 
-        TMP_Update::idMaterial = vkc::Assets::create_material(vkc::Assets::MaterialData{
+        TMP_Update::idMaterialModels = vkc::Assets::create_material(vkc::Assets::MaterialData{
             .id_render_pass = 0,
             .id_pipeline = 0,
             .uniform_data_material = &TMP_Update::tmp_data_uniform_material
          });
+
+        TMP_Update::idMaterialTrail = vkc::Assets::create_material(vkc::Assets::MaterialData{
+            .id_render_pass = 0,
+            .id_pipeline = 1,
+            // hack, material data of the trail is smaller than the one for materials, but the base matches
+            .uniform_data_material = &TMP_Update::tmp_data_uniform_material
+        });
+
+        // create trial geo
+
+        for (int i = 0; i < TMP_Update::trail_size; ++i) {
+            TMP_Update::vertex_data_trail[i].position = glm::vec3(0.0f);
+            TMP_Update::vertex_data_trail[i].color = glm::vec3(1.0f);
+            TMP_Update::vertex_data_trail[i].normal = glm::vec3(0.0f);
+            TMP_Update::vertex_data_trail[i].texCoords = glm::vec2(i * 1.0f / 10.0f, 0.0f);
+            TMP_Update::indices[i] = i;
+        }
+        TMP_Update::trail_mesh.vertex_count = TMP_Update::trail_size;
+        TMP_Update::trail_mesh.vertex_data = TMP_Update::vertex_data_trail;
+        TMP_Update::trail_mesh.index_count = TMP_Update::trail_size;
+        TMP_Update::trail_mesh.index_data = TMP_Update::indices;
+        TMP_Update::trail_mesh.vertex_data_size = sizeof(TMP_Update::vertex_data_trail[0]);
+
+        TMP_Update::trail_mesh_id = vkc::Assets::create_mesh(TMP_Update::trail_mesh);
+        /*TMP_Update::trail_mesh_id = vkc::Drawcall::createModelBuffers(
+            (void*)TMP_Update::vertex_data_trail,
+            (uint32_t)TMP_Update::trail_size * sizeof(TMP_Update::vertex_data_trail[0]),
+            (uint32_t*)TMP_Update::indices,
+            (uint32_t)TMP_Update::trail_size * sizeof(TMP_Update::indices[0]),
+            get_device_handle(),
+            get_render_context_obj()
+        );
+        vkc::Drawcall::add_debug_name(
+            TMP_Update::trail_mesh_id,
+            get_device_handle(),
+            get_instance_obj(),
+            "trail_buffers"
+        );*/
     }
 
     void update() override {
@@ -194,10 +243,10 @@ class TestRenderer : public VKRenderer {
             get_ubo_reference()
         );
 
-        // move model
+        // model
         const glm::vec3 UP(0.0f, 1.0f, 0.0f);
-        const float char_speed_mov = 1.0f;
-        const float char_speed_rot = 1.0f;
+        const float char_speed_mov = 3.0f;
+        const float char_speed_rot = 3.0f;
         auto& io = ImGui::GetIO();
         glm::vec3 char_mov(0.0f);
         float char_rot = 0;
@@ -212,14 +261,37 @@ class TestRenderer : public VKRenderer {
         auto mtx_mov = glm::translate(TMP_Utils::global_to_local_dir(char_mov * char_speed_mov * delta, TMP_Update::model_data[0].model));
 
         TMP_Update::model_data[0].model = mtx_mov * TMP_Update::model_data[0].model * mtx_rot;
+
+        // trail
+        if (get_current_frame() % 2 != 0)
+            return;
+        for (int i = TMP_Update::trail_size - 1; i > 0; --i)
+        {
+            TMP_Update::vertex_data_trail[i].position = TMP_Update::vertex_data_trail[i - 1].position;
+        }
+        TMP_Update::vertex_data_trail[0].position = TMP_Update::model_data[0].model[3];
+        TMP_Update::trail_data.radius = 0.1f;
+        TMP_Update::trail_data.viewport_half_width = get_window_size().width / 2.0f;
+        TMP_Update::trail_data.viewport_half_height = get_window_size().height / 2.0f;
+
+        get_render_context_obj()->update_mesh_vertex_data(TMP_Update::trail_mesh_id, TMP_Update::vertex_data_trail, sizeof(TMP_Update::vertex_data_trail));
     }
 
     void render() override {
-        // base drawcall
+        // model
         drawcall_add(
             TMP_Update::TMP_mesh_idxs[TMP_Update::TMP_object_curr_idx],
-            TMP_Update::idMaterial,
-            &TMP_Update::model_data[0]
+            TMP_Update::idMaterialModels,
+            &TMP_Update::model_data[0],
+            sizeof(TMP_Update::model_data[0])
+        );
+
+        // trail
+        drawcall_add(
+            TMP_Update::trail_mesh_id,
+            TMP_Update::idMaterialTrail,
+            &TMP_Update::trail_data,
+            sizeof(TMP_Update::trail_data)
         );
     }
 

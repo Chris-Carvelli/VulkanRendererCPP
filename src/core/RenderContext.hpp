@@ -32,6 +32,8 @@ namespace vkc {
 		void render_finalize();
 		void recreate_swapchain();
 
+		void update_mesh_vertex_data(uint32_t mesh_index, void* vertex_data, uint32_t vertex_data_size);
+
 		// TODO renderpass id, rendepass parameters
 		uint32_t add_renderpass() {
 			uint32_t ret = m_render_passes.size();

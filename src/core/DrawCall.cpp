@@ -1,5 +1,6 @@
 #include "DrawCall.hpp"
 
+#include <VulkanUtils.h>
 #include <assets/AssetManager.hpp>
 
 // debug draw calls includes
@@ -103,6 +104,44 @@ namespace vkc::Drawcall {
         );
 
         texture_data_gpu[texture_id] = new_gpu_data;
+    }
+
+    void updateModelVertexBuffer(
+        uint32_t model_index,
+        void* vertex_buffer_content,
+        uint32_t vertex_buffer_size,
+        VkDevice device,
+        vkc::RenderContext* obj_render_context
+    ) {
+        ModelDataGPU& model_data_gpu_ref = model_data_gpu[model_index];
+
+        {
+            VkDeviceSize bufferSize = vertex_buffer_size;
+
+            VkBuffer stagingBuffer;
+            VkDeviceMemory stagingBufferMemory;
+            obj_render_context->createBuffer(
+                bufferSize,
+                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                &stagingBuffer,
+                &stagingBufferMemory
+            );
+
+            // map memory
+            void* data;
+            vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+            memcpy(data, vertex_buffer_content, (size_t)bufferSize);
+            vkUnmapMemory(device, stagingBufferMemory);
+
+            obj_render_context->copyBuffer(
+                stagingBuffer,
+                model_data_gpu_ref.vertex_buffer,
+                bufferSize);
+
+            vkDestroyBuffer(device, stagingBuffer, NULL);
+            vkFreeMemory(device, stagingBufferMemory, NULL);
+        }
     }
 
     uint32_t createModelBuffers(
@@ -238,6 +277,14 @@ namespace vkc::Drawcall {
             vkFreeMemory(device, data.second.index_buffer_memory, NULL);
             vkFreeMemory(device, data.second.vertexbuffer_memory, NULL);
         }
+    }
+
+    void add_debug_name(uint32_t gpu_data_id, VkDevice device, vkc::Instance* obj_instance, const char * debug_name) {
+        
+        auto& gpu_data = model_data_gpu[gpu_data_id];
+
+        obj_instance->add_object_debug_name((uint64_t)gpu_data.vertex_buffer, VK_OBJECT_TYPE_BUFFER, device, debug_name);
+        obj_instance->add_object_debug_name((uint64_t)gpu_data.index_buffer, VK_OBJECT_TYPE_BUFFER, device, debug_name);
     }
 
 

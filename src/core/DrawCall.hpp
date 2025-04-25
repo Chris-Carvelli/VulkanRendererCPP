@@ -3,6 +3,7 @@
 #include <vulkan/vulkan.h>
 
 #include <assets/AssetManager.hpp>
+#include <core/Instance.hpp>
 #include <core/RenderContext.hpp>
 #include <core/VertexData.h>
 
@@ -28,7 +29,8 @@ namespace vkc {
 			vkc::RenderPass* obj_render_pass;
 			vkc::Pipeline*   obj_pipeline;
 			DataUniformMaterial* data_uniform_material;
-			DataUniformModel data_uniform_model;
+			void* data_uniform_model;
+			uint32_t data_uniform_model_size;
 			uint32_t idx_data_attributes;
 		};
 
@@ -41,6 +43,14 @@ namespace vkc {
 
 		void createTextureImage(
 			Assets::IdAssetTexture texture_id,
+			VkDevice device,
+			vkc::RenderContext* obj_render_context
+		);
+
+		void updateModelVertexBuffer(
+			uint32_t model_index,
+			void* vertex_buffer_content,
+			uint32_t vertex_buffer_size,
 			VkDevice device,
 			vkc::RenderContext* obj_render_context
 		);
@@ -64,6 +74,8 @@ namespace vkc {
 		);
 
 		void destroy_resources(VkDevice device);
+
+		void add_debug_name(uint32_t gpu_data_id, VkDevice device, vkc::Instance* obj_device, const char* debug_name);
 
 		// ======================================================================
 		// debug drawcalls

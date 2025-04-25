@@ -57,7 +57,8 @@ protected:
 	void drawcall_add(
 		vkc::Assets::IdAssetMesh id_mesh,
 		vkc::Assets::IdAssetMaterial id_material,
-		void* uniform_data_model
+		void* uniform_data_model,
+		uint32_t uniform_data_model_size
 	);
 	DataUniformFrame& get_ubo_reference() { return m_render_context->get_ubo_reference(); };
 
@@ -76,7 +77,15 @@ protected:
 	
 	// retrieve info
 	vkc::Rect2DI get_window_size() const { return m_window_size; };
+	int get_current_frame() const { return m_app_stats.curr_frame; };
 	float get_delta_time() const { return m_app_stats.delta_time; };
+
+	// TMP this is too low level to handle to the app
+	VkDevice get_device_handle() const { return m_device->get_handle(); };
+	// TMP this is too low level to handle to the app
+	vkc::RenderContext* get_render_context_obj() const { return m_render_context.get(); };
+	// TMP this is too low level to handle to the app
+	vkc::Instance* get_instance_obj() const { return m_instance.get(); };
 
 private:
 	void init_base();

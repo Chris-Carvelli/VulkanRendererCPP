@@ -155,17 +155,19 @@ namespace vkc {
 				obj_curr_pipeline->get_layout(),
 				VK_SHADER_STAGE_VERTEX_BIT,
 				0,
-				sizeof(drawcall.data_uniform_model),
-				&drawcall.data_uniform_model
+				drawcall.data_uniform_model_size,
+				drawcall.data_uniform_model
 			);
 
 			vkCmdBindVertexBuffers(m_command_buffer, 0, 1, vertexBuffers, offsets);
 			vkCmdBindIndexBuffer(m_command_buffer, model_data_gpu.index_buffer, 0, VK_INDEX_TYPE_UINT32);
 
+
+			vkc::Instance::TMP_get_singleton_instance()->add_buffer_util_label(m_command_buffer, "424242 HELLO WORLD");
 			vkCmdDrawIndexed(m_command_buffer, model_data_gpu.indices_count, 1, 0, 0, 0);
 		}
 		// ====================================================================
-		
+
 		// debug draw call ====================================================
 		// TMP only one renderpass, debug drawcall hardcoded at idx 1
 		auto obj_debug_pipeline = obj_curr_render_pass->get_debug_pipeline_ptr(0);
