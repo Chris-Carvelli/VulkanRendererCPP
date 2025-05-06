@@ -212,6 +212,8 @@ namespace vkc::Assets {
     }
 
     IdAssetMesh create_mesh(MeshData data) {
+        data.flags |= MeshData::FLAG_DYNAMIC;
+
         IdAssetMesh mesh_idx = num_mesh_assets++;
         mesh_data[mesh_idx] = data;
         return mesh_idx;

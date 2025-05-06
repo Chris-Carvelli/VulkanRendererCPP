@@ -53,7 +53,7 @@ namespace TMP_Update {
     vkc::Assets::IdAssetMaterial idMaterialModels;
 
     // trail
-    const int trail_size = 64;
+    const int trail_size = 128;
     std::vector<glm::vec3> trail_positions(trail_size);
     vkc::Assets::IdAssetMaterial idMaterialTrail;
     DataUniformTrail trail_data;
@@ -195,6 +195,15 @@ namespace TMP_Update {
 
 class TestRenderer : public VKRenderer {
     void init() override {
+        // TMP
+        auto g = offsetof(DataUniformFrame, view);
+        auto f = offsetof(DataUniformFrame, proj);
+        auto e = offsetof(DataUniformFrame, light_ambient);
+        auto d = offsetof(DataUniformFrame, light_dir);
+        auto c = offsetof(DataUniformFrame, light_color);
+        auto a = offsetof(DataUniformFrame, light_intensity);
+        auto b = offsetof(DataUniformFrame, frame);
+
         // load mesh and textures
         TMP_Update::TMP_mesh_idxs = vkc::Assets::load_meshes_from_folder("res/models/pack_prototype");
         auto TMP_texture_idx = vkc::Assets::load_texture("res/textures/colormap.png", vkc::Assets::TEX_CHANNELS_RGB_A);
@@ -239,6 +248,8 @@ class TestRenderer : public VKRenderer {
         TMP_Update::trail_mesh.vertex_data_size = sizeof(TMP_Update::vertex_data_trail[0]);
 
         TMP_Update::trail_mesh_id = vkc::Assets::create_mesh(TMP_Update::trail_mesh);
+        TMP_Update::trail_data.offset_dir = 1;
+        CC_LOG(LOG, "%d", TMP_Update::trail_data.offset_dir);
         /*TMP_Update::trail_mesh_id = vkc::Drawcall::createModelBuffers(
             (void*)TMP_Update::vertex_data_trail,
             (uint32_t)TMP_Update::trail_size * sizeof(TMP_Update::vertex_data_trail[0]),
@@ -256,6 +267,9 @@ class TestRenderer : public VKRenderer {
     }
 
     void update() override {
+        // TODO the engine should do this
+        int f = get_current_frame();
+        get_ubo_reference().frame = f;
         TMP_Update::updateUniformBuffer(
             get_window_size(),
             get_ubo_reference()
@@ -281,23 +295,27 @@ class TestRenderer : public VKRenderer {
         TMP_Update::model_data[0].model = mtx_mov * TMP_Update::model_data[0].model * mtx_rot;
 
         // trail
-        if (get_current_frame() % 2 != 0)
-            return;
-        for (int i = TMP_Update::trail_size - 1; i > 0; --i)
-            TMP_Update::vertex_data_trail[i].position = TMP_Update::vertex_data_trail[i - 1].position;
-        TMP_Update::vertex_data_trail[0].position = TMP_Update::model_data[0].model[3];
-        for (int i = 0; i < TMP_Update::trail_size - 1; ++i)
-            TMP_Update::vertex_data_trail[i].normal = glm::normalize(TMP_Update::vertex_data_trail[i + 1].position - TMP_Update::vertex_data_trail[i].position);
+        if (get_current_frame() % 1 == 0)
+        {
+            for (int i = TMP_Update::trail_size - 1; i > 0; --i)
+                TMP_Update::vertex_data_trail[i].position = TMP_Update::vertex_data_trail[i - 1].position;
+            TMP_Update::vertex_data_trail[0].position = TMP_Update::model_data[0].model[3];
+            for (int i = 0; i < TMP_Update::trail_size - 1; ++i)
+                TMP_Update::vertex_data_trail[i].normal = glm::normalize(TMP_Update::vertex_data_trail[i + 1].position - TMP_Update::vertex_data_trail[i].position);
+        }
 
         /*printf("%3.4f, %3.4f, %3.4f\n", TMP_Update::vertex_data_trail[0].normal.x, TMP_Update::vertex_data_trail[0].normal.y, TMP_Update::vertex_data_trail[0].normal.z);
         printf("%3.4f, %3.4f, %3.4f\n", TMP_Update::vertex_data_trail[0].position.x, TMP_Update::vertex_data_trail[0].position.y, TMP_Update::vertex_data_trail[0].position.z);
         printf("%3.4f, %3.4f, %3.4f\n", TMP_Update::vertex_data_trail[1].position.x, TMP_Update::vertex_data_trail[1].position.y, TMP_Update::vertex_data_trail[1].position.z);
         printf("==========================");*/
         TMP_Update::trail_data.radius = 0.1f;
-        TMP_Update::trail_data.viewport_half_width = get_window_size().width / 2.0f;
-        TMP_Update::trail_data.viewport_half_height = get_window_size().height / 2.0f;
+        TMP_Update::trail_data.offset_dir *= 1;
 
-        get_render_context_obj()->update_mesh_vertex_data(TMP_Update::trail_mesh_id, TMP_Update::vertex_data_trail, sizeof(TMP_Update::vertex_data_trail));
+        get_render_context_obj()->update_mesh_vertex_data(
+            TMP_Update::trail_mesh_id, 
+            TMP_Update::vertex_data_trail, 
+            sizeof(TMP_Update::vertex_data_trail)
+        );
 
         auto screen_normal = (glm::vec4(TMP_Update::vertex_data_trail[0].normal, 0.0f));
         auto screen_up = (TMP_Update::camera_view[2]);

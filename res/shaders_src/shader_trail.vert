@@ -1,21 +1,12 @@
 #version 450
 
-layout(binding = 0) uniform UniformBufferObject_Frame {
-    mat4 view;
-    mat4 proj;
-
-    // lighting
-    vec3  light_ambient;
-    vec3  light_dir;
-    vec3  light_color;
-    float light_intensity;
-} data_frame;
+#extension GL_ARB_shading_language_include : enable
+#include "../shaders_include/data_uniform.glsl"
 
 
 layout(std430, push_constant) uniform TrailData {
     float radius;
-    float viewport_half_width;
-    float viewport_half_height;
+    int offset_dir;
 } data_model;
 
 layout(location = 0) in vec3 inPosition;
@@ -34,7 +25,10 @@ void main() {
         1.0f
     );
 
-    float f = data_model.radius * ((gl_VertexIndex % 2) * 2 - 1);
+    int dir_frame = (data_frame.frame / 1);
+    int dir_vertex = (((gl_VertexIndex + dir_frame) % 2) * 2 - 1);
+    int dir = dir_vertex;
+    float f = data_model.radius * dir * data_model.offset_dir;
 
 //    // FIXME billboarded trail
 //    vec3 screen_up = vec3(0.0, 0.0, 1.0);
@@ -49,7 +43,11 @@ void main() {
     gl_Position =  data_frame.proj * data_frame.view * world_pos;
 
     fragPosition = world_pos.xyz;
-    fragColor = (gl_VertexIndex % 2) == 0 ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 1.0, 0.0);
+    fragColor = dir > 0 ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 1.0, 0.0);
     fragNormal = inNormal;
     fragTexCoord = inTexCoord;
+
+    
+    // flip UVs based on frame
+    fragTexCoord.x *= dir_frame == 0 ? 1 : -1;
 }

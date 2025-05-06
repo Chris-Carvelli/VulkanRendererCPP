@@ -49,12 +49,15 @@ namespace vkc::Assets {
 	}
 
 	struct MeshData {
+		static const uint8_t	FLAG_DYNAMIC = 0x00000001;
+
 		void*			vertex_data;
 		uint32_t		vertex_count;
 		uint32_t		vertex_data_size; // size of a single element
 		uint32_t*		index_data;
 		uint32_t		index_count;
 		// [optional]	enum for contiguous ot interlieaved vertex data storage
+		uint8_t			flags;
 	};
 
 	struct TextureData {

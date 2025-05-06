@@ -24,16 +24,22 @@ typedef struct {
 } VertexData;
 
 // TODO where to pit this? Together with vertexData?
-typedef struct {
+struct DataUniformFrame {
+    // camera
     glm::mat4 view;
     glm::mat4 proj;
 
     // lighting
     glm::vec3 light_ambient;
+    uint32_t padding_0;
     glm::vec3 light_dir;
+    uint32_t padding_1;
     glm::vec3 light_color;
     float light_intensity;
-} DataUniformFrame;
+    //uint32_t padding_2;
+    // application
+    uint32_t frame;
+};
 
 typedef struct {
     float ambient;
@@ -159,6 +165,5 @@ inline const VkVertexInputAttributeDescription* vertexDebug_getAttributeDescript
 
 struct DataUniformTrail {
     float radius;
-    float viewport_half_width;
-    float viewport_half_height;
+    int offset_dir;
 };

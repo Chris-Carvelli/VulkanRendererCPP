@@ -1,0 +1,929 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"io",
+				"stdio.h"
+			],
+			[
+				"ini",
+				"initialize_example_module"
+			],
+			[
+				"ve",
+				"vec2"
+			],
+			[
+				"jac",
+				"jacobi_rbeta"
+			],
+			[
+				"size_",
+				"size_y"
+			],
+			[
+				"gra",
+				"graze_count"
+			],
+			[
+				"DESIGN_GRA",
+				"DESIGN_GRAZE_FILTER_CUTOFF_MUL"
+			],
+			[
+				"sfx_gra",
+				"sfx_grazie_filter"
+			],
+			[
+				"GRA",
+				"DESIGN_GRAZE_MULTIPLIER"
+			],
+			[
+				"setV",
+				"setVolume"
+			],
+			[
+				"spaen",
+				"spawn_timer_start"
+			],
+			[
+				"DES",
+				"DESIGN_SPAWN_WAVES_TIMES"
+			],
+			[
+				"spawn",
+				"spawn_top"
+			],
+			[
+				"life",
+				"life_sprites"
+			],
+			[
+				"life_s",
+				"life_sprites"
+			],
+			[
+				"keya",
+				"keyboard"
+			],
+			[
+				"fun",
+				"function"
+			],
+			[
+				"scene",
+				"scene_current"
+			],
+			[
+				"sc",
+				"scene_current"
+			],
+			[
+				"particle",
+				"particles_alive"
+			],
+			[
+				"D",
+				"DESIGN_TRAIL_FREQUENCY"
+			],
+			[
+				"t",
+				"time_last_particle_spawn"
+			],
+			[
+				"time_",
+				"time_last_graze"
+			],
+			[
+				"hand",
+				"handle_collision"
+			],
+			[
+				"other",
+				"other_pos"
+			],
+			[
+				"pos",
+				"pos_y"
+			],
+			[
+				"mov",
+				"mov_dir"
+			],
+			[
+				"po",
+				"pos_y"
+			],
+			[
+				"part",
+				"particles_alive"
+			],
+			[
+				"vel",
+				"vel_y"
+			],
+			[
+				"p",
+				"pos_x"
+			],
+			[
+				"par",
+				"particle"
+			],
+			[
+				"main",
+				"main_theme_filter"
+			],
+			[
+				"player",
+				"playerSprite"
+			],
+			[
+				"pla",
+				"playerSprite"
+			],
+			[
+				"dli",
+				"DESIGN_FLICKER_FREQUENCY"
+			],
+			[
+				"time",
+				"time_last_collision"
+			],
+			[
+				"SSCA",
+				"DESIGN_BULLET_SCALE"
+			],
+			[
+				"sp",
+				"speed"
+			],
+			[
+				"bu",
+				"bullets_dead"
+			],
+			[
+				"bull",
+				"bullet_idx"
+			],
+			[
+				"ali",
+				"bullets_alive"
+			],
+			[
+				"bullets",
+				"bullets_alive"
+			],
+			[
+				"b",
+				"bullets_alive"
+			],
+			[
+				"c",
+				"waveform_current"
+			],
+			[
+				"cha",
+				"character_scale_duration"
+			],
+			[
+				"z",
+				"zoom_current"
+			],
+			[
+				"zoom",
+				"zoom_max"
+			],
+			[
+				"if",
+				"ifmain\tif __name__ == '__main__'"
+			],
+			[
+				"sa",
+				"nSampleRate"
+			],
+			[
+				"nNum",
+				"nNumSeconds"
+			],
+			[
+				"nS",
+				"nSampleRate"
+			],
+			[
+				"sub",
+				"m_szSubChunk1ID"
+			],
+			[
+				"u",
+				"uint32"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "test_debugger.sublime-project",
+			"settings":
+			{
+				"buffer_size": 252,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			},
+			"undo_stack":
+			[
+				[
+					1,
+					1,
+					"insert",
+					{
+						"characters": "\n"
+					},
+					"AwAAAEsAAAAAAAAATAAAAAAAAAAAAAAATAAAAAAAAABNAAAAAAAAAAAAAABNAAAAAAAAAE4AAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAASwAAAAAAAABLAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					2,
+					1,
+					"insert_snippet",
+					{
+						"contents": "{\n\t\"type\": \"lldb\",\n\t\"request\": \"launch\",\n\t\"name\": \"${2:Launch}\",\n\t\"program\": \"\\${folder}/${1:<program>}\",\n\t\"args\": [],\n\t\"cwd\": \"\\${folder}\"\n},"
+					},
+					"AQAAAE4AAAAAAAAA3gAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAATgAAAAAAAABOAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					3,
+					1,
+					"insert",
+					{
+						"characters": "out/build/"
+					},
+					"CwAAAKkAAAAAAAAAqgAAAAAAAAAAAAAAqgAAAAAAAACqAAAAAAAAAAkAAAA8cHJvZ3JhbT6qAAAAAAAAAKsAAAAAAAAAAAAAAKsAAAAAAAAArAAAAAAAAAAAAAAArAAAAAAAAACtAAAAAAAAAAAAAACtAAAAAAAAAK4AAAAAAAAAAAAAAK4AAAAAAAAArwAAAAAAAAAAAAAArwAAAAAAAACwAAAAAAAAAAAAAACwAAAAAAAAALEAAAAAAAAAAAAAALEAAAAAAAAAsgAAAAAAAAAAAAAAsgAAAAAAAACzAAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAqQAAAAAAAACyAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					4,
+					1,
+					"insert",
+					{
+						"characters": "x64/D"
+					},
+					"BQAAALMAAAAAAAAAtAAAAAAAAAAAAAAAtAAAAAAAAAC1AAAAAAAAAAAAAAC1AAAAAAAAALYAAAAAAAAAAAAAALYAAAAAAAAAtwAAAAAAAAAAAAAAtwAAAAAAAAC4AAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAswAAAAAAAACzAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					5,
+					1,
+					"left_delete",
+					null,
+					"AQAAALcAAAAAAAAAtwAAAAAAAAABAAAARA",
+					"AQAAAAAAAAABAAAAuAAAAAAAAAC4AAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					6,
+					1,
+					"insert",
+					{
+						"characters": "-"
+					},
+					"AQAAALcAAAAAAAAAuAAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAtwAAAAAAAAC3AAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					7,
+					2,
+					"left_delete",
+					null,
+					"AgAAALcAAAAAAAAAtwAAAAAAAAABAAAALbYAAAAAAAAAtgAAAAAAAAABAAAALw",
+					"AQAAAAAAAAABAAAAuAAAAAAAAAC4AAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					8,
+					1,
+					"insert",
+					{
+						"characters": "-Debug/"
+					},
+					"BwAAALYAAAAAAAAAtwAAAAAAAAAAAAAAtwAAAAAAAAC4AAAAAAAAAAAAAAC4AAAAAAAAALkAAAAAAAAAAAAAALkAAAAAAAAAugAAAAAAAAAAAAAAugAAAAAAAAC7AAAAAAAAAAAAAAC7AAAAAAAAALwAAAAAAAAAAAAAALwAAAAAAAAAvQAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAtgAAAAAAAAC2AAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					9,
+					1,
+					"insert",
+					{
+						"characters": "main.cpp.ex"
+					},
+					"CwAAAL0AAAAAAAAAvgAAAAAAAAAAAAAAvgAAAAAAAAC/AAAAAAAAAAAAAAC/AAAAAAAAAMAAAAAAAAAAAAAAAMAAAAAAAAAAwQAAAAAAAAAAAAAAwQAAAAAAAADCAAAAAAAAAAAAAADCAAAAAAAAAMMAAAAAAAAAAAAAAMMAAAAAAAAAxAAAAAAAAAAAAAAAxAAAAAAAAADFAAAAAAAAAAAAAADFAAAAAAAAAMYAAAAAAAAAAAAAAMYAAAAAAAAAxwAAAAAAAAAAAAAAxwAAAAAAAADIAAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAvQAAAAAAAAC9AAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					10,
+					1,
+					"insert",
+					{
+						"characters": "e"
+					},
+					"AQAAAMgAAAAAAAAAyQAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAyAAAAAAAAADIAAAAAAAAAAAAAAAAAPC/"
+				]
+			]
+		},
+		{
+			"file": "tests/main.cpp",
+			"settings":
+			{
+				"buffer_size": 14676,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			},
+			"undo_stack":
+			[
+				[
+					23,
+					1,
+					"right_delete",
+					null,
+					"AQAAAHkyAAAAAAAAeTIAAAAAAAAtAAAACiAgICAgICAgcHJpbnRmKCIlZFxuIiwgZ2V0X2N1cnJlbnRfZnJhbWUoKSk7",
+					"AQAAAAAAAAABAAAApjIAAAAAAAB5MgAAAAAAAP///////+9/"
+				]
+			]
+		},
+		{
+			"file": "src/VKRenderer.cpp",
+			"settings":
+			{
+				"buffer_size": 7079,
+				"line_ending": "Windows"
+			},
+			"undo_stack":
+			[
+			]
+		},
+		{
+			"contents": "Searching 1610 files for \"printf\"\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\ccstructs\\cc_logger.h:\n   42  \n   43      char buffer_format[MAX_LOG_CHARS] = { 0 };\n   44:     int ret0 = snprintf(buffer_format, MAX_LOG_CHARS, \"%s %s %s \\033[0m\", text_color, prefix, msg);\n   45      if (ret0 > MAX_LOG_CHARS) {\n   46          puts(\"Too many characters to write to format buffer\");\n   ..\n   49  \n   50      char buffer_text[MAX_LOG_CHARS] = { 0 };\n   51:     int ret1 = vsnprintf(buffer_text, MAX_LOG_CHARS, buffer_format, args);\n   52      if (ret1 > MAX_LOG_CHARS) {\n   53          puts(\"Too many characters to write to text buffer\");\n   ..\n   55      }\n   56  \n   57:     printf(\"%s\\n\", buffer_text);\n   58      fflush(stdout);\n   59  }\n   ..\n   98      char buffer[MAX_LOG_CHARS];\n   99      strerror_s(buffer, MAX_LOG_CHARS, errno);\n  100:     printf(\"[%d] %s\\n\", errno, buffer);\n  101  }\n  102  \n  ...\n  108          magnitude *= 1024;\n  109          if (size / (magnitude * 1024) == 0) {\n  110:             sprintf_s(buffer, 10, \"%3.2f%s\", size / (float)magnitude, suffix[i]);\n  111              return;\n  112          }\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\manual.md:\n  431  void foo()\n  432  {\n  433:     printf(\"MyStruct requires memory padding: %d bytes\\n\", sizeof(MyStruct));\n  434  }\n  435  \n  ...\n  449  void foo()\n  450  {\n  451:     printf(\"MyStruct is tightly packed: %d bytes\\n\", sizeof(MyStruct));\n  452  }\n  453  \n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\readme.md:\n  125  #### Fixes:\n  126  - Fixed SIMD detection on Clang and GCC\n  127: - Fixed build problems due to printf and std::clock_t #778\n  128  - Fixed int mod\n  129  - Anonymous unions require C++ language extensions\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\glm\\gtx\\string_cast.inl:\n   30  \t\tva_start(list, msg);\n   31  #\t\tif(GLM_COMPILER & GLM_COMPILER_VC)\n   32: \t\t\tvsprintf_s(text, STRING_BUFFER, msg, list);\n   33  #\t\telse//\n   34: \t\t\tvsprintf(text, msg, list);\n   35  #\t\tendif//\n   36  \t\tva_end(list);\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\core\\core_func_common.cpp:\n  331  \t\t\tstd::clock_t Timestamp1 = std::clock();\n  332  \n  333: \t\t\tstd::printf(\"min_tern Time %d clocks\\n\", static_cast<int>(Timestamp1 - Timestamp0));\n  334  \t\t}\n  335  \n  ...\n  344  \t\t\tstd::clock_t Timestamp1 = std::clock();\n  345  \n  346: \t\t\tstd::printf(\"min_int Time %d clocks\\n\", static_cast<int>(Timestamp1 - Timestamp0));\n  347  \t\t}\n  348  \n  ...\n 1101  \t\tstd::clock_t Timestamp6 = std::clock();\n 1102  \n 1103: \t\tstd::printf(\"sign_cmp(rand) Time %d clocks\\n\", static_cast<int>(Timestamp1 - Timestamp0));\n 1104: \t\tstd::printf(\"sign_if(rand) Time %d clocks\\n\", static_cast<int>(Timestamp2 - Timestamp1));\n 1105: \t\tstd::printf(\"sign_alu1(rand) Time %d clocks\\n\", static_cast<int>(Timestamp3 - Timestamp2));\n 1106: \t\tstd::printf(\"sign_alu2(rand) Time %d clocks\\n\", static_cast<int>(Timestamp4 - Timestamp3));\n 1107: \t\tstd::printf(\"sign_sub(rand) Time %d clocks\\n\", static_cast<int>(Timestamp5 - Timestamp4));\n 1108: \t\tstd::printf(\"glm::sign(rand) Time %d clocks\\n\", static_cast<int>(Timestamp6 - Timestamp5));\n 1109  \n 1110  \t\treturn Error;\n ....\n 1149  \t\tstd::clock_t Timestamp5 = std::clock();\n 1150  \n 1151: \t\tstd::printf(\"sign_cmp(linear) Time %d clocks\\n\", static_cast<int>(Timestamp1 - Timestamp0));\n 1152: \t\tstd::printf(\"sign_if(linear) Time %d clocks\\n\", static_cast<int>(Timestamp2 - Timestamp1));\n 1153: \t\tstd::printf(\"sign_alu1(linear) Time %d clocks\\n\", static_cast<int>(Timestamp3 - Timestamp2));\n 1154: \t\tstd::printf(\"sign_alu2(linear) Time %d clocks\\n\", static_cast<int>(Timestamp4 - Timestamp3));\n 1155: \t\tstd::printf(\"sign_sub(linear) Time %d clocks\\n\", static_cast<int>(Timestamp5 - Timestamp4));\n 1156  \n 1157  \t\treturn Error;\n ....\n 1192  \t\tstd::clock_t Timestamp5 = std::clock();\n 1193  \n 1194: \t\tstd::printf(\"Sum %d\\n\", static_cast<int>(Sum));\n 1195  \n 1196: \t\tstd::printf(\"sign_cmp(linear_cal) Time %d clocks\\n\", static_cast<int>(Timestamp1 - Timestamp0));\n 1197: \t\tstd::printf(\"sign_if(linear_cal) Time %d clocks\\n\", static_cast<int>(Timestamp2 - Timestamp1));\n 1198: \t\tstd::printf(\"sign_alu1(linear_cal) Time %d clocks\\n\", static_cast<int>(Timestamp3 - Timestamp2));\n 1199: \t\tstd::printf(\"sign_alu2(linear_cal) Time %d clocks\\n\", static_cast<int>(Timestamp4 - Timestamp3));\n 1200: \t\tstd::printf(\"sign_sub(linear_cal) Time %d clocks\\n\", static_cast<int>(Timestamp5 - Timestamp4));\n 1201  \n 1202  \t\treturn Error;\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\core\\core_func_integer.cpp:\n  481  \t\tstd::clock_t Timestamps4 = std::clock();\n  482  \n  483: \t\tstd::printf(\"glm::bitfieldReverse: %d clocks\\n\", static_cast<int>(Timestamps1 - Timestamps0));\n  484: \t\tstd::printf(\"bitfieldReverseLoop: %d clocks\\n\", static_cast<int>(Timestamps2 - Timestamps1));\n  485: \t\tstd::printf(\"bitfieldReverseUint32: %d clocks\\n\", static_cast<int>(Timestamps3 - Timestamps2));\n  486: \t\tstd::printf(\"bitfieldReverseOps: %d clocks\\n\", static_cast<int>(Timestamps4 - Timestamps3));\n  487  \n  488  \t\treturn Error;\n  ...\n  518  \t\tstd::clock_t Timestamps4 = std::clock();\n  519  \n  520: \t\tstd::printf(\"glm::bitfieldReverse - 64: %d clocks\\n\", static_cast<int>(Timestamps1 - Timestamps0));\n  521: \t\tstd::printf(\"bitfieldReverseLoop - 64: %d clocks\\n\", static_cast<int>(Timestamps2 - Timestamps1));\n  522: \t\tstd::printf(\"bitfieldReverseUint - 64: %d clocks\\n\", static_cast<int>(Timestamps3 - Timestamps2));\n  523: \t\tstd::printf(\"bitfieldReverseOps - 64: %d clocks\\n\", static_cast<int>(Timestamps4 - Timestamps3));\n  524  \n  525  \t\treturn Error;\n  ...\n  750  #\t\tendif\n  751  \n  752: \t\tstd::printf(\"glm::findMSB: %d clocks\\n\", static_cast<int>(Timestamps1 - Timestamps0));\n  753: \t\tstd::printf(\"findMSB - nlz1: %d clocks\\n\", static_cast<int>(Timestamps2 - Timestamps1));\n  754: \t\tstd::printf(\"findMSB - nlz2: %d clocks\\n\", static_cast<int>(Timestamps3 - Timestamps2));\n  755: \t\tstd::printf(\"findMSB - 0.9.5: %d clocks\\n\", static_cast<int>(Timestamps4 - Timestamps3));\n  756  \n  757  #\t\tif GLM_HAS_BITSCAN_WINDOWS\n  758: \t\t\tstd::printf(\"findMSB - intrinsics: %d clocks\\n\", static_cast<int>(Timestamps5 - Timestamps4));\n  759  #\t\tendif//GLM_HAS_BITSCAN_WINDOWS\n  760: \t\tstd::printf(\"findMSB - pop: %d clocks\\n\", static_cast<int>(Timestamps6 - Timestamps5));\n  761  \n  762  #\t\tif GLM_ARCH & GLM_ARCH_AVX && GLM_COMPILER & GLM_COMPILER_VC\n  763: \t\t\tstd::printf(\"findMSB - avx tzcnt: %d clocks\\n\", static_cast<int>(Timestamps7 - Timestamps6));\n  764  #\t\tendif//GLM_ARCH & GLM_ARCH_AVX && GLM_PLATFORM & GLM_PLATFORM_WINDOWS\n  765  \n  ...\n 1096  \t\tstd::clock_t Timestamps5 = std::clock();\n 1097  \n 1098: \t\tstd::printf(\"glm::findLSB: %d clocks\\n\", static_cast<int>(Timestamps1 - Timestamps0));\n 1099: \t\tstd::printf(\"findLSB - 0.9.5: %d clocks\\n\", static_cast<int>(Timestamps2 - Timestamps1));\n 1100  \n 1101  #\t\tif GLM_HAS_BITSCAN_WINDOWS\n 1102: \t\t\tstd::printf(\"findLSB - intrinsics: %d clocks\\n\", static_cast<int>(Timestamps3 - Timestamps2));\n 1103  #\t\tendif\n 1104  \n 1105: \t\tstd::printf(\"findLSB - ntz2: %d clocks\\n\", static_cast<int>(Timestamps4 - Timestamps3));\n 1106: \t\tstd::printf(\"findLSB - branchfree: %d clocks\\n\", static_cast<int>(Timestamps5 - Timestamps4));\n 1107  \n 1108  \t\treturn Error;\n ....\n 1495  \t\tstd::clock_t TimestampsF = std::clock();\n 1496  \n 1497: \t\tstd::printf(\"bitCount - TimeIf %d\\n\", static_cast<int>(TimestampsB - TimestampsA));\n 1498: \t\tstd::printf(\"bitCount - TimeVec %d\\n\", static_cast<int>(TimestampsC - TimestampsB));\n 1499: \t\tstd::printf(\"bitCount - TimeDefault %d\\n\", static_cast<int>(TimestampsD - TimestampsC));\n 1500: \t\tstd::printf(\"bitCount - TimeVec4 %d\\n\", static_cast<int>(TimestampsE - TimestampsD));\n 1501: \t\tstd::printf(\"bitCount - bitfield %d\\n\", static_cast<int>(TimestampsF - TimestampsE));\n 1502  \n 1503  \t\treturn Error;\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\core\\core_func_integer_bit_count.cpp:\n    8  unsigned rotatel(unsigned x, int n)\n    9  {\n   10: \tif (static_cast<unsigned>(n) > 63) {printf(\"rotatel, n out of range.\\n\"); exit(1);}\n   11  \treturn (x << n) | (x >> (32 - n));\n   12  }\n   ..\n  172  {\n  173  \terrors = errors + 1;\n  174: \tprintf(\"Error for x = %08x, got %08x\\n\", x, y);\n  175  }\n  176  \n  ...\n  200  \tTimestampEnd = std::clock();\n  201  \n  202: \tprintf(\"pop0: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  203  \n  204  \tTimestampBeg = std::clock();\n  ...\n  208  \tTimestampEnd = std::clock();\n  209  \n  210: \tprintf(\"pop1: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  211  \n  212  \tTimestampBeg = std::clock();\n  ...\n  216  \tTimestampEnd = std::clock();\n  217  \n  218: \tprintf(\"pop2: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  219  \n  220  \tTimestampBeg = std::clock();\n  ...\n  224  \tTimestampEnd = std::clock();\n  225  \n  226: \tprintf(\"pop3: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  227  \n  228  \tTimestampBeg = std::clock();\n  ...\n  232  \tTimestampEnd = std::clock();\n  233  \n  234: \tprintf(\"pop4: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  235  \n  236  \tTimestampBeg = std::clock();\n  ...\n  240  \tTimestampEnd = std::clock();\n  241  \n  242: \tprintf(\"pop5: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  243  \n  244  \tTimestampBeg = std::clock();\n  ...\n  248  \tTimestampEnd = std::clock();\n  249  \n  250: \tprintf(\"pop5a: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  251  \n  252  \tTimestampBeg = std::clock();\n  ...\n  256  \tTimestampEnd = std::clock();\n  257  \n  258: \tprintf(\"pop6: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  259  \n  260  \tTimestampBeg = std::clock();\n  ...\n  265  \tTimestampEnd = std::clock();\n  266  \n  267: \tprintf(\"pop7: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  268  \n  269  \tTimestampBeg = std::clock();\n  ...\n  274  \tTimestampEnd = std::clock();\n  275  \n  276: \tprintf(\"pop8: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  277  \n  278  \tTimestampBeg = std::clock();\n  ...\n  283  \tTimestampEnd = std::clock();\n  284  \n  285: \tprintf(\"pop9: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  286  \n  287  \tif (errors == 0)\n  288: \t\tprintf(\"Passed all %d cases.\\n\", static_cast<int>(sizeof(test)/8));\n  289  \n  290  #\tendif//NDEBUG\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\core\\core_func_integer_find_lsb.cpp:\n  243     unsigned int k;\n  244     n = n & (-n);        /* isolate lsb */\n  245:    printf(\"n = %d\\n\", n);\n  246  #if defined(SLOW_MUL)\n  247     k = (n << 11) - n;\n  ...\n  258  void error(int x, int y) {\n  259     errors = errors + 1;\n  260:    printf(\"Error for x = %08x, got %d\\n\", x, y);\n  261  }\n  262  \n  ...\n  288  \tTimestampEnd = std::clock();\n  289  \n  290: \tprintf(\"ntz1: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  291  \n  292  \tTimestampBeg = std::clock();\n  ...\n  296  \tTimestampEnd = std::clock();\n  297  \n  298: \tprintf(\"ntz2: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  299  \n  300  \tTimestampBeg = std::clock();\n  ...\n  304  \tTimestampEnd = std::clock();\n  305  \n  306: \tprintf(\"ntz3: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  307  \n  308  \tTimestampBeg = std::clock();\n  ...\n  312  \tTimestampEnd = std::clock();\n  313  \n  314: \tprintf(\"ntz4: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  315  \n  316  \tTimestampBeg = std::clock();\n  ...\n  320  \tTimestampEnd = std::clock();\n  321  \n  322: \tprintf(\"ntz4a: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  323  \n  324  \tTimestampBeg = std::clock();\n  ...\n  334  \tTimestampEnd = std::clock();\n  335  \n  336: \tprintf(\"ntz5: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  337  \n  338  \tTimestampBeg = std::clock();\n  ...\n  342  \tTimestampEnd = std::clock();\n  343  \n  344: \tprintf(\"ntz6: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  345  \n  346  \tTimestampBeg = std::clock();\n  ...\n  350  \tTimestampEnd = std::clock();\n  351  \n  352: \tprintf(\"ntz6a: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  353  \n  354  \tTimestampBeg = std::clock();\n  ...\n  358  \tTimestampEnd = std::clock();\n  359  \n  360: \tprintf(\"ntz7: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  361  \n  362  \tTimestampBeg = std::clock();\n  ...\n  366  \tTimestampEnd = std::clock();\n  367  \n  368: \tprintf(\"ntz7_christophe: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  369  \n  370  \tTimestampBeg = std::clock();\n  ...\n  374  \tTimestampEnd = std::clock();\n  375  \n  376: \tprintf(\"ntz8: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  377  \n  378  \tTimestampBeg = std::clock();\n  ...\n  382  \tTimestampEnd = std::clock();\n  383  \n  384: \tprintf(\"ntz8a: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  385  \n  386  \tTimestampBeg = std::clock();\n  ...\n  390  \tTimestampEnd = std::clock();\n  391  \n  392: \tprintf(\"ntz9: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  393  \n  394  \tTimestampBeg = std::clock();\n  ...\n  398  \tTimestampEnd = std::clock();\n  399  \n  400: \tprintf(\"ntz10: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  401  \n  402  \tif (errors == 0)\n  403: \t\tprintf(\"Passed all %d cases.\\n\", static_cast<int>(sizeof(test)/8));\n  404  \n  405  #\tendif//NDEBUG\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\core\\core_func_integer_find_msb.cpp:\n  299  {\n  300  \terrors = errors + 1;\n  301: \tprintf(\"Error for x = %08x, got %d\\n\", x, y);\n  302  }\n  303  \n  ...\n  328  \tTimestampEnd = std::clock();\n  329  \n  330: \tprintf(\"nlz1: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  331  \n  332  \tTimestampBeg = std::clock();\n  ...\n  336  \tTimestampEnd = std::clock();\n  337  \n  338: \tprintf(\"nlz1a: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  339  \n  340  \tTimestampBeg = std::clock();\n  ...\n  344  \tTimestampEnd = std::clock();\n  345  \n  346: \tprintf(\"nlz2: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  347  \n  348  \tTimestampBeg = std::clock();\n  ...\n  352  \tTimestampEnd = std::clock();\n  353  \n  354: \tprintf(\"nlz2a: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  355  \n  356  \tTimestampBeg = std::clock();\n  ...\n  360  \tTimestampEnd = std::clock();\n  361  \n  362: \tprintf(\"nlz3: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  363  \n  364  \tTimestampBeg = std::clock();\n  ...\n  368  \tTimestampEnd = std::clock();\n  369  \n  370: \tprintf(\"nlz4: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  371  \n  372  \tTimestampBeg = std::clock();\n  ...\n  376  \tTimestampEnd = std::clock();\n  377  \n  378: \tprintf(\"nlz5: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  379  \n  380  \tTimestampBeg = std::clock();\n  ...\n  384  \tTimestampEnd = std::clock();\n  385  \n  386: \tprintf(\"nlz6: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  387  \n  388  \tTimestampBeg = std::clock();\n  ...\n  392  \tTimestampEnd = std::clock();\n  393  \n  394: \tprintf(\"nlz7: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  395  \n  396  \tTimestampBeg = std::clock();\n  ...\n  400  \tTimestampEnd = std::clock();\n  401  \n  402: \tprintf(\"nlz8: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  403  \n  404  \tTimestampBeg = std::clock();\n  ...\n  408  \tTimestampEnd = std::clock();\n  409  \n  410: \tprintf(\"nlz9: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  411  \n  412  \tTimestampBeg = std::clock();\n  ...\n  416  \tTimestampEnd = std::clock();\n  417  \n  418: \tprintf(\"nlz10: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  419  \n  420  \tTimestampBeg = std::clock();\n  ...\n  424  \tTimestampEnd = std::clock();\n  425  \n  426: \tprintf(\"nlz10a: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  427  \n  428  \tTimestampBeg = std::clock();\n  ...\n  432  \tTimestampEnd = std::clock();\n  433  \n  434: \tprintf(\"nlz10b: %d clocks\\n\", static_cast<int>(TimestampEnd - TimestampBeg));\n  435  \n  436  \tif (errors == 0)\n  437: \t\tprintf(\"Passed all %d cases.\\n\", static_cast<int>(sizeof(test)/8));\n  438  \n  439  #\tendif//NDEBUG\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\core\\core_func_matrix.cpp:\n  298  \t//Ulp = glm::max(glm::float_distance(*Dst, *Src), Ulp);\n  299  \n  300: \tprintf(\"inverse<%s>(%f): %lu\\n\", Message, static_cast<double>(Diff), EndTime - StartTime);\n  301  \n  302  \treturn 0;\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\core\\core_setup_message.cpp:\n   12  \t\t{\n   13  \t\tcase GLM_COMPILER_VC12:\n   14: \t\t\tstd::printf(\"Visual C++ 12 - 2013\\n\");\n   15  \t\t\tbreak;\n   16  \t\tcase GLM_COMPILER_VC14:\n   17: \t\t\tstd::printf(\"Visual C++ 14 - 2015\\n\");\n   18  \t\t\tbreak;\n   19  \t\tcase GLM_COMPILER_VC15:\n   20: \t\t\tstd::printf(\"Visual C++ 15 - 2017\\n\");\n   21  \t\t\tbreak;\n   22  \t\tcase GLM_COMPILER_VC15_3:\n   23: \t\t\tstd::printf(\"Visual C++ 15.3 - 2017\\n\");\n   24  \t\t\tbreak;\n   25  \t\tcase GLM_COMPILER_VC15_5:\n   26: \t\t\tstd::printf(\"Visual C++ 15.5 - 2017\\n\");\n   27  \t\t\tbreak;\n   28  \t\tcase GLM_COMPILER_VC15_6:\n   29: \t\t\tstd::printf(\"Visual C++ 15.6 - 2017\\n\");\n   30  \t\t\tbreak;\n   31  \t\tcase GLM_COMPILER_VC15_7:\n   32: \t\t\tstd::printf(\"Visual C++ 15.7 - 2017\\n\");\n   33  \t\t\tbreak;\n   34  \t\tcase GLM_COMPILER_VC15_8:\n   35: \t\t\tstd::printf(\"Visual C++ 15.8 - 2017\\n\");\n   36  \t\t\tbreak;\n   37  \t\tcase GLM_COMPILER_VC15_9:\n   38: \t\t\tstd::printf(\"Visual C++ 15.9 - 2017\\n\");\n   39  \t\t\tbreak;\n   40  \t\tcase GLM_COMPILER_VC16:\n   41: \t\t\tstd::printf(\"Visual C++ 16 - 2019\\n\");\n   42  \t\t\tbreak;\n   43  \t\tdefault:\n   44: \t\t\tstd::printf(\"Visual C++ version not detected\\n\");\n   45  \t\t\tError += 1;\n   46  \t\t\tbreak;\n   ..\n   52  \t\t{\n   53  \t\tcase GLM_COMPILER_GCC46:\n   54: \t\t\tstd::printf(\"GCC 4.6\\n\");\n   55  \t\t\tbreak;\n   56  \t\tcase GLM_COMPILER_GCC47:\n   57: \t\t\tstd::printf(\"GCC 4.7\\n\");\n   58  \t\t\tbreak;\n   59  \t\tcase GLM_COMPILER_GCC48:\n   60: \t\t\tstd::printf(\"GCC 4.8\\n\");\n   61  \t\t\tbreak;\n   62  \t\tcase GLM_COMPILER_GCC49:\n   63: \t\t\tstd::printf(\"GCC 4.9\\n\");\n   64  \t\t\tbreak;\n   65  \t\tcase GLM_COMPILER_GCC5:\n   66: \t\t\tstd::printf(\"GCC 5\\n\");\n   67  \t\t\tbreak;\n   68  \t\tcase GLM_COMPILER_GCC6:\n   69: \t\t\tstd::printf(\"GCC 6\\n\");\n   70  \t\t\tbreak;\n   71  \t\tcase GLM_COMPILER_GCC7:\n   72: \t\t\tstd::printf(\"GCC 7\\n\");\n   73  \t\t\tbreak;\n   74  \t\tcase GLM_COMPILER_GCC8:\n   75: \t\t\tstd::printf(\"GCC 8\\n\");\n   76  \t\t\tbreak;\n   77  \t\tdefault:\n   78: \t\t\tstd::printf(\"GCC version not detected\\n\");\n   79  \t\t\tError += 1;\n   80  \t\t\tbreak;\n   ..\n   83  \telse if(GLM_COMPILER & GLM_COMPILER_CUDA)\n   84  \t{\n   85: \t\tstd::printf(\"CUDA\\n\");\n   86  \t}\n   87  \telse if(GLM_COMPILER & GLM_COMPILER_CLANG)\n   ..\n   90  \t\t{\n   91  \t\tcase GLM_COMPILER_CLANG34:\n   92: \t\t\tstd::printf(\"Clang 3.4\\n\");\n   93  \t\t\tbreak;\n   94  \t\tcase GLM_COMPILER_CLANG35:\n   95: \t\t\tstd::printf(\"Clang 3.5\\n\");\n   96  \t\t\tbreak;\n   97  \t\tcase GLM_COMPILER_CLANG36:\n   98: \t\t\tstd::printf(\"Clang 3.6\\n\");\n   99  \t\t\tbreak;\n  100  \t\tcase GLM_COMPILER_CLANG37:\n  101: \t\t\tstd::printf(\"Clang 3.7\\n\");\n  102  \t\t\tbreak;\n  103  \t\tcase GLM_COMPILER_CLANG38:\n  104: \t\t\tstd::printf(\"Clang 3.8\\n\");\n  105  \t\t\tbreak;\n  106  \t\tcase GLM_COMPILER_CLANG39:\n  107: \t\t\tstd::printf(\"Clang 3.9\\n\");\n  108  \t\t\tbreak;\n  109  \t\tcase GLM_COMPILER_CLANG40:\n  110: \t\t\tstd::printf(\"Clang 4.0\\n\");\n  111  \t\t\tbreak;\n  112  \t\tcase GLM_COMPILER_CLANG41:\n  113: \t\t\tstd::printf(\"Clang 4.1\\n\");\n  114  \t\t\tbreak;\n  115  \t\tcase GLM_COMPILER_CLANG42:\n  116: \t\t\tstd::printf(\"Clang 4.2\\n\");\n  117  \t\t\tbreak;\n  118  \t\tdefault:\n  119: \t\t\tstd::printf(\"LLVM version not detected\\n\");\n  120  \t\t\tbreak;\n  121  \t\t}\n  ...\n  126  \t\t{\n  127  \t\tcase GLM_COMPILER_INTEL14:\n  128: \t\t\tstd::printf(\"ICC 14 - 2013 SP1\\n\");\n  129  \t\t\tbreak;\n  130  \t\tcase GLM_COMPILER_INTEL15:\n  131: \t\t\tstd::printf(\"ICC 15 - 2015\\n\");\n  132  \t\t\tbreak;\n  133  \t\tcase GLM_COMPILER_INTEL16:\n  134: \t\t\tstd::printf(\"ICC 16 - 2017\\n\");\n  135  \t\t\tbreak;\n  136  \t\tcase GLM_COMPILER_INTEL17:\n  137: \t\t\tstd::printf(\"ICC 17 - 20XX\\n\");\n  138  \t\t\tbreak;\n  139  \t\tdefault:\n  140: \t\t\tstd::printf(\"Intel compiler version not detected\\n\");\n  141  \t\t\tError += 1;\n  142  \t\t\tbreak;\n  ...\n  145  \telse\n  146  \t{\n  147: \t\tstd::printf(\"Undetected compiler\\n\");\n  148  \t\tError += 1;\n  149  \t}\n  ...\n  159  \t\n  160  \tif(GLM_MODEL == GLM_MODEL_32)\n  161: \t\tstd::printf(\"GLM_MODEL_32\\n\");\n  162  \telse if(GLM_MODEL == GLM_MODEL_64)\n  163: \t\tstd::printf(\"GLM_MODEL_64\\n\");\n  164  \t\n  165  \treturn Error;\n  ...\n  170  \tint Error = 0;\n  171  \n  172: \tstd::printf(\"GLM_ARCH: \");\n  173  \n  174  \tif(GLM_ARCH & GLM_ARCH_ARM_BIT)\n  175: \t\tstd::printf(\"ARM \");\n  176  \tif(GLM_ARCH & GLM_ARCH_NEON_BIT)\n  177: \t\tstd::printf(\"NEON \");\n  178  \tif(GLM_ARCH & GLM_ARCH_AVX2)\n  179: \t\tstd::printf(\"AVX2 \");\n  180  \tif(GLM_ARCH & GLM_ARCH_AVX)\n  181: \t\tstd::printf(\"AVX \");\n  182  \tif(GLM_ARCH & GLM_ARCH_SSE42_BIT)\n  183: \t\tstd::printf(\"SSE4.2 \");\n  184  \tif(GLM_ARCH & GLM_ARCH_SSE41_BIT)\n  185: \t\tstd::printf(\"SSE4.1 \");\n  186  \tif(GLM_ARCH & GLM_ARCH_SSSE3_BIT)\n  187: \t\tstd::printf(\"SSSE3 \");\n  188  \tif(GLM_ARCH & GLM_ARCH_SSE3_BIT)\n  189: \t\tstd::printf(\"SSE3 \");\n  190  \tif(GLM_ARCH & GLM_ARCH_SSE2_BIT)\n  191: \t\tstd::printf(\"SSE2 \");\n  192  \n  193: \tstd::printf(\"\\n\");\n  194  \n  195  \treturn Error;\n  ...\n  198  int test_cpp_version()\n  199  {\n  200: \tstd::printf(\"__cplusplus: %d\\n\", static_cast<int>(__cplusplus));\n  201  \t\n  202  \treturn 0;\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\core\\core_type_vec4.cpp:\n  638  \tstd::clock_t EndTime = std::clock();\n  639  \n  640: \tstd::printf(\"AoS: %d\\n\", static_cast<int>(EndTime - StartTime));\n  641  \n  642  \treturn Error;\n  ...\n  677  \tstd::clock_t EndTime = std::clock();\n  678  \n  679: \tstd::printf(\"SoA: %d\\n\", static_cast<int>(EndTime - StartTime));\n  680  \n  681  \treturn Error;\n  ...\n  800  \t\tglm::ivec4 const g2 = *reinterpret_cast<glm::ivec4 const* const>(&f2);\n  801  \n  802: \t\tprintf(\"GNI\\n\");\n  803  \t}\n  804  \n  ...\n  820  \t\tglm::uvec4 const g2 = *reinterpret_cast<glm::uvec4 const* const>(&f2);\n  821  \n  822: \t\tprintf(\"GNI\\n\");\n  823  \t}\n  824  */\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\gtc\\gtc_bitfield.cpp:\n  104  \t\tstd::clock_t TimeHalf = Timestamp6 - Timestamp5;\n  105  \n  106: \t\tprintf(\"mask[mix]: %d\\n\", static_cast<unsigned int>(TimeMix));\n  107: \t\tprintf(\"mask[loop]: %d\\n\", static_cast<unsigned int>(TimeLoop));\n  108: \t\tprintf(\"mask[default]: %d\\n\", static_cast<unsigned int>(TimeDefault));\n  109: \t\tprintf(\"mask[zero]: %d\\n\", static_cast<unsigned int>(TimeZero));\n  110: \t\tprintf(\"mask[half]: %d\\n\", static_cast<unsigned int>(TimeHalf));\n  111  \n  112  \t\treturn TimeDefault < TimeLoop ? 0 : 1;\n  ...\n  542  \t\t\tstd::clock_t Time = std::clock() - LastTime;\n  543  \n  544: \t\t\tstd::printf(\"glm::bitfieldInterleave Time %d clocks\\n\", static_cast<int>(Time));\n  545  \t\t}\n  546  \n  ...\n  553  \t\t\tstd::clock_t Time = std::clock() - LastTime;\n  554  \n  555: \t\t\tstd::printf(\"fastBitfieldInterleave Time %d clocks\\n\", static_cast<int>(Time));\n  556  \t\t}\n  557  /*\n  ...\n  564  \t\t\tstd::clock_t Time = std::clock() - LastTime;\n  565  \n  566: \t\t\tstd::printf(\"loopBitfieldInterleave Time %d clocks\\n\", static_cast<int>(Time));\n  567  \t\t}\n  568  */\n  ...\n  575  \t\t\tstd::clock_t Time = std::clock() - LastTime;\n  576  \n  577: \t\t\tstd::printf(\"interleaveBitfieldInterleave Time %d clocks\\n\", static_cast<int>(Time));\n  578  \t\t}\n  579  \n  ...\n  587  \t\t\tstd::clock_t Time = std::clock() - LastTime;\n  588  \n  589: \t\t\tstd::printf(\"sseBitfieldInterleave Time %d clocks\\n\", static_cast<int>(Time));\n  590  \t\t}\n  591  \n  ...\n  598  \t\t\tstd::clock_t Time = std::clock() - LastTime;\n  599  \n  600: \t\t\tstd::printf(\"sseUnalignedBitfieldInterleave Time %d clocks\\n\", static_cast<int>(Time));\n  601  \t\t}\n  602  #\t\tendif//GLM_ARCH & GLM_ARCH_SSE2_BIT\n  ...\n  610  \t\t\tstd::clock_t Time = std::clock() - LastTime;\n  611  \n  612: \t\t\tstd::printf(\"glm::detail::bitfieldInterleave Time %d clocks\\n\", static_cast<int>(Time));\n  613  \t\t}\n  614  \n  ...\n  630  \t\t\tstd::clock_t Time = std::clock() - LastTime;\n  631  \n  632: \t\t\tstd::printf(\"_mm_bit_interleave_si128 Time %d clocks\\n\", static_cast<int>(Time));\n  633  \t\t}\n  634  #\t\tendif//GLM_ARCH & GLM_ARCH_SSE2_BIT\n  ...\n  764  \t\tconst std::clock_t EndTime = std::clock();\n  765  \n  766: \t\tstd::printf(\"glm::bitfieldInterleave<u8vec2> Time %d clocks\\n\", static_cast<int>(EndTime - BeginTime));\n  767  \n  768  \t\treturn Error;\n  ...\n  782  \t\tconst std::clock_t EndTime = std::clock();\n  783  \n  784: \t\tstd::printf(\"bitfieldInterleave_u8vec2 Time %d clocks\\n\", static_cast<int>(EndTime - BeginTime));\n  785  \n  786  \t\treturn Error;\n  ...\n  800  \t\tconst std::clock_t EndTime = std::clock();\n  801  \n  802: \t\tstd::printf(\"glm::bitfieldInterleave<u8vec4> Time %d clocks\\n\", static_cast<int>(EndTime - BeginTime));\n  803  \n  804  \t\treturn Error;\n  ...\n  818  \t\tconst std::clock_t EndTime = std::clock();\n  819  \n  820: \t\tstd::printf(\"bitfieldInterleave_u8vec4 Time %d clocks\\n\", static_cast<int>(EndTime - BeginTime));\n  821  \n  822  \t\treturn Error;\n  ...\n  836  \t\tconst std::clock_t EndTime = std::clock();\n  837  \n  838: \t\tstd::printf(\"glm::bitfieldInterleave<u16vec2> Time %d clocks\\n\", static_cast<int>(EndTime - BeginTime));\n  839  \n  840  \t\treturn Error;\n  ...\n  854  \t\tconst std::clock_t EndTime = std::clock();\n  855  \n  856: \t\tstd::printf(\"bitfieldInterleave_u16vec2 Time %d clocks\\n\", static_cast<int>(EndTime - BeginTime));\n  857  \n  858  \t\treturn Error;\n  ...\n  863  \t\tint Error = 0;\n  864  \n  865: \t\tstd::printf(\"bitfieldInterleave perf: init\\r\");\n  866  \n  867  \t\tstd::vector<glm::uint16> Result_u8vec2(256 * 256, 0);\n  ...\n  889  \t\tError += perf_new_u16vec2(Result_u16vec2);\n  890  \n  891: \t\tstd::printf(\"bitfieldInterleave perf: %d Errors\\n\", Error);\n  892  \n  893  \t\treturn Error;\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\gtc\\gtc_integer.cpp:\n   69  \t\t\tstd::clock_t End = clock();\n   70  \n   71: \t\t\tprintf(\"glm::log2<int>: %d clocks\\n\", static_cast<int>(End - Begin));\n   72  \t\t}\n   73  \n   ..\n   83  \t\t\tstd::clock_t End = clock();\n   84  \n   85: \t\t\tprintf(\"glm::log2<ivec4>: %d clocks\\n\", static_cast<int>(End - Begin));\n   86  \t\t}\n   87  \n   ..\n  105  \t\t\tstd::clock_t End = clock();\n  106  \n  107: \t\t\tprintf(\"glm::log2<ivec4> inlined: %d clocks\\n\", static_cast<int>(End - Begin));\n  108  \t\t}\n  109  \n  ...\n  125  \t\t\tstd::clock_t End = clock();\n  126  \n  127: \t\t\tprintf(\"glm::log2<ivec4> inlined no cast: %d clocks\\n\", static_cast<int>(End - Begin));\n  128  \t\t}\n  129  \n  ...\n  145  \t\t\tstd::clock_t End = clock();\n  146  \n  147: \t\t\tprintf(\"glm::log2<ivec4> reinterpret: %d clocks\\n\", static_cast<int>(End - Begin));\n  148  \t\t}\n  149  #\t\tendif//GLM_HAS_BITSCAN_WINDOWS\n  ...\n  160  \t\t\tstd::clock_t End = clock();\n  161  \n  162: \t\t\tprintf(\"glm::log2<float>: %d clocks\\n\", static_cast<int>(End - Begin));\n  163  \t\t}\n  164  \n  ...\n  174  \t\t\tstd::clock_t End = clock();\n  175  \n  176: \t\t\tprintf(\"glm::log2<vec4>: %d clocks\\n\", static_cast<int>(End - Begin));\n  177  \t\t}\n  178  \n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\gtc\\gtc_packing.cpp:\n   16  \tuif.f = s;\n   17  \n   18: \tprintf(\"f32: \");\n   19  \tfor(std::size_t j = sizeof(s) * 8; j > 0; --j)\n   20  \t{\n   21  \t\tif(j == 23 || j == 31)\n   22: \t\t\tprintf(\" \");\n   23: \t\tprintf(\"%d\", (uif.i & (1 << (j - 1))) ? 1 : 0);\n   24  \t}\n   25  }\n   ..\n   27  void print_10bits(glm::uint const& s)\n   28  {\n   29: \tprintf(\"10b: \");\n   30  \tfor(std::size_t j = 10; j > 0; --j)\n   31  \t{\n   32  \t\tif(j == 5)\n   33: \t\t\tprintf(\" \");\n   34: \t\tprintf(\"%d\", (s & (1 << (j - 1))) ? 1 : 0);\n   35  \t}\n   36  }\n   ..\n   38  void print_11bits(glm::uint const& s)\n   39  {\n   40: \tprintf(\"11b: \");\n   41  \tfor(std::size_t j = 11; j > 0; --j)\n   42  \t{\n   43  \t\tif(j == 6)\n   44: \t\t\tprintf(\" \");\n   45: \t\tprintf(\"%d\", (s & (1 << (j - 1))) ? 1 : 0);\n   46  \t}\n   47  }\n   ..\n   49  void print_value(float const& s)\n   50  {\n   51: \tprintf(\"%2.5f, \", static_cast<double>(s));\n   52  \tprint_bits(s);\n   53: \tprintf(\", \");\n   54  //\tprint_11bits(detail::floatTo11bit(s));\n   55: //\tprintf(\", \");\n   56  //\tprint_10bits(detail::floatTo10bit(s));\n   57: \tprintf(\"\\n\");\n   58  }\n   59  \n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\gtc\\gtc_round.cpp:\n  248  \t\tstd::clock_t Timestramp2 = std::clock();\n  249  \n  250: \t\tstd::printf(\"ceilPowerOfTwo_loop: %d clocks\\n\", static_cast<int>(Timestramp1 - Timestramp0));\n  251: \t\tstd::printf(\"glm::ceilPowerOfTwo: %d clocks\\n\", static_cast<int>(Timestramp2 - Timestramp1));\n  252  \n  253  \t\treturn Error;\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\gtx\\gtx_euler_angle.cpp:\n  359  \t\trotationDumb = glm::rotate(rotationDumb, third, glm::fvec3(0,0,1));\n  360  \n  361: \t\tstd::printf(\"%s\\n\", glm::to_string(glm::fmat3(rotationEuler)).c_str());\n  362: \t\tstd::printf(\"%s\\n\", glm::to_string(glm::fmat3(rotationDumb)).c_str());\n  363: \t\tstd::printf(\"%s\\n\", glm::to_string(glm::fmat3(rotationInvertedY)).c_str());\n  364  \n  365: \t\tstd::printf(\"\\nRESIDUAL\\n\");\n  366: \t\tstd::printf(\"%s\\n\", glm::to_string(glm::fmat3(rotationEuler-(rotationDumb))).c_str());\n  367: \t\tstd::printf(\"%s\\n\", glm::to_string(glm::fmat3(rotationEuler-(rotationInvertedY))).c_str());\n  368  \n  369  \t\treturn 0;\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\gtx\\gtx_fast_trigonometry.cpp:\n   32  \t\tconst std::clock_t time_fast = timestamp2 - timestamp1;\n   33  \t\tconst std::clock_t time_default = timestamp3 - timestamp2;\n   34: \t\tstd::printf(\"fastCos Time %d clocks\\n\", static_cast<int>(time_fast));\n   35: \t\tstd::printf(\"cos Time %d clocks\\n\", static_cast<int>(time_default));\n   36  \n   37  \t\treturn time_fast <= time_default ? 0 : 1;\n   ..\n   66  \t\tconst std::clock_t time_fast = timestamp2 - timestamp1;\n   67  \t\tconst std::clock_t time_default = timestamp3 - timestamp2;\n   68: \t\tstd::printf(\"fastSin Time %d clocks\\n\", static_cast<int>(time_fast));\n   69: \t\tstd::printf(\"sin Time %d clocks\\n\", static_cast<int>(time_default));\n   70  \n   71  \t\treturn time_fast <= time_default ? 0 : 1;\n   ..\n   92  \t\tconst std::clock_t time_fast = timestamp2 - timestamp1;\n   93  \t\tconst std::clock_t time_default = timestamp3 - timestamp2;\n   94: \t\tstd::printf(\"fastTan Time %d clocks\\n\", static_cast<int>(time_fast));\n   95: \t\tstd::printf(\"tan Time %d clocks\\n\", static_cast<int>(time_default));\n   96  \n   97  \t\treturn time_fast <= time_default ? 0 : 1;\n   ..\n  119  \t\tconst std::clock_t time_default = timestamp3 - timestamp2;\n  120  \n  121: \t\tstd::printf(\"fastAcos Time %d clocks\\n\", static_cast<int>(time_fast));\n  122: \t\tstd::printf(\"acos Time %d clocks\\n\", static_cast<int>(time_default));\n  123  \n  124  \t\treturn time_fast <= time_default ? 0 : 1;\n  ...\n  142  \t\tconst std::clock_t time_fast = timestamp2 - timestamp1;\n  143  \t\tconst std::clock_t time_default = timestamp3 - timestamp2;\n  144: \t\tstd::printf(\"fastAsin Time %d clocks\\n\", static_cast<int>(time_fast));\n  145: \t\tstd::printf(\"asin Time %d clocks\\n\", static_cast<int>(time_default));\n  146  \n  147  \t\treturn time_fast <= time_default ? 0 : 1;\n  ...\n  165  \t\tconst std::clock_t time_fast = timestamp2 - timestamp1;\n  166  \t\tconst std::clock_t time_default = timestamp3 - timestamp2;\n  167: \t\tstd::printf(\"fastAtan Time %d clocks\\n\", static_cast<int>(time_fast));\n  168: \t\tstd::printf(\"atan Time %d clocks\\n\", static_cast<int>(time_default));\n  169  \n  170  \t\treturn time_fast <= time_default ? 0 : 1;\n  ...\n  248  \t\tstd::clock_t const TimeStampEnd = std::clock();\n  249  \n  250: \t\tstd::printf(\"fastCosNew %d clocks\\n\", static_cast<int>(TimeStampEnd - TimeStampBegin));\n  251  \n  252  \t\tint Error = 0;\n  ...\n  289  \t\tstd::clock_t const TimeStampEnd = std::clock();\n  290  \n  291: \t\tstd::printf(\"fastCosDeterminisctic %d clocks\\n\", static_cast<int>(TimeStampEnd - TimeStampBegin));\n  292  \n  293  \t\tint Error = 0;\n  ...\n  336  \t\tstd::clock_t const TimeStampEnd = std::clock();\n  337  \n  338: \t\tstd::printf(\"fastCosRef %d clocks\\n\", static_cast<int>(TimeStampEnd - TimeStampBegin));\n  339  \n  340  \t\tint Error = 0;\n  ...\n  358  \t\tstd::clock_t const TimeStampEnd = std::clock();\n  359  \n  360: \t\tstd::printf(\"fastCosOld %d clocks\\n\", static_cast<int>(TimeStampEnd - TimeStampBegin));\n  361  \n  362  \t\tint Error = 0;\n  ...\n  380  \t\tstd::clock_t const TimeStampEnd = std::clock();\n  381  \n  382: \t\tstd::printf(\"cos %d clocks\\n\", static_cast<int>(TimeStampEnd - TimeStampBegin));\n  383  \n  384  \t\tint Error = 0;\n  ...\n  475  \t\tstd::clock_t const TimeStampEnd = std::clock();\n  476  \n  477: \t\tstd::printf(\"taylorCosA %d clocks\\n\", static_cast<int>(TimeStampEnd - TimeStampBegin));\n  478  \n  479  \t\tint Error = 0;\n  ...\n  497  \t\tstd::clock_t const TimeStampEnd = std::clock();\n  498  \n  499: \t\tstd::printf(\"taylorCosB %d clocks\\n\", static_cast<int>(TimeStampEnd - TimeStampBegin));\n  500  \n  501  \t\tint Error = 0;\n  ...\n  519  \t\tstd::clock_t const TimeStampEnd = std::clock();\n  520  \n  521: \t\tstd::printf(\"taylorCosC %d clocks\\n\", static_cast<int>(TimeStampEnd - TimeStampBegin));\n  522  \n  523  \t\tint Error = 0;\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\gtx\\gtx_integer.cpp:\n   34  \t\tassert(!Error);\n   35  \n   36: \t\tprintf(\"Log2(%d) error A=%d, B=%d\\n\", 1 << i, A, B);\n   37  \t}\n   38  \n   39: \tprintf(\"log2 error=%d\\n\", Error);\n   40  \n   41  \treturn Error;\n   ..\n   48  \tfor(glm::uint i = 1; i < glm::uint(33); ++i)\n   49  \t\tError += glm::nlz(i) == glm::uint(31u) - glm::findMSB(i) ? 0 : 1;\n   50: \t\t//printf(\"%d, %d\\n\", glm::nlz(i), 31u - glm::findMSB(i));\n   51  \n   52  \treturn Error;\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\gtx\\gtx_simd_mat4.cpp:\n   52  \n   53  \tstd::clock_t TimeEnd = clock();\n   54: \tprintf(\"Det A: %ld\\n\", TimeEnd - TimeStart);\n   55  \n   56  \treturn Test;\n   ..\n   73  \n   74  \tstd::clock_t TimeEnd = clock();\n   75: \tprintf(\"Det B: %ld\\n\", TimeEnd - TimeStart);\n   76  \n   77  \treturn Test;\n   ..\n   94  \n   95  \tstd::clock_t TimeEnd = clock();\n   96: \tprintf(\"Det C: %ld\\n\", TimeEnd - TimeStart);\n   97  \n   98  \treturn Test;\n   ..\n  115  \n  116  \tstd::clock_t TimeEnd = clock();\n  117: \tprintf(\"Det D: %ld\\n\", TimeEnd - TimeStart);\n  118  \n  119  \treturn Test;\n  ...\n  133  \n  134  \tstd::clock_t TimeEnd = clock();\n  135: \tprintf(\"Inv A: %ld\\n\", TimeEnd - TimeStart);\n  136  }\n  137  \n  ...\n  153  \n  154  \tstd::clock_t TimeEnd = clock();\n  155: \tprintf(\"Inv C: %ld\\n\", TimeEnd - TimeStart);\n  156  }\n  157  \n  ...\n  173  \n  174  \tstd::clock_t TimeEnd = clock();\n  175: \tprintf(\"Inv D: %ld\\n\", TimeEnd - TimeStart);\n  176  }\n  177  \n  ...\n  189  \n  190  \tstd::clock_t TimeEnd = clock();\n  191: \tprintf(\"Mul A: %ld\\n\", TimeEnd - TimeStart);\n  192  }\n  193  \n  ...\n  209  \n  210  \tstd::clock_t TimeEnd = clock();\n  211: \tprintf(\"Mul D: %ld\\n\", TimeEnd - TimeStart);\n  212  }\n  213  \n  ...\n  248  \n  249  \tstd::clock_t TimeEnd = clock();\n  250: \tprintf(\"test_compute_gtx: %ld\\n\", TimeEnd - TimeStart);\n  251  \n  252  \treturn 0;\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\gtx\\gtx_simd_vec4.cpp:\n   46  \t//glm::vec4 G1(E1);\n   47  \n   48: \t//printf(\"A1(%2.3f, %2.3f, %2.3f, %2.3f)\\n\", A1.x, A1.y, A1.z, A1.w);\n   49: \t//printf(\"B1(%2.3f, %2.3f, %2.3f, %2.3f)\\n\", B1.x, B1.y, B1.z, B1.w);\n   50: \t//printf(\"C1(%2.3f, %2.3f, %2.3f, %2.3f)\\n\", C1.x, C1.y, C1.z, C1.w);\n   51: \t//printf(\"D1(%2.3f, %2.3f, %2.3f, %2.3f)\\n\", D1.x, D1.y, D1.z, D1.w);\n   52  \n   53  \t__m128 value = _mm_set1_ps(0.0f);\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\gtx\\gtx_type_aligned.cpp:\n   18  \t\t};\n   19  \n   20: \t\tprintf(\"vec4 - Aligned: %d, unaligned: %d\\n\", static_cast<int>(sizeof(S1)), static_cast<int>(sizeof(S2)));\n   21  \n   22  \t\tError += sizeof(S1) >= sizeof(S2) ? 0 : 1;\n   ..\n   36  \t\t};\n   37  \n   38: \t\tprintf(\"vec3 - Aligned: %d, unaligned: %d\\n\", static_cast<int>(sizeof(S1)), static_cast<int>(sizeof(S2)));\n   39  \n   40  \t\tError += sizeof(S1) <= sizeof(S2) ? 0 : 1;\n   ..\n   54  \t\t};\n   55  \n   56: \t\tprintf(\"vec4 - Aligned: %d, unaligned: %d\\n\", static_cast<int>(sizeof(S1)), static_cast<int>(sizeof(S2)));\n   57  \n   58  \t\tError += sizeof(S1) >= sizeof(S2) ? 0 : 1;\n   ..\n   72  \t\t};\n   73  \n   74: \t\tprintf(\"dvec4 - Aligned: %d, unaligned: %d\\n\", static_cast<int>(sizeof(S1)), static_cast<int>(sizeof(S2)));\n   75  \n   76  \t\tError += sizeof(S1) >= sizeof(S2) ? 0 : 1;\n   ..\n   83  void print(genType const& Mat0)\n   84  {\n   85: \tprintf(\"mat4(\\n\");\n   86: \tprintf(\"\\tvec4(%2.9f, %2.9f, %2.9f, %2.9f)\\n\", static_cast<double>(Mat0[0][0]), static_cast<double>(Mat0[0][1]), static_cast<double>(Mat0[0][2]), static_cast<double>(Mat0[0][3]));\n   87: \tprintf(\"\\tvec4(%2.9f, %2.9f, %2.9f, %2.9f)\\n\", static_cast<double>(Mat0[1][0]), static_cast<double>(Mat0[1][1]), static_cast<double>(Mat0[1][2]), static_cast<double>(Mat0[1][3]));\n   88: \tprintf(\"\\tvec4(%2.9f, %2.9f, %2.9f, %2.9f)\\n\", static_cast<double>(Mat0[2][0]), static_cast<double>(Mat0[2][1]), static_cast<double>(Mat0[2][2]), static_cast<double>(Mat0[2][3]));\n   89: \tprintf(\"\\tvec4(%2.9f, %2.9f, %2.9f, %2.9f))\\n\\n\", static_cast<double>(Mat0[3][0]), static_cast<double>(Mat0[3][1]), static_cast<double>(Mat0[3][2]), static_cast<double>(Mat0[3][3]));\n   90  }\n   91  \n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\perf\\perf_matrix_div.cpp:\n   47  \n   48  \tstd::vector<packedMatType> SISD;\n   49: \tprintf(\"- SISD: %d us\\n\", launch_mat_div_mat<packedMatType>(SISD, Transform, Scale, Samples));\n   50  \n   51  \tstd::vector<alignedMatType> SIMD;\n   52: \tprintf(\"- SIMD: %d us\\n\", launch_mat_div_mat<alignedMatType>(SIMD, Transform, Scale, Samples));\n   53  \n   54  \tfor(std::size_t i = 0; i < Samples; ++i)\n   ..\n   74  \n   75  \tstd::vector<packedMatType> SISD;\n   76: \tprintf(\"- SISD: %d us\\n\", launch_mat_div_mat<packedMatType>(SISD, Transform, Scale, Samples));\n   77  \n   78  \tstd::vector<alignedMatType> SIMD;\n   79: \tprintf(\"- SIMD: %d us\\n\", launch_mat_div_mat<alignedMatType>(SIMD, Transform, Scale, Samples));\n   80  \n   81  \tfor(std::size_t i = 0; i < Samples; ++i)\n   ..\n  101  \n  102  \tstd::vector<packedMatType> SISD;\n  103: \tprintf(\"- SISD: %d us\\n\", launch_mat_div_mat<packedMatType>(SISD, Transform, Scale, Samples));\n  104  \n  105  \tstd::vector<alignedMatType> SIMD;\n  106: \tprintf(\"- SIMD: %d us\\n\", launch_mat_div_mat<alignedMatType>(SIMD, Transform, Scale, Samples));\n  107  \n  108  \tfor(std::size_t i = 0; i < Samples; ++i)\n  ...\n  123  \tint Error = 0;\n  124  \n  125: \tprintf(\"mat2 / mat2:\\n\");\n  126  \tError += comp_mat2_div_mat2<glm::mat2, glm::aligned_mat2>(Samples);\n  127  \t\n  128: \tprintf(\"dmat2 / dmat2:\\n\");\n  129  \tError += comp_mat2_div_mat2<glm::dmat2, glm::aligned_dmat2>(Samples);\n  130  \n  131: \tprintf(\"mat3 / mat3:\\n\");\n  132  \tError += comp_mat3_div_mat3<glm::mat3, glm::aligned_mat3>(Samples);\n  133  \t\n  134: \tprintf(\"dmat3 / dmat3:\\n\");\n  135  \tError += comp_mat3_div_mat3<glm::dmat3, glm::aligned_dmat3>(Samples);\n  136  \n  137: \tprintf(\"mat4 / mat4:\\n\");\n  138  \tError += comp_mat4_div_mat4<glm::mat4, glm::aligned_mat4>(Samples);\n  139  \t\n  140: \tprintf(\"dmat4 / dmat4:\\n\");\n  141  \tError += comp_mat4_div_mat4<glm::dmat4, glm::aligned_dmat4>(Samples);\n  142  \n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\perf\\perf_matrix_inverse.cpp:\n   46  \n   47  \tstd::vector<packedMatType> SISD;\n   48: \tprintf(\"- SISD: %d us\\n\", launch_mat_inverse<packedMatType>(SISD, Scale, Samples));\n   49  \n   50  \tstd::vector<alignedMatType> SIMD;\n   51: \tprintf(\"- SIMD: %d us\\n\", launch_mat_inverse<alignedMatType>(SIMD, Scale, Samples));\n   52  \n   53  \tfor(std::size_t i = 0; i < Samples; ++i)\n   ..\n   72  \n   73  \tstd::vector<packedMatType> SISD;\n   74: \tprintf(\"- SISD: %d us\\n\", launch_mat_inverse<packedMatType>(SISD, Scale, Samples));\n   75  \n   76  \tstd::vector<alignedMatType> SIMD;\n   77: \tprintf(\"- SIMD: %d us\\n\", launch_mat_inverse<alignedMatType>(SIMD, Scale, Samples));\n   78  \n   79  \tfor(std::size_t i = 0; i < Samples; ++i)\n   ..\n   98  \n   99  \tstd::vector<packedMatType> SISD;\n  100: \tprintf(\"- SISD: %d us\\n\", launch_mat_inverse<packedMatType>(SISD, Scale, Samples));\n  101  \n  102  \tstd::vector<alignedMatType> SIMD;\n  103: \tprintf(\"- SIMD: %d us\\n\", launch_mat_inverse<alignedMatType>(SIMD, Scale, Samples));\n  104  \n  105  \tfor(std::size_t i = 0; i < Samples; ++i)\n  ...\n  120  \tint Error = 0;\n  121  \n  122: \tprintf(\"glm::inverse(mat2):\\n\");\n  123  \tError += comp_mat2_inverse<glm::mat2, glm::aligned_mat2>(Samples);\n  124  \t\n  125: \tprintf(\"glm::inverse(dmat2):\\n\");\n  126  \tError += comp_mat2_inverse<glm::dmat2, glm::aligned_dmat2>(Samples);\n  127  \n  128: \tprintf(\"glm::inverse(mat3):\\n\");\n  129  \tError += comp_mat3_inverse<glm::mat3, glm::aligned_mat3>(Samples);\n  130  \t\n  131: \tprintf(\"glm::inverse(dmat3):\\n\");\n  132  \tError += comp_mat3_inverse<glm::dmat3, glm::aligned_dmat3>(Samples);\n  133  \n  134: \tprintf(\"glm::inverse(mat4):\\n\");\n  135  \tError += comp_mat4_inverse<glm::mat4, glm::aligned_mat4>(Samples);\n  136  \t\n  137: \tprintf(\"glm::inverse(dmat4):\\n\");\n  138  \tError += comp_mat4_inverse<glm::dmat4, glm::aligned_dmat4>(Samples);\n  139  \n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\perf\\perf_matrix_mul.cpp:\n   51  \n   52  \tstd::vector<packedMatType> SISD;\n   53: \tprintf(\"- SISD: %d us\\n\", launch_mat_mul_mat<packedMatType>(SISD, Transform, Scale, Samples));\n   54  \n   55  \tstd::vector<alignedMatType> SIMD;\n   56: \tprintf(\"- SIMD: %d us\\n\", launch_mat_mul_mat<alignedMatType>(SIMD, Transform, Scale, Samples));\n   57  \n   58  \tfor(std::size_t i = 0; i < Samples; ++i)\n   ..\n   77  \n   78  \tstd::vector<packedMatType> SISD;\n   79: \tprintf(\"- SISD: %d us\\n\", launch_mat_mul_mat<packedMatType>(SISD, Transform, Scale, Samples));\n   80  \n   81  \tstd::vector<alignedMatType> SIMD;\n   82: \tprintf(\"- SIMD: %d us\\n\", launch_mat_mul_mat<alignedMatType>(SIMD, Transform, Scale, Samples));\n   83  \n   84  \tfor(std::size_t i = 0; i < Samples; ++i)\n   ..\n  103  \n  104  \tstd::vector<packedMatType> SISD;\n  105: \tprintf(\"- SISD: %d us\\n\", launch_mat_mul_mat<packedMatType>(SISD, Transform, Scale, Samples));\n  106  \n  107  \tstd::vector<alignedMatType> SIMD;\n  108: \tprintf(\"- SIMD: %d us\\n\", launch_mat_mul_mat<alignedMatType>(SIMD, Transform, Scale, Samples));\n  109  \n  110  \tfor(std::size_t i = 0; i < Samples; ++i)\n  ...\n  124  \tint Error = 0;\n  125  \n  126: \tprintf(\"mat2 * mat2:\\n\");\n  127  \tError += comp_mat2_mul_mat2<glm::mat2, glm::aligned_mat2>(Samples);\n  128  \t\n  129: \tprintf(\"dmat2 * dmat2:\\n\");\n  130  \tError += comp_mat2_mul_mat2<glm::dmat2, glm::aligned_dmat2>(Samples);\n  131  \n  132: \tprintf(\"mat3 * mat3:\\n\");\n  133  \tError += comp_mat3_mul_mat3<glm::mat3, glm::aligned_mat3>(Samples);\n  134  \t\n  135: \tprintf(\"dmat3 * dmat3:\\n\");\n  136  \tError += comp_mat3_mul_mat3<glm::dmat3, glm::aligned_dmat3>(Samples);\n  137  \n  138: \tprintf(\"mat4 * mat4:\\n\");\n  139  \tError += comp_mat4_mul_mat4<glm::mat4, glm::aligned_mat4>(Samples);\n  140  \t\n  141: \tprintf(\"dmat4 * dmat4:\\n\");\n  142  \tError += comp_mat4_mul_mat4<glm::dmat4, glm::aligned_dmat4>(Samples);\n  143  \n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\perf\\perf_matrix_mul_vector.cpp:\n   51  \n   52  \tstd::vector<packedVecType> SISD;\n   53: \tprintf(\"- SISD: %d us\\n\", launch_mat_mul_vec<packedMatType, packedVecType>(SISD, Transform, Scale, Samples));\n   54  \n   55  \tstd::vector<alignedVecType> SIMD;\n   56: \tprintf(\"- SIMD: %d us\\n\", launch_mat_mul_vec<alignedMatType, alignedVecType>(SIMD, Transform, Scale, Samples));\n   57  \n   58  \tfor(std::size_t i = 0; i < Samples; ++i)\n   ..\n   77  \n   78  \tstd::vector<packedVecType> SISD;\n   79: \tprintf(\"- SISD: %d us\\n\", launch_mat_mul_vec<packedMatType, packedVecType>(SISD, Transform, Scale, Samples));\n   80  \n   81  \tstd::vector<alignedVecType> SIMD;\n   82: \tprintf(\"- SIMD: %d us\\n\", launch_mat_mul_vec<alignedMatType, alignedVecType>(SIMD, Transform, Scale, Samples));\n   83  \n   84  \tfor(std::size_t i = 0; i < Samples; ++i)\n   ..\n  103  \n  104  \tstd::vector<packedVecType> SISD;\n  105: \tprintf(\"- SISD: %d us\\n\", launch_mat_mul_vec<packedMatType, packedVecType>(SISD, Transform, Scale, Samples));\n  106  \n  107  \tstd::vector<alignedVecType> SIMD;\n  108: \tprintf(\"- SIMD: %d us\\n\", launch_mat_mul_vec<alignedMatType, alignedVecType>(SIMD, Transform, Scale, Samples));\n  109  \n  110  \tfor(std::size_t i = 0; i < Samples; ++i)\n  ...\n  124  \tint Error = 0;\n  125  \n  126: \tprintf(\"mat2 * vec2:\\n\");\n  127  \tError += comp_mat2_mul_vec2<glm::mat2, glm::vec2, glm::aligned_mat2, glm::aligned_vec2>(Samples);\n  128  \t\n  129: \tprintf(\"dmat2 * dvec2:\\n\");\n  130  \tError += comp_mat2_mul_vec2<glm::dmat2, glm::dvec2,glm::aligned_dmat2, glm::aligned_dvec2>(Samples);\n  131  \n  132: \tprintf(\"mat3 * vec3:\\n\");\n  133  \tError += comp_mat3_mul_vec3<glm::mat3, glm::vec3, glm::aligned_mat3, glm::aligned_vec3>(Samples);\n  134  \t\n  135: \tprintf(\"dmat3 * dvec3:\\n\");\n  136  \tError += comp_mat3_mul_vec3<glm::dmat3, glm::dvec3, glm::aligned_dmat3, glm::aligned_dvec3>(Samples);\n  137  \n  138: \tprintf(\"mat4 * vec4:\\n\");\n  139  \tError += comp_mat4_mul_vec4<glm::mat4, glm::vec4, glm::aligned_mat4, glm::aligned_vec4>(Samples);\n  140  \t\n  141: \tprintf(\"dmat4 * dvec4:\\n\");\n  142  \tError += comp_mat4_mul_vec4<glm::dmat4, glm::dvec4, glm::aligned_dmat4, glm::aligned_dvec4>(Samples);\n  143  \n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\perf\\perf_matrix_transpose.cpp:\n   46  \n   47  \tstd::vector<packedMatType> SISD;\n   48: \tprintf(\"- SISD: %d us\\n\", launch_mat_transpose<packedMatType>(SISD, Scale, Samples));\n   49  \n   50  \tstd::vector<alignedMatType> SIMD;\n   51: \tprintf(\"- SIMD: %d us\\n\", launch_mat_transpose<alignedMatType>(SIMD, Scale, Samples));\n   52  \n   53  \tfor(std::size_t i = 0; i < Samples; ++i)\n   ..\n   72  \n   73  \tstd::vector<packedMatType> SISD;\n   74: \tprintf(\"- SISD: %d us\\n\", launch_mat_transpose<packedMatType>(SISD, Scale, Samples));\n   75  \n   76  \tstd::vector<alignedMatType> SIMD;\n   77: \tprintf(\"- SIMD: %d us\\n\", launch_mat_transpose<alignedMatType>(SIMD, Scale, Samples));\n   78  \n   79  \tfor(std::size_t i = 0; i < Samples; ++i)\n   ..\n   98  \n   99  \tstd::vector<packedMatType> SISD;\n  100: \tprintf(\"- SISD: %d us\\n\", launch_mat_transpose<packedMatType>(SISD, Scale, Samples));\n  101  \n  102  \tstd::vector<alignedMatType> SIMD;\n  103: \tprintf(\"- SIMD: %d us\\n\", launch_mat_transpose<alignedMatType>(SIMD, Scale, Samples));\n  104  \n  105  \tfor(std::size_t i = 0; i < Samples; ++i)\n  ...\n  120  \tint Error = 0;\n  121  \n  122: \tprintf(\"glm::transpose(mat2):\\n\");\n  123  \tError += comp_mat2_transpose<glm::mat2, glm::aligned_mat2>(Samples);\n  124  \t\n  125: \tprintf(\"glm::transpose(dmat2):\\n\");\n  126  \tError += comp_mat2_transpose<glm::dmat2, glm::aligned_dmat2>(Samples);\n  127  \n  128: \tprintf(\"glm::transpose(mat3):\\n\");\n  129  \tError += comp_mat3_transpose<glm::mat3, glm::aligned_mat3>(Samples);\n  130  \t\n  131: \tprintf(\"glm::transpose(dmat3):\\n\");\n  132  \tError += comp_mat3_transpose<glm::dmat3, glm::aligned_dmat3>(Samples);\n  133  \n  134: \tprintf(\"glm::transpose(mat4):\\n\");\n  135  \tError += comp_mat4_transpose<glm::mat4, glm::aligned_mat4>(Samples);\n  136  \t\n  137: \tprintf(\"glm::transpose(dmat4):\\n\");\n  138  \tError += comp_mat4_transpose<glm::dmat4, glm::aligned_dmat4>(Samples);\n  139  \n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\glm\\test\\perf\\perf_vector_mul_matrix.cpp:\n   51  \n   52  \tstd::vector<packedVecType> SISD;\n   53: \tprintf(\"- SISD: %d us\\n\", launch_vec_mul_mat<packedMatType, packedVecType>(SISD, Transform, Scale, Samples));\n   54  \n   55  \tstd::vector<alignedVecType> SIMD;\n   56: \tprintf(\"- SIMD: %d us\\n\", launch_vec_mul_mat<alignedMatType, alignedVecType>(SIMD, Transform, Scale, Samples));\n   57  \n   58  \tfor(std::size_t i = 0; i < Samples; ++i)\n   ..\n   77  \n   78  \tstd::vector<packedVecType> SISD;\n   79: \tprintf(\"- SISD: %d us\\n\", launch_vec_mul_mat<packedMatType, packedVecType>(SISD, Transform, Scale, Samples));\n   80  \n   81  \tstd::vector<alignedVecType> SIMD;\n   82: \tprintf(\"- SIMD: %d us\\n\", launch_vec_mul_mat<alignedMatType, alignedVecType>(SIMD, Transform, Scale, Samples));\n   83  \n   84  \tfor(std::size_t i = 0; i < Samples; ++i)\n   ..\n  103  \n  104  \tstd::vector<packedVecType> SISD;\n  105: \tprintf(\"- SISD: %d us\\n\", launch_vec_mul_mat<packedMatType, packedVecType>(SISD, Transform, Scale, Samples));\n  106  \n  107  \tstd::vector<alignedVecType> SIMD;\n  108: \tprintf(\"- SIMD: %d us\\n\", launch_vec_mul_mat<alignedMatType, alignedVecType>(SIMD, Transform, Scale, Samples));\n  109  \n  110  \tfor(std::size_t i = 0; i < Samples; ++i)\n  ...\n  124  \tint Error = 0;\n  125  \n  126: \tprintf(\"vec2 * mat2:\\n\");\n  127  \tError += comp_vec2_mul_mat2<glm::mat2, glm::vec2, glm::aligned_mat2, glm::aligned_vec2>(Samples);\n  128  \t\n  129: \tprintf(\"dvec2 * dmat2:\\n\");\n  130  \tError += comp_vec2_mul_mat2<glm::dmat2, glm::dvec2,glm::aligned_dmat2, glm::aligned_dvec2>(Samples);\n  131  \n  132: \tprintf(\"vec3 * mat3:\\n\");\n  133  \tError += comp_vec3_mul_mat3<glm::mat3, glm::vec3, glm::aligned_mat3, glm::aligned_vec3>(Samples);\n  134  \t\n  135: \tprintf(\"dvec3 * dmat3:\\n\");\n  136  \tError += comp_vec3_mul_mat3<glm::dmat3, glm::dvec3, glm::aligned_dmat3, glm::aligned_dvec3>(Samples);\n  137  \n  138: \tprintf(\"vec4 * mat4:\\n\");\n  139  \tError += comp_vec4_mul_mat4<glm::mat4, glm::vec4, glm::aligned_mat4, glm::aligned_vec4>(Samples);\n  140  \t\n  141: \tprintf(\"dvec4 * dmat4:\\n\");\n  142  \tError += comp_vec4_mul_mat4<glm::dmat4, glm::dvec4, glm::aligned_dmat4, glm::aligned_dvec4>(Samples);\n  143  \n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\imgui\\include\\imconfig.h:\n   44  //#define IMGUI_ENABLE_OSX_DEFAULT_CLIPBOARD_FUNCTIONS      // [OSX] Implement default OSX clipboard handler (need to link with '-framework ApplicationServices', this is why this is not the default).\n   45  //#define IMGUI_DISABLE_DEFAULT_SHELL_FUNCTIONS             // Don't implement default platform_io.Platform_OpenInShellFn() handler (Win32: ShellExecute(), require shell32.lib/.a, Mac/Linux: use system(\"\")).\n   46: //#define IMGUI_DISABLE_DEFAULT_FORMAT_FUNCTIONS            // Don't implement ImFormatString/ImFormatStringV so you can implement them yourself (e.g. if you don't want to link with vsnprintf)\n   47  //#define IMGUI_DISABLE_DEFAULT_MATH_FUNCTIONS              // Don't implement ImFabs/ImSqrt/ImPow/ImFmod/ImCos/ImSin/ImAcos/ImAtan2 so you can implement them yourself.\n   48  //#define IMGUI_DISABLE_FILE_FUNCTIONS                      // Don't implement ImFileOpen/ImFileClose/ImFileRead/ImFileWrite and ImFileHandle at all (replace them with dummies)\n   ..\n   73  //#define IMGUI_STB_TRUETYPE_FILENAME   \"my_folder/stb_truetype.h\"\n   74  //#define IMGUI_STB_RECT_PACK_FILENAME  \"my_folder/stb_rect_pack.h\"\n   75: //#define IMGUI_STB_SPRINTF_FILENAME    \"my_folder/stb_sprintf.h\"    // only used if IMGUI_USE_STB_SPRINTF is defined.\n   76  //#define IMGUI_DISABLE_STB_TRUETYPE_IMPLEMENTATION\n   77  //#define IMGUI_DISABLE_STB_RECT_PACK_IMPLEMENTATION\n   78: //#define IMGUI_DISABLE_STB_SPRINTF_IMPLEMENTATION                   // only disabled if IMGUI_USE_STB_SPRINTF is defined.\n   79  \n   80: //---- Use stb_sprintf.h for a faster implementation of vsnprintf instead of the one from libc (unless IMGUI_DISABLE_DEFAULT_FORMAT_FUNCTIONS is defined)\n   81: // Compatibility checks of arguments and formats done by clang and GCC will be disabled in order to support the extra formats provided by stb_sprintf.h.\n   82: //#define IMGUI_USE_STB_SPRINTF\n   83  \n   84  //---- Use FreeType to build and rasterize the font atlas (instead of stb_truetype which is embedded by default in Dear ImGui)\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\imgui\\include\\imgui.h:\n   98  #define IMGUI_CHECKVERSION()        ImGui::DebugCheckVersionAndDataLayout(IMGUI_VERSION, sizeof(ImGuiIO), sizeof(ImGuiStyle), sizeof(ImVec2), sizeof(ImVec4), sizeof(ImDrawVert), sizeof(ImDrawIdx))\n   99  \n  100: // Helper Macros - IM_FMTARGS, IM_FMTLIST: Apply printf-style warnings to our formatting functions.\n  101  // (MSVC provides an equivalent mechanism via SAL Annotations but it would require the macros in a different\n  102: //  location. e.g. #include <sal.h> + void myprintf(_Printf_format_string_ const char* format, ...))\n  103: #if !defined(IMGUI_USE_STB_SPRINTF) && defined(__MINGW32__) && !defined(__clang__)\n  104: #define IM_FMTARGS(FMT)             __attribute__((format(gnu_printf, FMT, FMT+1)))\n  105: #define IM_FMTLIST(FMT)             __attribute__((format(gnu_printf, FMT, 0)))\n  106: #elif !defined(IMGUI_USE_STB_SPRINTF) && (defined(__clang__) || defined(__GNUC__))\n  107: #define IM_FMTARGS(FMT)             __attribute__((format(printf, FMT, FMT+1)))\n  108: #define IM_FMTLIST(FMT)             __attribute__((format(printf, FMT, 0)))\n  109  #else\n  110  #define IM_FMTARGS(FMT)\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\imgui\\include\\imgui_internal.h:\n  221  \n  222  // Debug Printing Into TTY\n  223: // (since IMGUI_VERSION_NUM >= 18729: IMGUI_DEBUG_LOG was reworked into IMGUI_DEBUG_PRINTF (and removed framecount from it). If you were using a #define IMGUI_DEBUG_LOG please rename)\n  224: #ifndef IMGUI_DEBUG_PRINTF\n  225  #ifndef IMGUI_DISABLE_DEFAULT_FORMAT_FUNCTIONS\n  226: #define IMGUI_DEBUG_PRINTF(_FMT,...)    printf(_FMT, __VA_ARGS__)\n  227  #else\n  228: #define IMGUI_DEBUG_PRINTF(_FMT,...)    ((void)0)\n  229  #endif\n  230  #endif\n  ...\n  856      size_t      Size;           // Size in bytes\n  857      const char* Name;           // Short descriptive name for the type, for debugging\n  858:     const char* PrintFmt;       // Default printf format for the type\n  859      const char* ScanFmt;        // Default scanf format for the type\n  860  };\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\imgui\\src\\imgui.cpp:\n 1090  \n 1091  // System includes\n 1092: #include <stdio.h>      // vsnprintf, sscanf, printf\n 1093  #include <stdint.h>     // intptr_t\n 1094  \n ....\n 1130  #ifdef _MSC_VER\n 1131  #pragma warning (disable: 4127)             // condition expression is constant\n 1132: #pragma warning (disable: 4996)             // 'This function or variable may be unsafe': strcpy, strdup, sprintf, vsnprintf, sscanf, fopen\n 1133  #if defined(_MSC_VER) && _MSC_VER >= 1922   // MSVC 2019 16.2 or later\n 1134  #pragma warning (disable: 5054)             // operator '|': deprecated between enumerations of different types\n ....\n 1155  #pragma clang diagnostic ignored \"-Wint-to-void-pointer-cast\"       // warning: cast to 'void *' from smaller integer type 'int'\n 1156  #pragma clang diagnostic ignored \"-Wzero-as-null-pointer-constant\"  // warning: zero as null pointer constant                    // some standard header variations use #define NULL 0\n 1157: #pragma clang diagnostic ignored \"-Wdouble-promotion\"               // warning: implicit conversion from 'float' to 'double' when passing argument to function  // using printf() is a misery with this as C++ va_arg ellipsis changes float to double.\n 1158  #pragma clang diagnostic ignored \"-Wimplicit-int-float-conversion\"  // warning: implicit conversion from 'xxx' to 'float' may lose precision\n 1159  #pragma clang diagnostic ignored \"-Wunsafe-buffer-usage\"            // warning: 'xxx' is an unsafe pointer used for buffer access\n ....\n 2084  \n 2085  // A) MSVC version appears to return -1 on overflow, whereas glibc appears to return total count (which may be >= buf_size).\n 2086: // Ideally we would test for only one of those limits at runtime depending on the behavior the vsnprintf(), but trying to deduct it at compile time sounds like a pandora can of worm.\n 2087: // B) When buf==NULL vsnprintf() will return the output size.\n 2088  #ifndef IMGUI_DISABLE_DEFAULT_FORMAT_FUNCTIONS\n 2089  \n 2090: // We support stb_sprintf which is much faster (see: https://github.com/nothings/stb/blob/master/stb_sprintf.h)\n 2091: // You may set IMGUI_USE_STB_SPRINTF to use our default wrapper, or set IMGUI_DISABLE_DEFAULT_FORMAT_FUNCTIONS\n 2092  // and setup the wrapper yourself. (FIXME-OPT: Some of our high-level operations such as ImGuiTextBuffer::appendfv() are\n 2093: // designed using two-passes worst case, which probably could be improved using the stbsp_vsprintfcb() function.)\n 2094: #ifdef IMGUI_USE_STB_SPRINTF\n 2095: #ifndef IMGUI_DISABLE_STB_SPRINTF_IMPLEMENTATION\n 2096: #define STB_SPRINTF_IMPLEMENTATION\n 2097  #endif\n 2098: #ifdef IMGUI_STB_SPRINTF_FILENAME\n 2099: #include IMGUI_STB_SPRINTF_FILENAME\n 2100  #else\n 2101: #include \"stb_sprintf.h\"\n 2102  #endif\n 2103: #endif // #ifdef IMGUI_USE_STB_SPRINTF\n 2104  \n 2105: #if defined(_MSC_VER) && !defined(vsnprintf)\n 2106: #define vsnprintf _vsnprintf\n 2107  #endif\n 2108  \n ....\n 2111      va_list args;\n 2112      va_start(args, fmt);\n 2113: #ifdef IMGUI_USE_STB_SPRINTF\n 2114:     int w = stbsp_vsnprintf(buf, (int)buf_size, fmt, args);\n 2115  #else\n 2116:     int w = vsnprintf(buf, buf_size, fmt, args);\n 2117  #endif\n 2118      va_end(args);\n ....\n 2127  int ImFormatStringV(char* buf, size_t buf_size, const char* fmt, va_list args)\n 2128  {\n 2129: #ifdef IMGUI_USE_STB_SPRINTF\n 2130:     int w = stbsp_vsnprintf(buf, (int)buf_size, fmt, args);\n 2131  #else\n 2132:     int w = vsnprintf(buf, buf_size, fmt, args);\n 2133  #endif\n 2134      if (buf == NULL)\n ....\n 2910  //-----------------------------------------------------------------------------\n 2911  \n 2912: // On some platform vsnprintf() takes va_list by reference and modifies it.\n 2913  // va_copy is the 'correct' way to copy a va_list but Visual Studio prior to 2013 doesn't have it.\n 2914  #ifndef va_copy\n ....\n 4813      if (size != (size_t)-1)\n 4814      {\n 4815:         //printf(\"[%05d] MemAlloc(%d) -> 0x%p\\n\", frame_count, (int)size, ptr);\n 4816          entry->AllocCount++;\n 4817          info->TotalAllocCount++;\n ....\n 4819      else\n 4820      {\n 4821:         //printf(\"[%05d] MemFree(0x%p)\\n\", frame_count, ptr);\n 4822          entry->FreeCount++;\n 4823          info->TotalFreeCount++;\n ....\n 16603      g.DebugLogIndex.append(g.DebugLogBuf.c_str(), old_size, g.DebugLogBuf.size());\n 16604      if (g.DebugLogFlags & ImGuiDebugLogFlags_OutputToTTY)\n 16605:         IMGUI_DEBUG_PRINTF(\"%s\", g.DebugLogBuf.begin() + old_size);\n 16606  #ifdef IMGUI_ENABLE_TEST_ENGINE\n 16607      // IMGUI_TEST_ENGINE_LOG() adds a trailing \\n automatically\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\imgui\\src\\imgui_draw.cpp:\n   39  #endif\n   40  \n   41: #include <stdio.h>      // vsnprintf, sscanf, printf\n   42  \n   43  // Visual Studio warnings\n   ..\n   45  #pragma warning (disable: 4127)     // condition expression is constant\n   46  #pragma warning (disable: 4505)     // unreferenced local function has been removed (stb stuff)\n   47: #pragma warning (disable: 4996)     // 'This function or variable may be unsafe': strcpy, strdup, sprintf, vsnprintf, sscanf, fopen\n   48  #pragma warning (disable: 26451)    // [Static Analyzer] Arithmetic overflow : Using operator 'xxx' on a 4 byte value and then casting the result to a 8 byte value. Cast the value to the wider type before calling operator 'xxx' to avoid overflow(io.2).\n   49  #pragma warning (disable: 26812)    // [Static Analyzer] The enum type 'xxx' is unscoped. Prefer 'enum class' over 'enum' (Enum.3). [MSVC Static Analyzer)\n   ..\n   63  #pragma clang diagnostic ignored \"-Wcomma\"                          // warning: possible misuse of comma operator here\n   64  #pragma clang diagnostic ignored \"-Wreserved-id-macro\"              // warning: macro name is a reserved identifier\n   65: #pragma clang diagnostic ignored \"-Wdouble-promotion\"               // warning: implicit conversion from 'float' to 'double' when passing argument to function  // using printf() is a misery with this as C++ va_arg ellipsis changes float to double.\n   66  #pragma clang diagnostic ignored \"-Wimplicit-int-float-conversion\"  // warning: implicit conversion from 'xxx' to 'float' may lose precision\n   67  #pragma clang diagnostic ignored \"-Wreserved-identifier\"            // warning: identifier '_Xxx' is reserved because it starts with '_' followed by a capital letter\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\imgui\\src\\imgui_impl_vulkan.cpp:\n 1355      vkGetPhysicalDeviceSurfacePresentModesKHR(physical_device, surface, &avail_count, avail_modes.Data);\n 1356      //for (uint32_t avail_i = 0; avail_i < avail_count; avail_i++)\n 1357:     //    printf(\"[vulkan] avail_modes[%d] = %d\\n\", avail_i, avail_modes[avail_i]);\n 1358  \n 1359      for (int request_i = 0; request_i < request_modes_count; request_i++)\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\imgui\\src\\imgui_tables.cpp:\n  206  #ifdef _MSC_VER\n  207  #pragma warning (disable: 4127)     // condition expression is constant\n  208: #pragma warning (disable: 4996)     // 'This function or variable may be unsafe': strcpy, strdup, sprintf, vsnprintf, sscanf, fopen\n  209  #if defined(_MSC_VER) && _MSC_VER >= 1922 // MSVC 2019 16.2 or later\n  210  #pragma warning (disable: 5054)     // operator '|': deprecated between enumerations of different types\n  ...\n  226  #pragma clang diagnostic ignored \"-Wsign-conversion\"                // warning: implicit conversion changes signedness\n  227  #pragma clang diagnostic ignored \"-Wzero-as-null-pointer-constant\"  // warning: zero as null pointer constant                    // some standard header variations use #define NULL 0\n  228: #pragma clang diagnostic ignored \"-Wdouble-promotion\"               // warning: implicit conversion from 'float' to 'double' when passing argument to function  // using printf() is a misery with this as C++ va_arg ellipsis changes float to double.\n  229  #pragma clang diagnostic ignored \"-Wenum-enum-conversion\"           // warning: bitwise operation between different enumeration types ('XXXFlags_' and 'XXXFlagsPrivate_')\n  230  #pragma clang diagnostic ignored \"-Wdeprecated-enum-enum-conversion\"// warning: bitwise operation between different enumeration types ('XXXFlags_' and 'XXXFlagsPrivate_') is deprecated\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\imgui\\src\\imgui_widgets.cpp:\n   55  #ifdef _MSC_VER\n   56  #pragma warning (disable: 4127)     // condition expression is constant\n   57: #pragma warning (disable: 4996)     // 'This function or variable may be unsafe': strcpy, strdup, sprintf, vsnprintf, sscanf, fopen\n   58  #if defined(_MSC_VER) && _MSC_VER >= 1922 // MSVC 2019 16.2 or later\n   59  #pragma warning (disable: 5054)     // operator '|': deprecated between enumerations of different types\n   ..\n   74  #pragma clang diagnostic ignored \"-Wformat-nonliteral\"              // warning: format string is not a string literal            // passing non-literal to vsnformat(). yes, user passing incorrect format strings can crash the code.\n   75  #pragma clang diagnostic ignored \"-Wsign-conversion\"                // warning: implicit conversion changes signedness\n   76: #pragma clang diagnostic ignored \"-Wunused-macros\"                  // warning: macro is not used                                // we define snprintf/vsnprintf on Windows so they are available, but not always used.\n   77  #pragma clang diagnostic ignored \"-Wzero-as-null-pointer-constant\"  // warning: zero as null pointer constant                    // some standard header variations use #define NULL 0\n   78: #pragma clang diagnostic ignored \"-Wdouble-promotion\"               // warning: implicit conversion from 'float' to 'double' when passing argument to function  // using printf() is a misery with this as C++ va_arg ellipsis changes float to double.\n   79  #pragma clang diagnostic ignored \"-Wenum-enum-conversion\"           // warning: bitwise operation between different enumeration types ('XXXFlags_' and 'XXXFlagsPrivate_')\n   80  #pragma clang diagnostic ignored \"-Wdeprecated-enum-enum-conversion\"// warning: bitwise operation between different enumeration types ('XXXFlags_' and 'XXXFlagsPrivate_') is deprecated\n   ..\n 2640      // Default format string when passing NULL\n 2641      if (format == NULL)\n 2642:         format = DataTypeGetInfo(data_type)->PrintFmt;\n 2643  \n 2644      const bool hovered = ItemHoverable(frame_bb, id, g.LastItemData.ItemFlags);\n ....\n 3244      // Default format string when passing NULL\n 3245      if (format == NULL)\n 3246:         format = DataTypeGetInfo(data_type)->PrintFmt;\n 3247  \n 3248      const bool hovered = ItemHoverable(frame_bb, id, g.LastItemData.ItemFlags);\n ....\n 3415      // Default format string when passing NULL\n 3416      if (format == NULL)\n 3417:         format = DataTypeGetInfo(data_type)->PrintFmt;\n 3418  \n 3419      const bool hovered = ItemHoverable(frame_bb, id, g.LastItemData.ItemFlags);\n ....\n 3504  const char* ImParseFormatFindEnd(const char* fmt)\n 3505  {\n 3506:     // Printf/scanf types modifiers: I/L/h/j/l/t/w/z. Other uppercase letters qualify as types aka end of the format.\n 3507      if (fmt[0] != '%')\n 3508          return fmt;\n ....\n 3538  // Sanitize format\n 3539  // - Zero terminate so extra characters after format (e.g. \"%f123\") don't confuse atof/atoi\n 3540: // - stb_sprintf.h supports several new modifiers which format numbers in a way that also makes them incompatible atof/atoi.\n 3541  void ImParseFormatSanitizeForPrinting(const char* fmt_in, char* fmt_out, size_t fmt_out_size)\n 3542  {\n ....\n 3547      {\n 3548          char c = *fmt_in++;\n 3549:         if (c != '\\'' && c != '$' && c != '_') // Custom flags provided by stb_sprintf.h. POSIX 2008 also supports '.\n 3550              *(fmt_out++) = c;\n 3551      }\n ....\n 3567              continue;\n 3568          has_type |= ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')); // Stop skipping digits\n 3569:         if (c != '\\'' && c != '$' && c != '_') // Custom flags provided by stb_sprintf.h. POSIX 2008 also supports '.\n 3570              *(fmt_out++) = c;\n 3571      }\n ....\n 3649      format = ImParseFormatTrimDecorations(format, fmt_buf, IM_ARRAYSIZE(fmt_buf));\n 3650      if (format[0] == 0)\n 3651:         format = type_info->PrintFmt;\n 3652      DataTypeFormatString(data_buf, IM_ARRAYSIZE(data_buf), data_type, p_data, format);\n 3653      ImStrTrimBlanks(data_buf);\n ....\n 3701  \n 3702      if (format == NULL)\n 3703:         format = DataTypeGetInfo(data_type)->PrintFmt;\n 3704  \n 3705      void* p_data_default = (g.NextItemData.HasFlags & ImGuiNextItemDataFlags_HasRefVal) ? &g.NextItemData.RefVal : &g.DataTypeZeroValue;\n ....\n 4329      if (apply_named_filters && (flags & (ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase | ImGuiInputTextFlags_CharsNoBlank | ImGuiInputTextFlags_CharsScientific | (ImGuiInputTextFlags)ImGuiInputTextFlags_LocalizeDecimalPoint)))\n 4330      {\n 4331:         // The libc allows overriding locale, with e.g. 'setlocale(LC_NUMERIC, \"de_DE.UTF-8\");' which affect the output/input of printf/scanf to use e.g. ',' instead of '.'.\n 4332          // The standard mandate that programs starts in the \"C\" locale where the decimal point is '.'.\n 4333          // We don't really intend to provide widespread support for it, but out of empathy for people stuck with using odd API, we support the bare minimum aka overriding the decimal point.\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\vulkan\\include\\vulkan\\vulkan.cppm:\n 3627  \n 3628    //=== VK_NV_shader_image_footprint ===\n 3629:   using VULKAN_HPP_NAMESPACE::PhysicalDeviceShaderImageFootprintFeaturesNV;\n 3630  \n 3631    //=== VK_NV_scissor_exclusive ===\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\vulkan\\include\\vulkan\\vulkan.hpp:\n 12099    //=== VK_NV_shader_image_footprint ===\n 12100    template <>\n 12101:   struct StructExtends<PhysicalDeviceShaderImageFootprintFeaturesNV, PhysicalDeviceFeatures2>\n 12102    {\n 12103      enum\n .....\n 12108  \n 12109    template <>\n 12110:   struct StructExtends<PhysicalDeviceShaderImageFootprintFeaturesNV, DeviceCreateInfo>\n 12111    {\n 12112      enum\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\vulkan\\include\\vulkan\\vulkan_core.h:\n 14536  #define VK_NV_SHADER_IMAGE_FOOTPRINT_SPEC_VERSION 2\n 14537  #define VK_NV_SHADER_IMAGE_FOOTPRINT_EXTENSION_NAME \"VK_NV_shader_image_footprint\"\n 14538: typedef struct VkPhysicalDeviceShaderImageFootprintFeaturesNV {\n 14539      VkStructureType    sType;\n 14540      void*              pNext;\n 14541      VkBool32           imageFootprint;\n 14542: } VkPhysicalDeviceShaderImageFootprintFeaturesNV;\n 14543  \n 14544  \n .....\n 15021      VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_RESERVE_BINDING_SLOT_EXT = 1,\n 15022      VK_VALIDATION_FEATURE_ENABLE_BEST_PRACTICES_EXT = 2,\n 15023:     VK_VALIDATION_FEATURE_ENABLE_DEBUG_PRINTF_EXT = 3,\n 15024      VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT = 4,\n 15025      VK_VALIDATION_FEATURE_ENABLE_MAX_ENUM_EXT = 0x7FFFFFFF\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\vulkan\\include\\vulkan\\vulkan_enums.hpp:\n  971      ePhysicalDeviceMeshShaderFeaturesNV                 = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV,\n  972      ePhysicalDeviceMeshShaderPropertiesNV               = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_NV,\n  973:     ePhysicalDeviceShaderImageFootprintFeaturesNV       = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_IMAGE_FOOTPRINT_FEATURES_NV,\n  974      ePipelineViewportExclusiveScissorStateCreateInfoNV  = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_EXCLUSIVE_SCISSOR_STATE_CREATE_INFO_NV,\n  975      ePhysicalDeviceExclusiveScissorFeaturesNV           = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXCLUSIVE_SCISSOR_FEATURES_NV,\n  ...\n 6088      eGpuAssistedReserveBindingSlot = VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_RESERVE_BINDING_SLOT_EXT,\n 6089      eBestPractices                 = VK_VALIDATION_FEATURE_ENABLE_BEST_PRACTICES_EXT,\n 6090:     eDebugPrintf                   = VK_VALIDATION_FEATURE_ENABLE_DEBUG_PRINTF_EXT,\n 6091      eSynchronizationValidation     = VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT\n 6092    };\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\vulkan\\include\\vulkan\\vulkan_handles.hpp:\n 1007  \n 1008    //=== VK_NV_shader_image_footprint ===\n 1009:   struct PhysicalDeviceShaderImageFootprintFeaturesNV;\n 1010  \n 1011    //=== VK_NV_scissor_exclusive ===\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\vulkan\\include\\vulkan\\vulkan_hash.hpp:\n 11958  \n 11959    template <>\n 11960:   struct hash<VULKAN_HPP_NAMESPACE::PhysicalDeviceShaderImageFootprintFeaturesNV>\n 11961    {\n 11962:     std::size_t operator()( VULKAN_HPP_NAMESPACE::PhysicalDeviceShaderImageFootprintFeaturesNV const & physicalDeviceShaderImageFootprintFeaturesNV ) const\n 11963        VULKAN_HPP_NOEXCEPT\n 11964      {\n 11965        std::size_t seed = 0;\n 11966:       VULKAN_HPP_HASH_COMBINE( seed, physicalDeviceShaderImageFootprintFeaturesNV.sType );\n 11967:       VULKAN_HPP_HASH_COMBINE( seed, physicalDeviceShaderImageFootprintFeaturesNV.pNext );\n 11968:       VULKAN_HPP_HASH_COMBINE( seed, physicalDeviceShaderImageFootprintFeaturesNV.imageFootprint );\n 11969        return seed;\n 11970      }\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\vulkan\\include\\vulkan\\vulkan_static_assertions.hpp:\n 4084  //=== VK_NV_shader_image_footprint ===\n 4085  \n 4086: VULKAN_HPP_STATIC_ASSERT( sizeof( VULKAN_HPP_NAMESPACE::PhysicalDeviceShaderImageFootprintFeaturesNV ) ==\n 4087:                             sizeof( VkPhysicalDeviceShaderImageFootprintFeaturesNV ),\n 4088                            \"struct and wrapper have different size!\" );\n 4089: VULKAN_HPP_STATIC_ASSERT( std::is_standard_layout<VULKAN_HPP_NAMESPACE::PhysicalDeviceShaderImageFootprintFeaturesNV>::value,\n 4090                            \"struct wrapper is not a standard layout!\" );\n 4091: VULKAN_HPP_STATIC_ASSERT( std::is_nothrow_move_constructible<VULKAN_HPP_NAMESPACE::PhysicalDeviceShaderImageFootprintFeaturesNV>::value,\n 4092:                           \"PhysicalDeviceShaderImageFootprintFeaturesNV is not nothrow_move_constructible!\" );\n 4093  \n 4094  //=== VK_NV_scissor_exclusive ===\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\vulkan\\include\\vulkan\\vulkan_structs.hpp:\n 87837    };\n 87838  \n 87839:   struct PhysicalDeviceShaderImageFootprintFeaturesNV\n 87840    {\n 87841:     using NativeType = VkPhysicalDeviceShaderImageFootprintFeaturesNV;\n 87842  \n 87843      static const bool                                  allowDuplicate = false;\n 87844:     static VULKAN_HPP_CONST_OR_CONSTEXPR StructureType structureType  = StructureType::ePhysicalDeviceShaderImageFootprintFeaturesNV;\n 87845  \n 87846  #if !defined( VULKAN_HPP_NO_STRUCT_CONSTRUCTORS )\n 87847:     VULKAN_HPP_CONSTEXPR PhysicalDeviceShaderImageFootprintFeaturesNV( VULKAN_HPP_NAMESPACE::Bool32 imageFootprint_ = {},\n 87848                                                                         void *                       pNext_          = nullptr ) VULKAN_HPP_NOEXCEPT\n 87849        : pNext{ pNext_ }\n .....\n 87852      }\n 87853  \n 87854:     VULKAN_HPP_CONSTEXPR PhysicalDeviceShaderImageFootprintFeaturesNV( PhysicalDeviceShaderImageFootprintFeaturesNV const & rhs ) VULKAN_HPP_NOEXCEPT = default;\n 87855  \n 87856:     PhysicalDeviceShaderImageFootprintFeaturesNV( VkPhysicalDeviceShaderImageFootprintFeaturesNV const & rhs ) VULKAN_HPP_NOEXCEPT\n 87857:       : PhysicalDeviceShaderImageFootprintFeaturesNV( *reinterpret_cast<PhysicalDeviceShaderImageFootprintFeaturesNV const *>( &rhs ) )\n 87858      {\n 87859      }\n 87860  \n 87861:     PhysicalDeviceShaderImageFootprintFeaturesNV & operator=( PhysicalDeviceShaderImageFootprintFeaturesNV const & rhs ) VULKAN_HPP_NOEXCEPT = default;\n 87862  #endif /*VULKAN_HPP_NO_STRUCT_CONSTRUCTORS*/\n 87863  \n 87864:     PhysicalDeviceShaderImageFootprintFeaturesNV & operator=( VkPhysicalDeviceShaderImageFootprintFeaturesNV const & rhs ) VULKAN_HPP_NOEXCEPT\n 87865      {\n 87866:       *this = *reinterpret_cast<VULKAN_HPP_NAMESPACE::PhysicalDeviceShaderImageFootprintFeaturesNV const *>( &rhs );\n 87867        return *this;\n 87868      }\n 87869  \n 87870  #if !defined( VULKAN_HPP_NO_STRUCT_SETTERS )\n 87871:     VULKAN_HPP_CONSTEXPR_14 PhysicalDeviceShaderImageFootprintFeaturesNV & setPNext( void * pNext_ ) VULKAN_HPP_NOEXCEPT\n 87872      {\n 87873        pNext = pNext_;\n .....\n 87875      }\n 87876  \n 87877:     VULKAN_HPP_CONSTEXPR_14 PhysicalDeviceShaderImageFootprintFeaturesNV & setImageFootprint( VULKAN_HPP_NAMESPACE::Bool32 imageFootprint_ ) VULKAN_HPP_NOEXCEPT\n 87878      {\n 87879        imageFootprint = imageFootprint_;\n .....\n 87882  #endif /*VULKAN_HPP_NO_STRUCT_SETTERS*/\n 87883  \n 87884:     operator VkPhysicalDeviceShaderImageFootprintFeaturesNV const &() const VULKAN_HPP_NOEXCEPT\n 87885      {\n 87886:       return *reinterpret_cast<const VkPhysicalDeviceShaderImageFootprintFeaturesNV *>( this );\n 87887      }\n 87888  \n 87889:     operator VkPhysicalDeviceShaderImageFootprintFeaturesNV &() VULKAN_HPP_NOEXCEPT\n 87890      {\n 87891:       return *reinterpret_cast<VkPhysicalDeviceShaderImageFootprintFeaturesNV *>( this );\n 87892      }\n 87893  \n .....\n 87905  \n 87906  #if defined( VULKAN_HPP_HAS_SPACESHIP_OPERATOR )\n 87907:     auto operator<=>( PhysicalDeviceShaderImageFootprintFeaturesNV const & ) const = default;\n 87908  #else\n 87909:     bool operator==( PhysicalDeviceShaderImageFootprintFeaturesNV const & rhs ) const VULKAN_HPP_NOEXCEPT\n 87910      {\n 87911  #  if defined( VULKAN_HPP_USE_REFLECT )\n .....\n 87916      }\n 87917  \n 87918:     bool operator!=( PhysicalDeviceShaderImageFootprintFeaturesNV const & rhs ) const VULKAN_HPP_NOEXCEPT\n 87919      {\n 87920        return !operator==( rhs );\n .....\n 87923  \n 87924    public:\n 87925:     VULKAN_HPP_NAMESPACE::StructureType sType          = StructureType::ePhysicalDeviceShaderImageFootprintFeaturesNV;\n 87926      void *                              pNext          = {};\n 87927      VULKAN_HPP_NAMESPACE::Bool32        imageFootprint = {};\n .....\n 87929  \n 87930    template <>\n 87931:   struct CppType<StructureType, StructureType::ePhysicalDeviceShaderImageFootprintFeaturesNV>\n 87932    {\n 87933:     using Type = PhysicalDeviceShaderImageFootprintFeaturesNV;\n 87934    };\n 87935  \n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\vulkan\\include\\vulkan\\vulkan_to_string.hpp:\n 4173        case StructureType::ePhysicalDeviceMeshShaderFeaturesNV: return \"PhysicalDeviceMeshShaderFeaturesNV\";\n 4174        case StructureType::ePhysicalDeviceMeshShaderPropertiesNV: return \"PhysicalDeviceMeshShaderPropertiesNV\";\n 4175:       case StructureType::ePhysicalDeviceShaderImageFootprintFeaturesNV: return \"PhysicalDeviceShaderImageFootprintFeaturesNV\";\n 4176        case StructureType::ePipelineViewportExclusiveScissorStateCreateInfoNV: return \"PipelineViewportExclusiveScissorStateCreateInfoNV\";\n 4177        case StructureType::ePhysicalDeviceExclusiveScissorFeaturesNV: return \"PhysicalDeviceExclusiveScissorFeaturesNV\";\n ....\n 8143        case ValidationFeatureEnableEXT::eGpuAssistedReserveBindingSlot: return \"GpuAssistedReserveBindingSlot\";\n 8144        case ValidationFeatureEnableEXT::eBestPractices: return \"BestPractices\";\n 8145:       case ValidationFeatureEnableEXT::eDebugPrintf: return \"DebugPrintf\";\n 8146        case ValidationFeatureEnableEXT::eSynchronizationValidation: return \"SynchronizationValidation\";\n 8147        default: return \"invalid ( \" + VULKAN_HPP_NAMESPACE::toHexString( static_cast<uint32_t>( value ) ) + \" )\";\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\vulkan\\registry\\validusage.json:\n  155          {\n  156            \"vuid\": \"VUID-VkValidationFeaturesEXT-pEnabledValidationFeatures-02967\",\n  157:           \"text\": \"If the <code>pEnabledValidationFeatures</code> array contains <code>VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_RESERVE_BINDING_SLOT_EXT</code>, then it <strong class=\\\"purple\\\">must</strong> also contain <code>VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_EXT</code> or <code>VK_VALIDATION_FEATURE_ENABLE_DEBUG_PRINTF_EXT</code>\",\n  158            \"page\": \"vkspec\"\n  159          },\n  160          {\n  161            \"vuid\": \"VUID-VkValidationFeaturesEXT-pEnabledValidationFeatures-02968\",\n  162:           \"text\": \"If the <code>pEnabledValidationFeatures</code> array contains <code>VK_VALIDATION_FEATURE_ENABLE_DEBUG_PRINTF_EXT</code>, then it <strong class=\\\"purple\\\">must</strong> not contain <code>VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_EXT</code>\",\n  163            \"page\": \"vkspec\"\n  164          },\n  ...\n  887          {\n  888            \"vuid\": \"VUID-VkDeviceCreateInfo-pNext-pNext\",\n  889: <skipped 18231 characters> ...rFloat16Int8Features</a>, <a href=\\\"#VkPhysicalDeviceShaderFloatControls2FeaturesKHR\\\">VkPhysicalDeviceShaderFloatControls2FeaturesKHR</a>, <a href=\\\"#VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT\\\">VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT</a>, <a href=\\\"#VkPhysicalDeviceShaderImageFootprintFeaturesNV\\\">VkPhysicalDeviceShaderImageFootprintFeaturesNV</a>, <a href=\\\"#VkPhysicalDeviceShaderIntegerDotProductFeatures\\\">VkPhysicalDeviceShaderIntegerDotProductFeatures</a>, <a href=\\\"#VkPhysicalDeviceShaderIntegerFunctions2FeaturesINTEL\\\">VkPhysicalDeviceShaderIntegerFunctions2FeaturesINTEL</a>, <a href=\\\"#VkPhysicalDeviceShaderMaximalReconve... <skipped 4066 characters> ...\n  890            \"page\": \"vkspec\"\n  891          },\n  ...\n 99215        ]\n 99216      },\n 99217:     \"VkPhysicalDeviceShaderImageFootprintFeaturesNV\": {\n 99218        \"core\": [\n 99219          {\n 99220:           \"vuid\": \"VUID-VkPhysicalDeviceShaderImageFootprintFeaturesNV-sType-sType\",\n 99221            \"text\": \"<code>sType</code> <strong class=\\\"purple\\\">must</strong> be <code>VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_IMAGE_FOOTPRINT_FEATURES_NV</code>\",\n 99222            \"page\": \"vkspec\"\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\lib\\vulkan\\registry\\vk.xml:\n 4520          </type>\n 4521          <type category=\"struct\" name=\"VkPhysicalDeviceFragmentShaderBarycentricFeaturesNV\"   alias=\"VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR\"/>\n 4522:         <type category=\"struct\" name=\"VkPhysicalDeviceShaderImageFootprintFeaturesNV\" structextends=\"VkPhysicalDeviceFeatures2,VkDeviceCreateInfo\">\n 4523              <member values=\"VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_IMAGE_FOOTPRINT_FEATURES_NV\"><type>VkStructureType</type> <name>sType</name></member>\n 4524              <member optional=\"true\"><type>void</type>*                              <name>pNext</name></member>\n ....\n 10391          <enum value=\"1\"     name=\"VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_RESERVE_BINDING_SLOT_EXT\"/>\n 10392          <enum value=\"2\"     name=\"VK_VALIDATION_FEATURE_ENABLE_BEST_PRACTICES_EXT\"/>\n 10393:         <enum value=\"3\"     name=\"VK_VALIDATION_FEATURE_ENABLE_DEBUG_PRINTF_EXT\"/>\n 10394          <enum value=\"4\"     name=\"VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT\"/>\n 10395      </enums>\n .....\n 20441                  <enum value=\"&quot;VK_NV_shader_image_footprint&quot;\"  name=\"VK_NV_SHADER_IMAGE_FOOTPRINT_EXTENSION_NAME\"/>\n 20442                  <enum offset=\"0\" extends=\"VkStructureType\"              name=\"VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_IMAGE_FOOTPRINT_FEATURES_NV\"/>\n 20443:                 <type name=\"VkPhysicalDeviceShaderImageFootprintFeaturesNV\"/>\n 20444              </require>\n 20445          </extension>\n .....\n 27471          </spirvcapability>\n 27472          <spirvcapability name=\"ImageFootprintNV\">\n 27473:             <enable struct=\"VkPhysicalDeviceShaderImageFootprintFeaturesNV\" feature=\"imageFootprint\" requires=\"VK_NV_shader_image_footprint\"/>\n 27474          </spirvcapability>\n 27475          <spirvcapability name=\"ShadingRateNV\">\n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\src\\window\\WIndow_win32.cpp:\n    9  #include <errno.h>\n   10  \n   11: #define TMP_CC_EXIT(x, msg, ...) { printf(msg, __VA_ARGS__); exit(x); }\n   12  \n   13  inline void TMP_CC_LOG_SYS_ERROR() {\n   14  \tchar buffer[512];\n   15  \tstrerror_s(buffer, 512, errno);\n   16: \tprintf(\"[%d] %s\\n\", errno, buffer);\n   17  }\n   18  \n\nC:\\Users\\carve\\dev\\VulkanRendererCPP\\tests\\main.cpp:\n   25      inline glm::vec3 local_to_global_dir(glm::vec3 global, glm::mat4 m) {\n   26          auto ret = glm::vec3(glm::inverse(m) * glm::vec4(global, 0.0f));\n   27:         printf(\"%.3f   %.3f   %.3f\\n\", ret.x, ret.y, ret.z);\n   28          return ret;\n   29      }\n   ..\n  291              TMP_Update::vertex_data_trail[i].normal = glm::normalize(TMP_Update::vertex_data_trail[i + 1].position - TMP_Update::vertex_data_trail[i].position);\n  292  \n  293:         /*printf(\"%3.4f, %3.4f, %3.4f\\n\", TMP_Update::vertex_data_trail[0].normal.x, TMP_Update::vertex_data_trail[0].normal.y, TMP_Update::vertex_data_trail[0].normal.z);\n  294:         printf(\"%3.4f, %3.4f, %3.4f\\n\", TMP_Update::vertex_data_trail[0].position.x, TMP_Update::vertex_data_trail[0].position.y, TMP_Update::vertex_data_trail[0].position.z);\n  295:         printf(\"%3.4f, %3.4f, %3.4f\\n\", TMP_Update::vertex_data_trail[1].position.x, TMP_Update::vertex_data_trail[1].position.y, TMP_Update::vertex_data_trail[1].position.z);\n  296:         printf(\"==========================\");*/\n  297          TMP_Update::trail_data.radius = 0.1f;\n  298          TMP_Update::trail_data.offset_dir *= 1;\n  299:         printf(\"%d\\n\", get_current_frame());\n  300  \n  301          get_render_context_obj()->update_mesh_vertex_data(TMP_Update::trail_mesh_id, TMP_Update::vertex_data_trail, sizeof(TMP_Update::vertex_data_trail));\n\n475 matches across 49 files\n",
+			"settings":
+			{
+				"buffer_size": 82721,
+				"line_ending": "Windows",
+				"name": "Find Results",
+				"scratch": true
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"debugger sett",
+				"Preferences: Debugger Settings"
+			],
+			[
+				"debugger settin",
+				"Preferences: Debugger Settings"
+			],
+			[
+				"debugger settings",
+				"Preferences: Debugger Settings"
+			],
+			[
+				"preferences debuge",
+				"Preferences: Debugger Settings"
+			],
+			[
+				"prefernce",
+				"Preferences: Settings"
+			],
+			[
+				"debugger start",
+				"Debugger: Start (no debug)"
+			],
+			[
+				"settings",
+				"Preferences: Settings"
+			],
+			[
+				"debugger star",
+				"Debugger: Start (no debug)"
+			],
+			[
+				"termi",
+				"Terminal (panel)"
+			],
+			[
+				"debugger install",
+				"Debugger: Install Adapters"
+			],
+			[
+				"debugger ",
+				"Debugger: Open"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"install packa",
+				"Package Control: Install Package"
+			],
+			[
+				"mark",
+				"MarkdownLivePreview: Open Preview"
+			],
+			[
+				"install pa",
+				"Package Control: Install Package"
+			],
+			[
+				"preview",
+				"MarkdownLivePreview: Open Preview"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"markdownlive",
+				"MarkdownLivePreview: Open Preview"
+			],
+			[
+				"package remo",
+				"Package Control: Remove Package"
+			],
+			[
+				"previ",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"package remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"intall",
+				"Package Control: Install Package"
+			],
+			[
+				"install pac",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 482.0,
+		"history":
+		[
+			"window.find_output_panel('Debugger').em_width()",
+			"window.find_output_panel('Debugger').settings().get('font_size')",
+			"./maiin.exe",
+			"view.encoding()"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": false,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/Users/carve/dev/VulkanRendererCPP",
+		"/C/Users/carve/dev/VulkanRendererCPP/tests"
+	],
+	"file_history":
+	[
+		"/C/Users/carve/dev/TodoApp/todoapp.sublime-project",
+		"/C/Users/carve/dev/TodoApp/main.c",
+		"/C/Users/carve/dev/TodoApp/main.exe",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/.git/MERGE_MSG",
+		"/C/Users/carve/dev/Python-3.10.17/Python-3.10.17/PCbuild/readme.txt",
+		"/C/Users/carve/dev/VulkanRendererCPP/tests/main.cpp",
+		"/C/Users/carve/dev/VulkanRendererCPP/CMakeLists.txt",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/exercises/exercise10/shaders/raymarching.frag",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/exercises/exercise06/Assets/Shaders/SampleUnlit.shader",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/exercises/exercise06/Assets/Shaders/Refraction.shader",
+		"/C/Users/carve/dev/VulkanRenderer/src/archivist/archivist.c",
+		"/C/Users/carve/dev/VulkanRenderer/src/main.c",
+		"/C/Users/carve/dev/VulkanRenderer/src/renderer/vertex.h",
+		"/C/Users/carve/dev/VulkanRenderer/src/renderer/renderer_vulkan_bindings.h",
+		"/C/Users/carve/dev/VulkanRenderer/src/resources/js_resources.h",
+		"/C/Users/carve/dev/VulkanRenderer/src/resources/js_resources.c",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/exercises/exercise06/exercise06.sln",
+		"/C/Users/carve/Downloads/compose.frag",
+		"/C/Users/carve/Downloads/PostFXSceneViewerApplication.h",
+		"/C/Users/carve/Documents/PlaydateSDK/Disk/Data/NGJ25/saves/dat0.json",
+		"/C/Users/carve/Documents/PlaydateSDK/Disk/Data/NGJ25/data.json",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/exercises/exercise06/Assets/Shaders/SampleLit.shader",
+		"/C/Users/carve/Documents/PlaydateSDK/Disk/Data/com.cc.testgame/data.json",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/libraries/itugl/src/ituGL/scene/Transform.cpp",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/exercises/exercise06/Assets/Shaders/ITUCG.glslinc",
+		"/C/Users/carve/dev/VulkanRenderer/src/math/js_math.h",
+		"/C/Users/carve/dev/VulkanRenderer/src/renderer/renderer_vulkan.c",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/exercises/exercise09/shaders/renderer/fullscreen.vert",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/exercises/exercise08/CMakeLists.txt",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/exercises/exercise05/shaders/blinn-phong.frag",
+		"/C/Users/carve/Desktop/test.gltf",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/exercises/exercise09/PostFXSceneViewerApplication.cpp",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/libraries/itugl/src/ituGL/camera/Camera.cpp",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/libraries/itugl/src/ituGL/camera/CameraController.cpp",
+		"/C/Users/carve/Downloads/PostFXSceneViewerApplication.cpp",
+		"/C/Users/carve/Desktop/test.bin",
+		"/C/Users/carve/Desktop/OBJ format/animal-bison.mtl",
+		"/C/Users/carve/dev/VulkanRenderer/src/low_window/low_window_win.c",
+		"/C/Users/carve/dev/VulkanRenderer/src/low_window/low_window.h",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/exercises/exercise06/Assets/Shaders/TemplateUnlit.shader",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/CMakeLists.txt",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/libraries/itugl/src/ituGL/application/Application.cpp",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/libraries/CMakeLists.txt",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/exercises/CMakeLists.txt",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/exercises/exercise00/CMakeLists.txt",
+		"/C/Users/carve/dev/VulkanRenderer/src/logging.h",
+		"/C/Users/carve/dev/raylib/src/CMakeLists.txt",
+		"/C/Users/carve/dev/ITU/RP25/previous year projects/TomPries_GraPro-final-project-master/GraPro-final-project-master/links.txt",
+		"/C/Users/carve/dev/ITU/game-programming-dev/CMakeLists.txt",
+		"/C/Users/carve/dev/ITU/RP25/previous year projects/GunnarMagnussen_GraphicsProgProject-main/GraphicsProgProject-main/launch.vs.json",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/libraries/itugl/src/ituGL/application/Window.cpp",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/exercises/exercise02/ParticlesApplication.cpp",
+		"/C/Users/carve/dev/ITU/game-programming-dev/libraries/CMakeLists.txt",
+		"/C/Users/carve/AppData/Local/Temp/213cbbc4-53c3-47ac-b3cc-dcdb5a5c4b9a_TomPries_GraPro-final-project-master.zip.b9a/GraPro-final-project-master/links.txt",
+		"/C/Users/carve/dev/ITU/game-programming-dev/.gitignore",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/.git/rebase-merge/git-rebase-todo",
+		"/C/Users/carve/dev/showcase_sizeof/sizeof_structs.cpp",
+		"/C/Users/carve/dev/showcase_sizeof/sizeof_arrays.cpp",
+		"/C/Users/carve/dev/showcase_sizeof/README.md",
+		"/C/Users/carve/AppData/Local/Temp/88c98ce7-8dc2-482b-b134-99f35f37ac0c_imgui-1.91.8.zip.imgui-1.91.8.zip/imgui-1.91.8/examples/README.txt",
+		"/C/Users/carve/Desktop/TMP/sizeof_structs.cpp",
+		"/C/Users/carve/Desktop/TMP/sizeof_arrays.cpp",
+		"/C/Users/carve/Desktop/TMP/sizeof_padding.cpp",
+		"/C/Users/carve/Desktop/TMP/sizeof_comparison.cpp",
+		"/C/Users/carve/dev/ITU/RP25/graphics-programming-2025/CMakeLists.txt",
+		"/C/Users/carve/dev/ITU/raylib-cmake-custom/CMakeLists.txt",
+		"/C/Users/carve/dev/ITU/raylib-cmake-custom/exercises/main.cpp",
+		"/C/Users/carve/dev/ITU/raylib-cmake-custom/exercises/CMakeLists.txt",
+		"/C/Users/carve/dev/ITU/TMP/CmakeLists.txt",
+		"/C/Users/carve/dev/ITU/TMP/main.cpp",
+		"/C/Users/carve/dev/ITU/graphics-programming-dev/.git/COMMIT_EDITMSG",
+		"/C/Users/carve/dev/ITU/raylib-exercises/core_basic_window.c",
+		"/C/Users/carve/dev/ITU/raylib-exercises/CMakeLists.txt",
+		"/C/Users/carve/dev/ITU/raylib-exercises/libraries/raylib/CMakeLists.txt",
+		"/C/Users/carve/dev/ITU/raylib-exercises/exercises/CMakeLists.txt",
+		"/C/Users/carve/dev/ITU/raylib-exercises/exercises/exercise00/main.cpp",
+		"/C/Users/carve/dev/Dragraces/CMakeLists.txt",
+		"/C/Users/carve/dev/ITU/Personal Projects/AEGP/Out/Build/x64-Debug/output.json",
+		"/C/Users/carve/Documents/Zoom/2025-01-28 14.16.20 rp25 lecture 0_ introduction/chat.txt",
+		"/C/Users/carve/Desktop/temp.txt",
+		"/C/Users/carve/dev/ITU/GP24/SimpleRenderEngineProject/GameProgramming24/_xms/_14/First-Game-main/levels/0.lvl",
+		"/C/Users/carve/dev/ITU/RP24/graphics-programming-2024/CMakeSettings.json",
+		"/C/Users/carve/dev/ITU/GP24/SimpleRenderEngineProject/GameProgramming24/_xms/_03/game-programming-exam/Sprites/Lever.pxo",
+		"/C/Users/carve/AppData/Local/Temp/5ca3c34f-3550-4581-a972-0d015aabc9f5_jlhj-nako.zip.9f5/readme.txt",
+		"/C/Users/carve/dev/Dragraces/out/build/x64-Debug/results.csv",
+		"/C/Users/carve/AppData/Local/Temp/5522b470-d5ad-4a67-9b36-9047d9a5f5ae_glm-1.0.1-light.zip.glm-1.0.1-light.zip/glm/copying.txt",
+		"/C/Users/carve/dev/CWG/Ocelot_PRODUCTION_tests/game/_TMP.txt",
+		"/C/Users/carve/dev/ITU/SimpleRenderEngineProject/CMakeLists.txt",
+		"/C/Users/carve/dev/ITU/GameProgramming23/CMakeLists.txt",
+		"/C/Users/carve/dev/ITU/GameBenchmarks/out/build/x64-debug/GameBenchmarks/results.csv",
+		"/C/Users/carve/Downloads/grassland_special(1).twee",
+		"/C/Users/carve/AppData/Roaming/Godot/app_userdata/Dawnbringers/12_35_12.json",
+		"/C/Users/carve/AppData/Roaming/Godot/app_userdata/Dawnbringers/11_36_54.json",
+		"/C/Users/carve/AppData/Roaming/Godot/app_userdata/Dawnbringers/09_14_43.json",
+		"/C/Users/carve/AppData/Roaming/Godot/app_userdata/Dawnbringers/09_30_24.json",
+		"/C/Users/carve/Desktop/Graph Grammars Notes.md",
+		"/C/Users/carve/AppData/Roaming/Godot/app_userdata/Dawnbringers/09_11_45.json",
+		"/C/Users/carve/AppData/Roaming/Godot/app_userdata/Dawnbringers/09_09_57.json",
+		"/C/Users/carve/AppData/Roaming/Godot/app_userdata/Dawnbringers/08_42_25.json",
+		"/C/Users/carve/AppData/Roaming/Godot/app_userdata/Dawnbringers/08_43_17.json",
+		"/C/Users/carve/AppData/Roaming/Godot/app_userdata/Dawnbringers/08_41_06.json",
+		"/C/Users/carve/AppData/Roaming/Godot/app_userdata/Dawnbringers/08_39_24.json",
+		"/C/Users/carve/AppData/Roaming/Godot/app_userdata/Dawnbringers/08_32_13.json",
+		"/C/Users/carve/AppData/Roaming/Godot/app_userdata/Dawnbringers/08_22_34.json",
+		"/C/Users/carve/AppData/Roaming/Godot/app_userdata/Dawnbringers/08_23_41.json",
+		"/C/Users/carve/AppData/Roaming/Godot/app_userdata/Dawnbringers/08_26_00.json",
+		"/C/Users/carve/AppData/Roaming/Godot/app_userdata/Dawnbringers/08_27_38.json",
+		"/C/Users/carve/AppData/Roaming/Sublime Text/Packages/User/CP.sublime-build",
+		"/C/Users/carve/Desktop/TODO dev_test_repeat.md",
+		"/C/Users/carve/dev/TMP/TestSublimeIDE/main.c",
+		"/C/Users/carve/dev/Research/GraphGrammars/CMakeLists.txt",
+		"/C/Users/carve/Desktop/GP24 dependencies.txt",
+		"/C/Users/carve/Desktop/Game Programming Engine Notes.md",
+		"/C/Users/carve/Desktop/Project supervision notes.md",
+		"/C/Users/carve/dev/TMP/TestSublimeIDE/console.in",
+		"/C/Users/carve/dev/TMP/TestSublimeIDE/console.out",
+		"/C/Users/carve/Desktop/activy2.txt",
+		"/C/Users/carve/dev/CWG/Ocelot_PRODUCTION_tests/game/data/twine_stories/grassland_camp.twee",
+		"/C/Users/carve/Desktop/Exercise3/README.md",
+		"/C/Users/carve/Desktop/Exercise4/ExampleGame/data/snake.json",
+		"/C/Users/carve/dev/ITU/GP24/SimpleRenderEngineProject/CMakeSettings.json",
+		"/C/Users/carve/AppData/Roaming/Godot/app_userdata/Dawnbringers/18_21_29.json",
+		"/C/Users/carve/dev/ITU/GP24/SimpleRenderEngineProject/CMakeLists.txt",
+		"/C/Users/carve/dev/CWG/Ocelot_PRODUCTION_tests/game/textures/PORTRAIT/portrait_kiran.png.import",
+		"/C/Users/carve/dev/ITU/GP24/SimpleRenderEngine/.git/MERGE_MSG",
+		"/C/Users/carve/Downloads/Kiran_event_1.twee",
+		"/C/Users/carve/dev/ITU/GP24/_TEST/CMakeLists.txt",
+		"/C/Users/carve/dev/ITU/GP24/_TEST/main.c"
+	],
+	"find":
+	{
+		"height": 38.0
+	},
+	"find_in_files":
+	{
+		"height": 262.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"printf"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"scrollbar_highlights": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"use_gitignore": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "test_debugger.sublime-project",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 252,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								201,
+								201
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JSON/JSON.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "tests/main.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 14676,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								12921,
+								12921
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3334.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/VKRenderer.cpp",
+					"selected": true,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7079,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4875,
+								4875
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1171.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 82721,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions": "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",
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 27221.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"stack_multiselect": false,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 24.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.Debugger":
+	{
+		"height": 536.0
+	},
+	"output.Debugger Console":
+	{
+		"height": 526.0
+	},
+	"output.Debugger Console(1)":
+	{
+		"height": 0.0
+	},
+	"output.Debugger Console(1)(2)":
+	{
+		"height": 0.0
+	},
+	"output.Debugger Terminal":
+	{
+		"height": 258.0
+	},
+	"output.Terminus":
+	{
+		"height": 436.0
+	},
+	"output.exec":
+	{
+		"height": 96.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/User/CP.sublime-build",
+	"project": "test_debugger.sublime-project",
+	"replace":
+	{
+		"height": 44.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 338.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

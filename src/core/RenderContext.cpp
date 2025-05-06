@@ -190,26 +190,24 @@ namespace vkc {
     }
 
     void RenderContext::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
-        vkEndCommandBuffer(commandBuffer);
+        CC_VK_CHECK(vkEndCommandBuffer(commandBuffer));
 
         VkSubmitInfo submitInfo = { VK_STRUCTURE_TYPE_SUBMIT_INFO };
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = &commandBuffer;
 
-        vkQueueSubmit(m_queue_graphic, 1, &submitInfo, VK_NULL_HANDLE);
-        vkQueueWaitIdle(m_queue_graphic);
+        CC_VK_CHECK(vkQueueSubmit(m_queue_graphic, 1, &submitInfo, VK_NULL_HANDLE));
+        CC_VK_CHECK(vkQueueWaitIdle(m_queue_graphic));
 
         vkFreeCommandBuffers(m_device, m_command_pool, 1, &commandBuffer);
     }
 
     void RenderContext::copyBuffer(VkBuffer src, VkBuffer dst, VkDeviceSize size) {
-        VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-
+        VkCommandBuffer cmdbuf = beginSingleTimeCommands();
         VkBufferCopy copyRegion = { 0 };
         copyRegion.size = size;
-        vkCmdCopyBuffer(commandBuffer, src, dst, 1, &copyRegion);
-
-        endSingleTimeCommands(commandBuffer);
+        vkCmdCopyBuffer(cmdbuf, src, dst, 1, &copyRegion);
+        endSingleTimeCommands(cmdbuf);
     }
 
     void RenderContext::copy_buffer_to_image(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {

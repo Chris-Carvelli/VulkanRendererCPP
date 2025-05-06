@@ -361,17 +361,21 @@ namespace vkc {
 	};
 
 	void Instance::add_object_debug_name(uint64_t object, VkObjectType object_type, VkDevice device, const char* debug_name) {
+#ifdef ENABLE_VALID_LAYERS
 		VkDebugUtilsObjectNameInfoEXT name_info = { VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT };
 		name_info.objectType = object_type;
 		name_info.objectHandle = object;
 		name_info.pObjectName = debug_name;
 		CC_VK_CHECK(vkSetDebugUtilsObjectNameEXT(device, &name_info));
+#endif
 	}
 
 	void Instance::add_buffer_util_label(VkCommandBuffer buffer, const char* debug_name) {
+#ifdef ENABLE_VALID_LAYERS
 		VkDebugUtilsLabelEXT name_info = { VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT };
 		name_info.pLabelName = debug_name;
 		vkCmdInsertDebugUtilsLabelEXT(buffer, &name_info);
+#endif
 	}
 }
  

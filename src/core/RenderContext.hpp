@@ -27,6 +27,7 @@ namespace vkc {
 		VkExtent2D get_swapchain_extent() const { return m_swapchain->get_extent(); };
 		const Swapchain* get_obj_swapchain() const { return m_swapchain.get(); };
 		const VkPhysicalDeviceProperties& get_physical_device_properties() const;
+		VkDevice get_device() const { return m_device; };
 
 		void render_begin();
 		void render_finalize();
@@ -82,9 +83,9 @@ namespace vkc {
 			VkImageAspectFlags aspectFlags
 		);
 
-	private:
 		VkCommandBuffer beginSingleTimeCommands();
 		void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+	private:
 
 		Window * m_window;
 		const PhysicalDevice * m_obj_physical_device;

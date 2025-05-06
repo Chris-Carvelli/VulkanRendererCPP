@@ -47,6 +47,7 @@ namespace vkc {
 		};
 
 		vkc::PhysicalDevice& get_selected_gpu() const;
+
 		void add_object_debug_name(uint64_t object, VkObjectType object_type, VkDevice device, const char* debug_name);
 		void add_buffer_util_label(VkCommandBuffer buffer, const char* debug_name);
 

@@ -156,6 +156,156 @@ namespace vkc::Drawcall {
         model_data_gpu[model_index] = ModelDataGPU();
         ModelDataGPU& model_data_gpu_ref = model_data_gpu[model_index];
 
+        // we could use a single staging buffer here, but then we would need to sync them.
+        // alternatively, create a RenderContext::copyBuffers() that handles it appropriately
+        // (avoiding to create and destroy the same staring buffer seems like a good idea in any case,
+        // just a metter of figuring out how)
+        // vertices ============================================================
+        {
+            // TODO FIXME this won't work if we don't use indices.
+            // but we can't just sizeof(vertices), since now vertices is now a pointer variable
+            VkDeviceSize bufferSize = vertex_buffer_size;
+
+            VkBuffer stagingBuffer;
+            VkDeviceMemory stagingBufferMemory;
+            obj_render_context->createBuffer(
+                bufferSize,
+                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                &stagingBuffer,
+                &stagingBufferMemory
+            );
+
+            // map memory
+            void* data;
+            vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+            memcpy(data, vertex_buffer_content, (size_t)bufferSize);
+            vkUnmapMemory(device, stagingBufferMemory);
+
+            obj_render_context->createBuffer(
+                bufferSize,
+                VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                &model_data_gpu_ref.vertex_buffer,
+                &model_data_gpu_ref.vertexbuffer_memory
+            );
+
+            obj_render_context->copyBuffer(
+                stagingBuffer,
+                model_data_gpu_ref.vertex_buffer,
+                bufferSize
+            );
+
+            vkDestroyBuffer(device, stagingBuffer, NULL);
+            vkFreeMemory(device, stagingBufferMemory, NULL);
+
+            // debug
+            std::string debug_name = "vertex buffer " + std::to_string(model_index);
+            vkc::Instance::TMP_get_singleton_instance()->add_object_debug_name(
+                (uint64_t)model_data_gpu_ref.vertex_buffer,
+                VK_OBJECT_TYPE_BUFFER,
+                obj_render_context->get_device(),
+                debug_name.c_str()
+            );
+            /*std::string debug_name_2 = "staging vertex buffer " + std::to_string(model_index);
+            vkc::Instance::TMP_get_singleton_instance()->add_object_debug_name(
+                (uint64_t)stagingBuffer,
+                VK_OBJECT_TYPE_BUFFER,
+                obj_render_context->get_device(),
+                debug_name.c_str()
+            );*/
+            std::string debug_name_3 = "vertex buffer memory " + std::to_string(model_index);
+            vkc::Instance::TMP_get_singleton_instance()->add_object_debug_name(
+                (uint64_t)model_data_gpu_ref.vertexbuffer_memory,
+                VK_OBJECT_TYPE_DEVICE_MEMORY,
+                obj_render_context->get_device(),
+                debug_name_3.c_str()
+            );
+        }
+
+
+        // indices  ============================================================
+        {
+            model_data_gpu_ref.indices_count = index_buffer_size / sizeof(uint32_t);
+            // TODO FIXME this won't work if we don't use indices.
+            // but we can't just sizeof(indices), since now indices is now a pointer variable
+            VkDeviceSize bufferSize = index_buffer_size;
+
+            VkBuffer stagingBuffer;
+            VkDeviceMemory stagingBufferMemory;
+            obj_render_context->createBuffer(
+                bufferSize,
+                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                &stagingBuffer,
+                &stagingBufferMemory
+            );
+
+            // map memory
+            void* data;
+            vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+            memcpy(data, index_buffer_content, (size_t)bufferSize);
+            vkUnmapMemory(device, stagingBufferMemory);
+
+            obj_render_context->createBuffer(
+                bufferSize,
+                VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                &model_data_gpu_ref.index_buffer,
+                &model_data_gpu_ref.index_buffer_memory
+            );
+
+            obj_render_context->copyBuffer(
+                stagingBuffer,
+                model_data_gpu_ref.index_buffer,
+                bufferSize
+            );
+
+            vkDestroyBuffer(device, stagingBuffer, NULL);
+            vkFreeMemory(device, stagingBufferMemory, NULL);
+
+
+            // debug
+            std::string debug_name = "index buffer " + std::to_string(model_index);
+            vkc::Instance::TMP_get_singleton_instance()->add_object_debug_name(
+                (uint64_t)model_data_gpu_ref.index_buffer,
+                VK_OBJECT_TYPE_BUFFER,
+                obj_render_context->get_device(),
+                debug_name.c_str()
+            );
+            /*std::string debug_name_2 = "staging index buffer " + std::to_string(model_index);
+            vkc::Instance::TMP_get_singleton_instance()->add_object_debug_name(
+                (uint64_t)stagingBuffer,
+                VK_OBJECT_TYPE_BUFFER,
+                obj_render_context->get_device(),
+                debug_name.c_str()
+            );*/
+            std::string debug_name_3 = "index buffer memory " + std::to_string(model_index);
+            vkc::Instance::TMP_get_singleton_instance()->add_object_debug_name(
+                (uint64_t)model_data_gpu_ref.index_buffer_memory,
+                VK_OBJECT_TYPE_DEVICE_MEMORY,
+                obj_render_context->get_device(),
+                debug_name_3.c_str()
+            );
+        }
+
+        return model_index;
+    }
+
+    uint32_t create_model_buffers_dynamic(
+        void* vertex_buffer_content,
+        uint32_t vertex_buffer_size,
+        uint32_t* index_buffer_content,
+        uint32_t  index_buffer_size,
+        VkDevice device,
+        vkc::RenderContext* obj_render_context
+    ) {
+        uint32_t model_index = model_data_gpu.size();
+        model_data_gpu[model_index] = ModelDataGPU();
+        ModelDataGPU& model_data_gpu_ref = model_data_gpu[model_index];
+
+
+        VkCommandBuffer commandBuffer = obj_render_context->beginSingleTimeCommands();
 
         // we could use a single staging buffer here, but then we would need to sync them.
         // alternatively, create a RenderContext::copyBuffers() that handles it appropriately
@@ -185,7 +335,8 @@ namespace vkc::Drawcall {
 
             obj_render_context->createBuffer(
                 bufferSize,
-                VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                 &model_data_gpu_ref.vertex_buffer,
                 &model_data_gpu_ref.vertexbuffer_memory
             );
@@ -193,7 +344,8 @@ namespace vkc::Drawcall {
             obj_render_context->copyBuffer(
                 stagingBuffer,
                 model_data_gpu_ref.vertex_buffer,
-                bufferSize);
+                bufferSize
+            );
 
             vkDestroyBuffer(device, stagingBuffer, NULL);
             vkFreeMemory(device, stagingBufferMemory, NULL);
@@ -241,6 +393,8 @@ namespace vkc::Drawcall {
             vkFreeMemory(device, stagingBufferMemory, NULL);
         }
 
+
+        obj_render_context->endSingleTimeCommands(commandBuffer);
         return model_index;
     }
 

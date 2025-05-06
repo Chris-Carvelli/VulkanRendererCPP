@@ -90,10 +90,11 @@ struct MeshData {
 	- [x] move character
 	- [ ] draw trail
 		- [x] create pipeline with TRI_STRIP topology
-		- [ ] write shader for billboarded triangle strip
-		- [ ] upload X vertives to the GPU
-		- [ ] set vertex attributes init time
-		- [ ] update vertex position at runtime
+		- [x] write shader for billboarded triangle strip
+		- [x] upload X vertives to the GPU
+		- [x] set vertex attributes init time
+		- [x] update vertex position at runtime
+		- [ ] switch offsets based on frame to avoid flickering
 	- [ ] main application can create renderpasses
 	- [ ] main application can create pipelines
 		- [ ] `PipelineConfig` should contain `IdAssetTexture` rather than texture view

@@ -82,6 +82,10 @@ namespace vkc {
 			CC_LOG(ERROR, "failed to begin recording command buffer!");
 		}
 
+		// copy dynamic meshes (trials and stuff like that)
+		
+
+
 		// viewport and scissor ===============================================
 		// these could be metadata of shaders/pipelines/renderpasses
 		// examples of only some calls setting special ones
@@ -123,6 +127,9 @@ namespace vkc {
 		{
 			if (drawcall.obj_render_pass != obj_curr_render_pass)
 			{
+				if (obj_curr_render_pass != nullptr)
+					vkCmdEndRenderPass(m_command_buffer);
+
 				obj_curr_render_pass = drawcall.obj_render_pass;
 				begin_info = obj_curr_render_pass->get_being_info(frame_index);
 				vkCmdBeginRenderPass(
