@@ -123,6 +123,7 @@ namespace vkc {
 		vkc::Pipeline* obj_curr_pipeline = nullptr;
 		VkRenderPassBeginInfo begin_info;
 
+		vkc::Instance::TMP_get_singleton_instance()->begin_cmd_buffer_util_label(m_command_buffer, "drawcalls", (float[4]){ 1.0f, 0.0f, 0.0f, 1.0f });
 		for(const auto& drawcall : drawcalls)
 		{
 			if (drawcall.obj_render_pass != obj_curr_render_pass)
@@ -170,12 +171,13 @@ namespace vkc {
 			vkCmdBindIndexBuffer(m_command_buffer, model_data_gpu.index_buffer, 0, VK_INDEX_TYPE_UINT32);
 
 
-			vkc::Instance::TMP_get_singleton_instance()->add_buffer_util_label(m_command_buffer, "424242 HELLO WORLD");
 			vkCmdDrawIndexed(m_command_buffer, model_data_gpu.indices_count, 1, 0, 0, 0);
 		}
+		vkc::Instance::TMP_get_singleton_instance()->end_cmd_buffer_util_label(m_command_buffer);
 		// ====================================================================
 
 		// debug draw call ====================================================
+		vkc::Instance::TMP_get_singleton_instance()->begin_cmd_buffer_util_label(m_command_buffer, "debug drawcalls", (float[4]) { 0.0f, 1.0f, 0.0f, 1.0f });
 		// TMP only one renderpass, debug drawcall hardcoded at idx 1
 		auto obj_debug_pipeline = obj_curr_render_pass->get_debug_pipeline_ptr(0);
 		vkCmdBindPipeline(
@@ -190,6 +192,7 @@ namespace vkc {
 
 		glm::mat4 viewProj = ubo.proj * ubo.view;
 		obj_debug_pipeline->update_uniform_buffer(&viewProj, frame_index);
+
 
 		// TODO IMMEDIATE bind pipeline and execute draw calls
 		for (const auto& drawcall : debug_drawcalls)
@@ -212,14 +215,17 @@ namespace vkc {
 
 			vkCmdDrawIndexed(m_command_buffer, model_data_gpu.indices_count, 1, 0, 0, 0);
 		}
+		vkc::Instance::TMP_get_singleton_instance()->end_cmd_buffer_util_label(m_command_buffer);
 		// ====================================================================
 		
-		// TMP test imgui
 
+		// TMP test imgui
+		vkc::Instance::TMP_get_singleton_instance()->begin_cmd_buffer_util_label(m_command_buffer, "imgui drawcalls", (float[4]) { 0.0f, 0.0f, 1.0f, 1.0f });
 		// TODO check if RenderDrawData's third parameter (VkPipeline, default to nullptr) is needed
 		ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), m_command_buffer);
 
 		vkCmdEndRenderPass(m_command_buffer);
+		vkc::Instance::TMP_get_singleton_instance()->end_cmd_buffer_util_label(m_command_buffer);
 
 		if (vkEndCommandBuffer(m_command_buffer) != VK_SUCCESS)
 			CC_LOG(ERROR, "failed to record command buffer");

@@ -13,8 +13,17 @@ namespace vkc {
 		PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT;
 		PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT;
 		PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT;
+
+		// runtime labels for RenderDoc
 		PFN_vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT;
+		PFN_vkCmdBeginDebugUtilsLabelEXT vkCmdBeginDebugUtilsLabelEXT;
+		PFN_vkCmdEndDebugUtilsLabelEXT vkCmdEndDebugUtilsLabelEXT;
 		PFN_vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT;
+		PFN_vkQueueBeginDebugUtilsLabelEXT vkQueueBeginDebugUtilsLabelEXT;
+		PFN_vkQueueEndDebugUtilsLabelEXT vkQueueEndDebugUtilsLabelEXT;
+		PFN_vkQueueInsertDebugUtilsLabelEXT vkQueueInsertDebugUtilsLabelEXT;
+		//---------------------------------
+
 
 		// manual load of necessary function addresses
 		void loadVkFuncAddr(VkInstance instance) {
@@ -23,7 +32,15 @@ namespace vkc {
 			vkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT"));
 			vkDestroyDebugReportCallbackEXT = reinterpret_cast<PFN_vkDestroyDebugReportCallbackEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT"));
 			vkSetDebugUtilsObjectNameEXT = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetInstanceProcAddr(instance, "vkSetDebugUtilsObjectNameEXT"));
+
 			vkCmdInsertDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdInsertDebugUtilsLabelEXT>(vkGetInstanceProcAddr(instance, "vkCmdInsertDebugUtilsLabelEXT"));
+			vkSetDebugUtilsObjectNameEXT = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetInstanceProcAddr(instance, "vkSetDebugUtilsObjectNameEXT"));
+			vkCmdBeginDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdBeginDebugUtilsLabelEXT>(vkGetInstanceProcAddr(instance, "vkCmdBeginDebugUtilsLabelEXT"));
+			vkCmdEndDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdEndDebugUtilsLabelEXT>(vkGetInstanceProcAddr(instance, "vkCmdEndDebugUtilsLabelEXT"));
+			vkCmdInsertDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdInsertDebugUtilsLabelEXT>(vkGetInstanceProcAddr(instance, "vkCmdInsertDebugUtilsLabelEXT"));
+			vkQueueBeginDebugUtilsLabelEXT = reinterpret_cast<PFN_vkQueueBeginDebugUtilsLabelEXT>(vkGetInstanceProcAddr(instance, "vkQueueBeginDebugUtilsLabelEXT"));
+			vkQueueEndDebugUtilsLabelEXT = reinterpret_cast<PFN_vkQueueEndDebugUtilsLabelEXT>(vkGetInstanceProcAddr(instance, "vkQueueEndDebugUtilsLabelEXT"));
+			vkQueueInsertDebugUtilsLabelEXT = reinterpret_cast<PFN_vkQueueInsertDebugUtilsLabelEXT>(vkGetInstanceProcAddr(instance, "vkQueueInsertDebugUtilsLabelEXT"));
 		}
 	}
 	
@@ -370,11 +387,39 @@ namespace vkc {
 #endif
 	}
 
-	void Instance::add_buffer_util_label(VkCommandBuffer buffer, const char* debug_name) {
+	void Instance::begin_cmd_buffer_util_label(VkCommandBuffer buffer, const char* debug_name, float color[4]) {
 #ifdef ENABLE_VALID_LAYERS
 		VkDebugUtilsLabelEXT name_info = { VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT };
 		name_info.pLabelName = debug_name;
+		if (color != VK_NULL_HANDLE)
+		{
+			name_info.color[0] = color[0];
+			name_info.color[1] = color[1];
+			name_info.color[2] = color[2];
+			name_info.color[3] = color[3];
+		}
+		vkCmdBeginDebugUtilsLabelEXT(buffer, &name_info);
+#endif
+	}
+
+	void Instance::add_cmd_buffer_util_label(VkCommandBuffer buffer, const char* debug_name, float color[4]) {
+#ifdef ENABLE_VALID_LAYERS
+		VkDebugUtilsLabelEXT name_info = { VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT };
+		name_info.pLabelName = debug_name;
+		if (color != VK_NULL_HANDLE)
+		{
+			name_info.color[0] = color[0];
+			name_info.color[1] = color[1];
+			name_info.color[2] = color[2];
+			name_info.color[3] = color[3];
+		}
 		vkCmdInsertDebugUtilsLabelEXT(buffer, &name_info);
+#endif
+	}
+
+	void Instance::end_cmd_buffer_util_label(VkCommandBuffer buffer) {
+#ifdef ENABLE_VALID_LAYERS
+		vkCmdEndDebugUtilsLabelEXT(buffer);
 #endif
 	}
 }

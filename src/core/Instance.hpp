@@ -49,7 +49,10 @@ namespace vkc {
 		vkc::PhysicalDevice& get_selected_gpu() const;
 
 		void add_object_debug_name(uint64_t object, VkObjectType object_type, VkDevice device, const char* debug_name);
-		void add_buffer_util_label(VkCommandBuffer buffer, const char* debug_name);
+
+		void begin_cmd_buffer_util_label(VkCommandBuffer buffer, const char* debug_name, float color[4] = VK_NULL_HANDLE);
+		void add_cmd_buffer_util_label(VkCommandBuffer buffer, const char* debug_name, float color[4] = VK_NULL_HANDLE);
+		void end_cmd_buffer_util_label(VkCommandBuffer buffer);
 
 	private:
 		void query_gpus();
