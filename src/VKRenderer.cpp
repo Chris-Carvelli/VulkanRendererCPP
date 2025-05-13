@@ -10,7 +10,7 @@ void VKRenderer::run() {
 	init_base();
 	init();
 
-	// force upload of assets to GPU
+	// TODO FIXME force upload of assets to GPU
 	TMP_force_gpu_upload_all();
 	TMP_create_renderpasses();
 
@@ -186,12 +186,20 @@ void VKRenderer::update_base() {
 	auto extents = m_window->get_current_extent();
 	m_window_size.width = extents.width;
 	m_window_size.height = extents.height;
+
+	// TODO FIXME use internal input system
+	if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_F1, false))
+		m_app_config.show_debug_ui = !m_app_config.show_debug_ui;
 }
 
 void VKRenderer::gui_base() {
+	if (!m_app_config.show_debug_ui)
+		return;
+
 	float smoothed_fps = 0;
 	for (int i = 0; i < AppStats::FPS_SMOOTH_WINDOW_SIZE; ++i)
 		smoothed_fps += m_app_stats.fps[i];
+
 	ImGui::Begin("App Info");
 	ImGui::LabelText("FPS", "%3.0f", smoothed_fps / AppStats::FPS_SMOOTH_WINDOW_SIZE);
 	ImGui::LabelText("Delta", "%3.4f", m_app_stats.delta_time);

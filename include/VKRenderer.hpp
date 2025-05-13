@@ -17,6 +17,10 @@
 #include <memory>
 
 class VKRenderer {
+	struct AppConfig {
+		bool show_debug_ui;
+	};
+
 	struct AppStats {
 		static const int FPS_SMOOTH_WINDOW_SIZE = 8;
 
@@ -101,6 +105,7 @@ private:
 
 	VkSurfaceKHR m_surface;
 
+	AppConfig m_app_config;
 	AppStats m_app_stats;
 
 	// internal state
