@@ -81,9 +81,9 @@ namespace vkc {
     }
 
     void RenderContext::render_begin() {
-        // make up some drawcalls for testing
-        vkc::RenderPass* obj_render_pass = m_render_passes[0].get();
-
+        // return;
+        
+        // TODO FIXME find an appropriate place for drawing defualt gizmos
         // center
         Drawcall::add_debug_cube(
             glm::vec3(0.0f, 0.0f, 0.0f),

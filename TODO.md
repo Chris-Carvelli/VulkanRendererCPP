@@ -85,6 +85,7 @@ struct MeshData {
 		- [ ] ~handle multiple uniform buffer and push constants~
 		- [x] number and size of buffer is a creation parameter
 	- [ ] check why adding light color to blinn phong hue shifts (???) the final color
+	- [ ] add debug names to assets and buffers
 
 - 25/04/25
 	- [x] move character

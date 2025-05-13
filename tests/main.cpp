@@ -250,20 +250,6 @@ class TestRenderer : public VKRenderer {
         TMP_Update::trail_mesh_id = vkc::Assets::create_mesh(TMP_Update::trail_mesh);
         TMP_Update::trail_data.offset_dir = 1;
         CC_LOG(LOG, "%d", TMP_Update::trail_data.offset_dir);
-        /*TMP_Update::trail_mesh_id = vkc::Drawcall::createModelBuffers(
-            (void*)TMP_Update::vertex_data_trail,
-            (uint32_t)TMP_Update::trail_size * sizeof(TMP_Update::vertex_data_trail[0]),
-            (uint32_t*)TMP_Update::indices,
-            (uint32_t)TMP_Update::trail_size * sizeof(TMP_Update::indices[0]),
-            get_device_handle(),
-            get_render_context_obj()
-        );
-        vkc::Drawcall::add_debug_name(
-            TMP_Update::trail_mesh_id,
-            get_device_handle(),
-            get_instance_obj(),
-            "trail_buffers"
-        );*/
     }
 
     void update() override {

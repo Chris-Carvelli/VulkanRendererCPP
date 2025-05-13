@@ -197,34 +197,6 @@ namespace vkc {
 				.topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST
 			}
 		);
-
-		// // TODO
-		// // 1. RenderPass must be created with custom framebuffers
-		// // 2. render textures must be resized with swapchain recreation
-		//// outlines
-		//m_pipelines[1] = std::make_unique<vkc::Pipeline>(
-		//	m_handle_device,
-		//	m_obj_render_context,
-		//	m_handle,
-		//	new PipelineConfig{
-		//		"res/shaders/fx_shader_fullscreen.vert.spv",
-		//		"res/shaders/fx_shader.frag.spv",
-		//		.size_uniform_data_frame = 0,
-		//		.size_uniform_data_material = 0,
-		//		.size_push_constant_model = 0,
-		//		.vertex_binding_descriptors = vertexData_getBindingDescriptions(),
-		//		.vertex_binding_descriptors_count = vertexData_getBindingDescriptionsCount(),
-		//		// FIXME check `vertexDataFX_getAttributeDescriptions` definition
-		//		.vertex_attribute_descriptors = vertexDataFX_getAttributeDescriptions(),
-		//		.vertex_attribute_descriptors_count = 1,
-		//		.texture_image_views = new VkImageView[] {
-		//			m_colo
-		//			m_depth_image_view
-		//		},
-		//		.texture_image_views_count = 2,
-		//		.face_culling_mode = VK_CULL_MODE_FRONT_BIT
-		//	}
-		//);
 	}
 
 	void RenderPass::handle_swapchain_destruction() {
