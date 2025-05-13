@@ -21,7 +21,12 @@ do
     file_path_dst="$path_dst/$file_name_dst"
 
     file_last_modified_src=$(stat -c %Y $file_path_src)
-    file_last_modified_dst=$(stat -c %Y $file_path_dst)
+
+    if [ -f $file_path_dst ]; then
+        file_last_modified_dst=$(stat -c %Y $file_path_dst)
+    else
+        file_last_modified_dst=0 # file was never modified
+    fi
 
     
     if ! $is_forcing && [ $file_last_modified_src -le $file_last_modified_dst ];
@@ -33,6 +38,7 @@ do
     # shader_stage="${file_name##*.}"
 
     glslang -I$path_src/include -V $file_path_src -o $file_path_dst
+    #echo "compiled shader $file_path_src"
     #echo "glslang -V $file -o '$path_dst/$file_name_dst'"
 
 done

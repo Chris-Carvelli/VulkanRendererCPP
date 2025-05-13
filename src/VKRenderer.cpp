@@ -87,8 +87,8 @@ void VKRenderer::TMP_create_renderpasses() {
 
 	// TODO configure renderpass and pipelines
 	uint32_t default_pipeline = m_render_context->get_renderpass(0)->add_pipeline(new vkc::PipelineConfig{
-				.vert_path = "res/shaders/shader_base.vert.spv",
-				.frag_path = "res/shaders/shader_base.frag.spv",
+				.vert_path = "res/shaders/base.vert.spv",
+				.frag_path = "res/shaders/base.frag.spv",
 				.size_uniform_data_frame = sizeof(DataUniformFrame),
 				.size_uniform_data_material = sizeof(DataUniformMaterial),
 				.size_push_constant_model = sizeof(DataUniformModel),
@@ -110,8 +110,8 @@ void VKRenderer::TMP_create_renderpasses() {
 	);
 
 	uint32_t trail_pipeline = m_render_context->get_renderpass(0)->add_pipeline(new vkc::PipelineConfig{
-				.vert_path = "res/shaders/shader_trail.vert.spv",
-				.frag_path = "res/shaders/shader_trail.frag.spv",
+				.vert_path = "res/shaders/trail.vert.spv",
+				.frag_path = "res/shaders/trail.frag.spv",
 				.size_uniform_data_frame = sizeof(DataUniformFrame),
 				.size_uniform_data_material = sizeof(DataUniformMaterial),
 				.size_push_constant_model = sizeof(DataUniformTrail),

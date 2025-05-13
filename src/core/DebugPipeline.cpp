@@ -18,8 +18,8 @@ namespace vkc {
 	{
 		create_descriptor_set_layout();
 
-		std::vector<char> shaderCodeVert = TMP_VUlkanUtils::read_file_binary("res/shaders/shader_debug.vert.spv");
-		std::vector<char> shaderCodeFrag = TMP_VUlkanUtils::read_file_binary("res/shaders/shader_debug.frag.spv"); // TODO custom debug fragment shader
+		std::vector<char> shaderCodeVert = TMP_VUlkanUtils::read_file_binary("res/shaders/debug.vert.spv");
+		std::vector<char> shaderCodeFrag = TMP_VUlkanUtils::read_file_binary("res/shaders/debug.frag.spv"); // TODO custom debug fragment shader
 
 		VkShaderModule shaderModuleVert = create_shader_module(handle_device, shaderCodeVert.data(), shaderCodeVert.size());
 		VkShaderModule shaderModuleFrag = create_shader_module(handle_device, shaderCodeFrag.data(), shaderCodeFrag.size());
