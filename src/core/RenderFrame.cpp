@@ -108,15 +108,6 @@ namespace vkc {
 		};
 		scissor.extent = swapchain_extent;
 		vkCmdSetScissor(m_command_buffer, 0, 1, &scissor);
-		// ====================================================================
-		
-		// renderpass =========================================================
-		
-		// ====================================================================
-
-		// pipeline ===========================================================
-		
-		// ====================================================================
 
 		// draw calls =========================================================
 		vkc::RenderPass* obj_curr_render_pass = nullptr;
@@ -174,12 +165,30 @@ namespace vkc {
 			vkCmdDrawIndexed(m_command_buffer, model_data_gpu.indices_count, 1, 0, 0, 0);
 		}
 		vkc::Instance::TMP_get_singleton_instance()->end_cmd_buffer_util_label(m_command_buffer);
+
+
 		// ====================================================================
+
 
 		// debug draw call ====================================================
 		vkc::Instance::TMP_get_singleton_instance()->begin_cmd_buffer_util_label(m_command_buffer, "debug drawcalls", (float[4]) { 0.0f, 1.0f, 0.0f, 1.0f });
 		// TMP only one renderpass, debug drawcall hardcoded at idx 1
-		auto obj_debug_pipeline = obj_curr_render_pass->get_debug_pipeline_ptr(0);
+		auto obj_debug_renderpass = m_render_context->get_renderpass(0);
+
+		if (obj_curr_render_pass != obj_debug_renderpass) {
+			if (obj_curr_render_pass != nullptr)
+				vkCmdEndRenderPass(m_command_buffer);
+
+
+			begin_info = obj_debug_renderpass->get_being_info(frame_index);
+			vkCmdBeginRenderPass(
+				m_command_buffer,
+				&begin_info,
+				VK_SUBPASS_CONTENTS_INLINE
+			);
+		}
+
+		auto obj_debug_pipeline = obj_debug_renderpass->get_debug_pipeline_ptr(0);
 		vkCmdBindPipeline(
 			m_command_buffer,
 			VK_PIPELINE_BIND_POINT_GRAPHICS,
