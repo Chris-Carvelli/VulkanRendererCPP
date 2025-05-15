@@ -3,6 +3,11 @@
 # flags
 is_forcing=false
 
+# glslang params
+shader_include_folders="shaders_include"
+vulkan_version=450
+preamble_text='--preamble-text '
+
 while getopts 'f' flag; do
   case "${flag}" in
     f) is_forcing=true ;;
@@ -33,12 +38,7 @@ do
     then
         continue
     fi
-    # # not needed ATM, but it will be useful for more refined logic
-    # shader_name="${file_name%.*}"
-    # shader_stage="${file_name##*.}"
 
-    glslang -I$path_src/include -V $file_path_src -o $file_path_dst
-    #echo "compiled shader $file_path_src"
-    #echo "glslang -V $file -o '$path_dst/$file_name_dst'"
+    glslang -I$shader_include_folders -V --glsl-version $vulkan_version -P"#extension GL_ARB_shading_language_include : require" $file_path_src -o $file_path_dst
 
 done

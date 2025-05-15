@@ -14,11 +14,12 @@
 	VkResult err = y;				\
 									\
 	if(err) {						\
-		CC_EXIT(err,				\
+		CC_LOG(ERROR,				\
 			"[Vulkan error %d] %s",	\
 			err,					\
 			string_VkResult(err)	\
 		);							\
+		assert(false);				\
 	}								\
 }
 

@@ -181,7 +181,8 @@ namespace vkc {
 		for (auto& handle : m_uniform_buffers_memory_material)
 			vkFreeMemory(m_handle_device, handle, NULL);
 
-		vkDestroySampler(m_handle_device, m_texture_sampler, NULL);
+		for(auto &sampler : m_texture_samplers)
+			vkDestroySampler(m_handle_device, sampler, NULL);
 
 		// FIXME cleanup config (see below)
 		// pipeline either acquires ALL config arrays, or none
@@ -226,7 +227,7 @@ namespace vkc {
 
 		VkDescriptorSetLayoutBinding samplerLayoutBinding = { 0 };
 		samplerLayoutBinding.binding = 2;
-		samplerLayoutBinding.descriptorCount = 1;
+		samplerLayoutBinding.descriptorCount = m_config->texture_image_views_count;
 		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
@@ -251,20 +252,23 @@ namespace vkc {
 
 		// descriptor pool
 		VkDescriptorPoolSize poolSize[] = {
-		(VkDescriptorPoolSize) {
-			.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-			.descriptorCount = num_swapchain_images
-		},
 			(VkDescriptorPoolSize) {
-			.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-			.descriptorCount = num_swapchain_images
-		},
-		(VkDescriptorPoolSize) {
-			.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-			.descriptorCount = num_swapchain_images
-		}
+				.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+				.descriptorCount = num_swapchain_images
+			},
+				(VkDescriptorPoolSize) {
+				.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+				.descriptorCount = num_swapchain_images
+			},
+			(VkDescriptorPoolSize) {
+				.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+				.descriptorCount = num_swapchain_images * m_config->texture_image_views_count
+			}
 		};
-		static const uint32_t poolSizeCount = sizeof(poolSize) / sizeof(VkDescriptorPoolSize);
+		//static const uint32_t poolSizeCount = sizeof(poolSize) / sizeof(VkDescriptorPoolSize);
+		uint32_t poolSizeCount = sizeof(poolSize) / sizeof(VkDescriptorPoolSize);
+		if (m_config->texture_image_views_count == 0)
+			--poolSizeCount;
 
 		VkDescriptorPoolCreateInfo poolInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO };
 		poolInfo.poolSizeCount = poolSizeCount;
@@ -280,16 +284,13 @@ namespace vkc {
 			layouts[i] = m_handle_descriptor_set_layout;
 
 		VkDescriptorSetAllocateInfo allocInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO };
-		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 		allocInfo.descriptorPool = m_descriptor_pool;
 		allocInfo.descriptorSetCount = num_swapchain_images;
 		allocInfo.pSetLayouts = layouts.data();
 
 		m_descriptor_sets.resize(num_swapchain_images);
 
-		if (vkAllocateDescriptorSets(m_handle_device, &allocInfo, m_descriptor_sets.data()) != VK_SUCCESS) {
-			CC_LOG(ERROR, "failed to allocate descriptor sets!");
-		}
+		CC_VK_CHECK(vkAllocateDescriptorSets(m_handle_device, &allocInfo, m_descriptor_sets.data()));
 
 
 		for (size_t i = 0; i < num_swapchain_images; ++i) {
@@ -298,7 +299,11 @@ namespace vkc {
 			// - material UBO
 			const uint32_t TEXTURE_BINDING_OFFSET = 2;
 
-			std::vector< VkWriteDescriptorSet> descriptor_writes(TEXTURE_BINDING_OFFSET + m_config->texture_image_views_count);
+			uint32_t descriptro_writes_count = TEXTURE_BINDING_OFFSET;
+			if (m_config->texture_image_views_count > 0)
+				++descriptro_writes_count;
+
+			std::vector< VkWriteDescriptorSet> descriptor_writes(descriptro_writes_count);
 
 			VkDescriptorBufferInfo bufferInfo_frame = { 0 };
 			bufferInfo_frame.buffer = m_uniform_buffers[i];
@@ -330,27 +335,29 @@ namespace vkc {
 					.pBufferInfo = &bufferInfo_material
 			};
 
-
-
-			for (int j = 0; j < m_config->texture_image_views_count; ++j)
+			std::vector<VkDescriptorImageInfo> imageInfo = std::vector<VkDescriptorImageInfo>(m_config->texture_image_views_count);
+			if (m_config->texture_image_views_count > 0)
 			{
-				VkDescriptorImageInfo imageInfo = { 0 };
-				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				imageInfo.imageView = m_config->texture_image_views[j];
-				imageInfo.sampler = m_texture_sampler;
+				for (int j = 0; j < m_config->texture_image_views_count; ++j)
+				{
+					imageInfo[j].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+					imageInfo[j].imageView = m_config->texture_image_views[j];
+					imageInfo[j].sampler = m_texture_samplers[j];
+				}
 
-				descriptor_writes[TEXTURE_BINDING_OFFSET + j] = (VkWriteDescriptorSet){ // texture sampler
+				descriptor_writes[TEXTURE_BINDING_OFFSET] = (VkWriteDescriptorSet){ // texture sampler
 					.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 					.dstSet = m_descriptor_sets[i],
-					.dstBinding = TEXTURE_BINDING_OFFSET + j,
+					.dstBinding = TEXTURE_BINDING_OFFSET,
 					.dstArrayElement = 0,
-					.descriptorCount = 1,
+					.descriptorCount = m_config->texture_image_views_count,
 					.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-					.pImageInfo = &imageInfo
+					.pImageInfo = imageInfo.data()
 				};
 			}
 
-			vkUpdateDescriptorSets(m_handle_device, descriptor_writes.size(), descriptor_writes.data(), 0, NULL);
+			// TODO FIXME handle better pipelines without textures
+			vkUpdateDescriptorSets(m_handle_device, descriptro_writes_count, descriptor_writes.data(), 0, NULL);
 		}
 	}
 
@@ -399,6 +406,9 @@ namespace vkc {
 	}
 
 	void Pipeline::create_texture_samplers() {
+		m_texture_samplers.resize(m_config->texture_image_views_count);
+
+
 		VkSamplerCreateInfo samplerInfo = { VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO };
 		samplerInfo.magFilter = VK_FILTER_LINEAR;
 		samplerInfo.minFilter = VK_FILTER_LINEAR;
@@ -418,9 +428,8 @@ namespace vkc {
 		samplerInfo.minLod = 0.0f;
 		samplerInfo.maxLod = 0.0f;
 
-		if (vkCreateSampler(m_handle_device, &samplerInfo, NULL, &m_texture_sampler) != VK_SUCCESS) {
-			CC_LOG(ERROR, "failed to create texture sampler!");
-		}
+		for(int i = 0; i < m_config->texture_image_views_count; ++i)
+			CC_VK_CHECK(vkCreateSampler(m_handle_device, &samplerInfo, NULL, &m_texture_samplers[i]));
 	}
 
 	VkShaderModule Pipeline::create_shader_module(VkDevice device, const char* code, const size_t codeSize) {

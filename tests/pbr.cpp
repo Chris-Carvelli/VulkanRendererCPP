@@ -28,6 +28,7 @@ namespace TMP_Utils {
         return ret;
     }
 }
+
 namespace TMP_Update {
     // camera
     glm::mat4 camera_world;
@@ -184,18 +185,12 @@ namespace TMP_Update {
 
 class TestRenderer : public VKRenderer {
     void init() override {
-        // TMP
-        auto g = offsetof(DataUniformFrame, view);
-        auto f = offsetof(DataUniformFrame, proj);
-        auto e = offsetof(DataUniformFrame, light_ambient);
-        auto d = offsetof(DataUniformFrame, light_dir);
-        auto c = offsetof(DataUniformFrame, light_color);
-        auto a = offsetof(DataUniformFrame, light_intensity);
-        auto b = offsetof(DataUniformFrame, frame);
-
         // load mesh and textures
-        TMP_Update::TMP_mesh_idxs = vkc::Assets::load_meshes_from_folder("res/models/pack_prototype");
-        auto TMP_texture_idx = vkc::Assets::load_texture("res/textures/colormap.png", vkc::Assets::TEX_CHANNELS_RGB_A);
+        TMP_Update::TMP_mesh_idxs = std::vector<vkc::Assets::IdAssetMesh>(1);
+        TMP_Update::TMP_mesh_idxs[0] = vkc::Assets::load_mesh("res/models/treasure_chest/treasure_chest.obj");
+        auto TMP_tex_idx_arm      = vkc::Assets::load_texture("res/models/treasure_chest/treasure_chest_diffuse.png", vkc::Assets::TEX_CHANNELS_RGB_A);
+        auto TMP_tex_idx_diffuse  = vkc::Assets::load_texture("res/models/treasure_chest/treasure_chest_arm.png", vkc::Assets::TEX_CHANNELS_RGB_A);
+        auto TMP_tex_idx_normal   = vkc::Assets::load_texture("res/models/treasure_chest/treasure_chest_normal.png", vkc::Assets::TEX_CHANNELS_RGB_A);
 
         // create uniform data for each model
         TMP_Update::model_data.resize(TMP_Update::drawcall_cout);
@@ -223,25 +218,6 @@ class TestRenderer : public VKRenderer {
             get_window_size(),
             get_ubo_reference()
         );
-
-        // model
-        const glm::vec3 UP(0.0f, 1.0f, 0.0f);
-        const float char_speed_mov = 3.0f;
-        const float char_speed_rot = 3.0f;
-        auto& io = ImGui::GetIO();
-        glm::vec3 char_mov(0.0f);
-        float char_rot = 0;
-        if (ImGui::IsKeyDown(ImGuiKey_UpArrow))    char_mov.z += 1.0f;
-        if (ImGui::IsKeyDown(ImGuiKey_DownArrow))  char_mov.z -= 1.0f;
-        if (ImGui::IsKeyDown(ImGuiKey_RightArrow)) char_rot -= 1.0f;
-        if (ImGui::IsKeyDown(ImGuiKey_LeftArrow))  char_rot += 1.0f;
-
-        float delta = get_delta_time();
-
-        auto mtx_rot = glm::eulerAngleXYZ(0.0f, char_rot * char_speed_rot * delta, 0.0f);
-        auto mtx_mov = glm::translate(TMP_Utils::global_to_local_dir(char_mov * char_speed_mov * delta, TMP_Update::model_data[0].model));
-
-        TMP_Update::model_data[0].model = mtx_mov * TMP_Update::model_data[0].model * mtx_rot;
     }
 
     void render() override {

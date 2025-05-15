@@ -88,7 +88,6 @@ namespace vkc {
 		std::vector<VkBuffer>			m_uniform_buffers_material;
 		std::vector<VkDeviceMemory>		m_uniform_buffers_memory_material;
 		std::vector<void*>				m_uniform_buffers_mapped_material;
-
-		VkSampler m_texture_sampler;
+		std::vector<VkSampler>			m_texture_samplers;
 	};
 }

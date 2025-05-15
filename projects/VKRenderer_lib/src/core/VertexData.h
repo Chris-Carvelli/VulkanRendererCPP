@@ -20,6 +20,7 @@ typedef struct {
     glm::vec3 position;
     glm::vec3 color;
     glm::vec3 normal;
+    glm::vec3 tangent;
     glm::vec2 texCoords;
 } VertexData;
 
@@ -82,6 +83,12 @@ static const VkVertexInputAttributeDescription attributeDescriptions[] = {
     },
     (VkVertexInputAttributeDescription) {
         .location = 3,
+        .binding = 0,
+        .format = VK_FORMAT_R32G32B32_SFLOAT,
+        .offset = offsetof(VertexData, tangent)
+    },
+    (VkVertexInputAttributeDescription) {
+        .location = 4,
         .binding = 0,
         .format = VK_FORMAT_R32G32_SFLOAT,
         .offset = offsetof(VertexData, texCoords)

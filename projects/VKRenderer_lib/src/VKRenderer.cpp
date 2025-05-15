@@ -85,10 +85,9 @@ void VKRenderer::TMP_force_gpu_upload_all() {
 
 void VKRenderer::TMP_create_renderpasses() {
 
-	// TODO configure renderpass and pipelines
 	uint32_t default_pipeline = m_render_context->get_renderpass(0)->add_pipeline(new vkc::PipelineConfig{
-				.vert_path = "res/shaders/base.vert.spv",
-				.frag_path = "res/shaders/base.frag.spv",
+				.vert_path = "res/shaders/pbr.vert.spv",
+				.frag_path = "res/shaders/pbr.frag.spv",
 				.size_uniform_data_frame = sizeof(DataUniformFrame),
 				.size_uniform_data_material = sizeof(DataUniformMaterial),
 				.size_push_constant_model = sizeof(DataUniformModel),
@@ -97,9 +96,11 @@ void VKRenderer::TMP_create_renderpasses() {
 				.vertex_attribute_descriptors = vertexData_getAttributeDescriptions(),
 				.vertex_attribute_descriptors_count = vertexData_getAttributeDescriptionsCount(),
 				.texture_image_views = new VkImageView[] {
-					vkc::Drawcall::get_texture_image_view(0)
+					vkc::Drawcall::get_texture_image_view(0),
+					vkc::Drawcall::get_texture_image_view(1),
+					vkc::Drawcall::get_texture_image_view(2)
 				},
-				.texture_image_views_count = 1,
+				.texture_image_views_count = 3,
 				.face_culling_mode = VK_CULL_MODE_BACK_BIT
 		});
 	vkc::Instance::TMP_get_singleton_instance()->add_object_debug_name(
