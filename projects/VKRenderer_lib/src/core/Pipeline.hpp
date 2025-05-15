@@ -46,6 +46,7 @@ namespace vkc {
 
 		void update_uniform_buffer(void* ubo, uint32_t current_frame);
 		void update_uniform_buffer_material(void* ubo, uint32_t current_frame);
+		void update_material_textures(std::vector<VkImageView> image_views, uint32_t current_frame);
 		void bind_descriptor_sets(VkCommandBuffer command_buffer, uint32_t image_index);
 
 	private:

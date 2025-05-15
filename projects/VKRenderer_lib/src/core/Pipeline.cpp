@@ -4,6 +4,11 @@
 #include <core/RenderContext.hpp>
 #include <core/DrawCall.hpp>
 
+// hardcoded 2 is
+// - frame UBO
+// - material UBO
+const uint32_t TEXTURE_BINDING_OFFSET = 2;
+
 namespace vkc {
 	Pipeline::Pipeline(
 		VkDevice handle_device,
@@ -200,6 +205,33 @@ namespace vkc {
 		memcpy(m_uniform_buffers_mapped_material[current_frame], ubo, m_config->size_uniform_data_material);
 	}
 
+
+	void Pipeline::update_material_textures(std::vector<VkImageView> image_views, uint32_t current_frame) {
+		if (m_config->texture_image_views_count == 0)
+			return;
+
+		std::vector<VkDescriptorImageInfo> imageInfo = std::vector<VkDescriptorImageInfo>(m_config->texture_image_views_count);
+		
+		for (int j = 0; j < m_config->texture_image_views_count; ++j)
+		{
+			imageInfo[j].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			imageInfo[j].imageView = image_views[j];
+			imageInfo[j].sampler = m_texture_samplers[j];
+		}
+
+		VkWriteDescriptorSet descriptor_writes = (VkWriteDescriptorSet){ // texture sampler
+			.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+			.dstSet = m_descriptor_sets[current_frame],
+			.dstBinding = TEXTURE_BINDING_OFFSET,
+			.dstArrayElement = 0,
+			.descriptorCount = m_config->texture_image_views_count,
+			.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+			.pImageInfo = imageInfo.data()
+		};
+
+		vkUpdateDescriptorSets(m_handle_device, 1, &descriptor_writes, 0, NULL);
+	}
+
 	void Pipeline::bind_descriptor_sets(VkCommandBuffer command_buffer, uint32_t image_index) {
 		vkCmdBindDescriptorSets(
 			command_buffer,
@@ -246,7 +278,6 @@ namespace vkc {
 		}
 	}
 
-	// TODO should this be automatically read from pipeline info?
 	void Pipeline::create_descriptor_sets() {
 		uint8_t num_swapchain_images = m_obj_render_context->get_num_render_frames();
 
@@ -294,11 +325,6 @@ namespace vkc {
 
 
 		for (size_t i = 0; i < num_swapchain_images; ++i) {
-			// hardcoded 2 is
-			// - frame UBO
-			// - material UBO
-			const uint32_t TEXTURE_BINDING_OFFSET = 2;
-
 			uint32_t descriptro_writes_count = TEXTURE_BINDING_OFFSET;
 			if (m_config->texture_image_views_count > 0)
 				++descriptro_writes_count;
@@ -356,10 +382,10 @@ namespace vkc {
 				};
 			}
 
-			// TODO FIXME handle better pipelines without textures
 			vkUpdateDescriptorSets(m_handle_device, descriptro_writes_count, descriptor_writes.data(), 0, NULL);
 		}
 	}
+
 
 	void Pipeline::create_uniform_buffers() {
 		// frame data

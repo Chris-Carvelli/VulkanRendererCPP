@@ -73,6 +73,7 @@ namespace vkc::Assets {
 		uint32_t id_render_pass;
 		uint32_t id_pipeline;
 		void* uniform_data_material;
+		std::vector<VkImageView> image_views;
 	};
 
 	void asset_manager_init();

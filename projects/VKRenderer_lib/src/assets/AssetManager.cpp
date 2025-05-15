@@ -142,7 +142,7 @@ namespace vkc::Assets {
 
         int i = 0;
         VertexData* p_vertex_data = (VertexData*)data.vertex_data;
-        for (const auto& shape : shapes)
+        for (const auto& shape : shapes) 
             for (const auto& index : shape.mesh.indices) {
                 data.index_data[i] = i;
                 p_vertex_data[i].position = glm::vec3(
