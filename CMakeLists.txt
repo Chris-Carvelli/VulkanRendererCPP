@@ -58,13 +58,12 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/lib)
 # Projects
 # =========================================================
 
-file(GLOB_RECURSE src "src/*.cpp")
-
-
+## VKRenderer_lib
+file(GLOB_RECURSE src "projects/VKRenderer_lib/*.cpp")
 add_library(VKRenderer_lib STATIC ${src})
 
-target_include_directories(VKRenderer_lib PUBLIC "src")
-target_include_directories(VKRenderer_lib PUBLIC "include")
+target_include_directories(VKRenderer_lib PUBLIC "projects/VKRenderer_lib/src")
+target_include_directories(VKRenderer_lib PUBLIC "projects/VKRenderer_lib/include")
 
 target_include_directories(VKRenderer_lib PUBLIC
 	${LIBRARIES_SOURCE_PATH}/imgui/include
@@ -76,7 +75,9 @@ target_include_directories(VKRenderer_lib PUBLIC
 )
 
 target_link_libraries(VKRenderer_lib Vulkan::Vulkan)
-target_link_libraries(VKRenderer_lib ${LIBRARIES_STATIC} imgui)
+target_link_libraries(VKRenderer_lib imgui)
+
+## Asset baker
 
 
 # =========================================================
@@ -85,7 +86,6 @@ target_link_libraries(VKRenderer_lib ${LIBRARIES_STATIC} imgui)
 FILELIST(tests "${CMAKE_CURRENT_LIST_DIR}/tests")
 FOREACH(test_exe ${tests})
     set(TARGETNAME ${test_exe})
-    message("424242: ${TARGETNAME}")
     add_executable(${TARGETNAME} "${CMAKE_CURRENT_LIST_DIR}/tests/${test_exe}")
     target_link_libraries(${TARGETNAME} VKRenderer_lib)
     target_include_directories(${TARGETNAME} PRIVATE "lib")
