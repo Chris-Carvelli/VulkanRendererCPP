@@ -89,6 +89,7 @@ namespace vkc::Assets {
 	// load
 	// ===================================================================================
 	IdAssetMesh load_mesh(const char* path);
+	IdAssetMesh load_mesh(const char* path, const char* path_material);
 	std::vector<IdAssetMesh> load_meshes(const char** paths);
 	std::vector<IdAssetMesh> load_meshes_from_folder(const char* folder_path);
 

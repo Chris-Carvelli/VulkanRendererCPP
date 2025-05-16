@@ -2478,8 +2478,8 @@ namespace tinyobj {
             }
 
             // PBR: normal map texture
-            if ((0 == strncmp(token, "norm", 4)) && IS_SPACE(token[4])) {
-                token += 5;
+            if ((0 == strncmp(token, "map_Kn", 6)) && IS_SPACE(token[6])) {
+                token += 7;
                 ParseTextureNameAndOption(&(material.normal_texname),
                     &(material.normal_texopt), token);
                 continue;

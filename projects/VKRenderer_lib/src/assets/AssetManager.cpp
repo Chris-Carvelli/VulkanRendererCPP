@@ -101,10 +101,14 @@ namespace vkc::Assets {
         return material_data[id];
     }
 
+    IdAssetMesh load_mesh(const char* path) {
+        return load_mesh(path, "");
+    }
+
     // flipp X and Z to match Kenney assets orientation
     // (prob. default blender)
     // this should probably be an import util + cooking anyway
-    IdAssetMesh load_mesh(const char* path) {
+    IdAssetMesh load_mesh(const char* path, const char* path_material) {
         const int offset_x = 2;
         const int offset_y = 1;
         const int offset_z = 0;
@@ -115,7 +119,7 @@ namespace vkc::Assets {
         std::string err;
         std::string warn;
 
-        assert(tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path));
+        assert(tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path, path_material));
 
         MeshData data;
         IdAssetMesh mesh_idx = num_mesh_assets++;
