@@ -211,29 +211,25 @@ namespace vkc {
 
 
 	void Pipeline::update_material_textures(std::vector<VkImageView> image_views, uint32_t current_frame) {
-		if (m_config->texture_image_views_count == 0)
-			return;
-
-		std::vector<VkDescriptorImageInfo> imageInfo = std::vector<VkDescriptorImageInfo>(m_config->texture_image_views_count);
-		
 		for (int j = 0; j < m_config->texture_image_views_count; ++j)
 		{
-			imageInfo[j].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			imageInfo[j].imageView = image_views[j];
-			imageInfo[j].sampler = m_texture_samplers[j];
+			VkDescriptorImageInfo imageInfo;
+			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			imageInfo.imageView = image_views[j];
+			imageInfo.sampler = m_texture_samplers[j];
+
+			VkWriteDescriptorSet descriptor_writes = (VkWriteDescriptorSet){ // texture sampler
+				.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+				.dstSet = m_descriptor_sets[current_frame],
+				.dstBinding = m_first_texture_binding_slot + j,
+				.dstArrayElement = 0,
+				.descriptorCount = 1,
+				.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+				.pImageInfo = &imageInfo
+			};
+
+			vkUpdateDescriptorSets(m_handle_device, 1, &descriptor_writes, 0, NULL);
 		}
-
-		VkWriteDescriptorSet descriptor_writes = (VkWriteDescriptorSet){ // texture sampler
-			.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-			.dstSet = m_descriptor_sets[current_frame],
-			.dstBinding = m_first_texture_binding_slot,
-			.dstArrayElement = 0,
-			.descriptorCount = m_config->texture_image_views_count,
-			.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-			.pImageInfo = imageInfo.data()
-		};
-
-		vkUpdateDescriptorSets(m_handle_device, 1, &descriptor_writes, 0, NULL);
 	}
 
 	void Pipeline::bind_descriptor_sets(VkCommandBuffer command_buffer, uint32_t image_index) {
@@ -269,11 +265,12 @@ namespace vkc {
 			bindings.push_back(uboLayoutBinding_material);
 		}
 
-		if (m_config->texture_image_views_count > 0)
+		//if (m_config->texture_image_views_count > 0)
+		for(int i = 0; i < m_config->texture_image_views_count; ++i)
 		{
 			VkDescriptorSetLayoutBinding samplerLayoutBinding = { 0 };
 			samplerLayoutBinding.binding = idx_binding++;
-			samplerLayoutBinding.descriptorCount = m_config->texture_image_views_count;
+			samplerLayoutBinding.descriptorCount = 1;
 			samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 			samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 			bindings.push_back(samplerLayoutBinding);
@@ -308,11 +305,13 @@ namespace vkc {
 		}
 
 		// texture - only if num textures > 0
-		if (m_config->texture_image_views_count > 0) {
-			m_first_texture_binding_slot = poolSize.size(); 
+		//if (m_config->texture_image_views_count > 0)
+		m_first_texture_binding_slot = poolSize.size();
+		for(int i = 0; i < m_config->texture_image_views_count; ++i)
+		{
 			poolSize.push_back((VkDescriptorPoolSize) {
 				.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-				.descriptorCount = num_swapchain_images * m_config->texture_image_views_count
+				.descriptorCount = num_swapchain_images
 			});
 		}
 
@@ -376,23 +375,23 @@ namespace vkc {
 			}
 
 			std::vector<VkDescriptorImageInfo> imageInfo = std::vector<VkDescriptorImageInfo>(m_config->texture_image_views_count);
-			if (m_config->texture_image_views_count > 0)
-			{
-				for (int j = 0; j < m_config->texture_image_views_count; ++j)
-				{
-					imageInfo[j].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-					imageInfo[j].imageView = m_config->texture_image_views[j];
-					imageInfo[j].sampler = m_texture_samplers[j];
-				}
 
-				descriptor_writes[m_first_texture_binding_slot] = (VkWriteDescriptorSet){ // texture sampler
+
+			for (int j = 0; j < m_config->texture_image_views_count; ++j)
+			{
+				imageInfo[j].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				imageInfo[j].imageView = m_config->texture_image_views[j];
+				imageInfo[j].sampler = m_texture_samplers[j];
+
+				uint32_t idx_binding = m_first_texture_binding_slot + j;
+				descriptor_writes[idx_binding] = (VkWriteDescriptorSet){ // texture sampler
 					.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 					.dstSet = m_descriptor_sets[i],
-					.dstBinding = m_first_texture_binding_slot,
+					.dstBinding = idx_binding,
 					.dstArrayElement = 0,
-					.descriptorCount = m_config->texture_image_views_count,
+					.descriptorCount = 1,
 					.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-					.pImageInfo = imageInfo.data()
+					.pImageInfo = &imageInfo[j]
 				};
 			}
 

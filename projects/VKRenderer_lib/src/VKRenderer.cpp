@@ -96,11 +96,12 @@ void VKRenderer::TMP_create_renderpasses() {
 				.vertex_attribute_descriptors       = vertexData_getAttributeDescriptions(),
 				.vertex_attribute_descriptors_count = vertexData_getAttributeDescriptionsCount(),
 				.texture_image_views = new VkImageView[] {
-					vkc::Drawcall::get_texture_image_view(0),
-					vkc::Drawcall::get_texture_image_view(1),
-					vkc::Drawcall::get_texture_image_view(2)
+					vkc::Drawcall::get_texture_image_view(0), // albedo
+					vkc::Drawcall::get_texture_image_view(1), // diffuse
+					vkc::Drawcall::get_texture_image_view(2), // normal map
+					vkc::Drawcall::get_texture_image_view(3)  // enviroment map
 				},
-				.texture_image_views_count = 3,
+				.texture_image_views_count = 4,
 				.face_culling_mode = VK_CULL_MODE_BACK_BIT
 		});
 	vkc::Instance::TMP_get_singleton_instance()->add_object_debug_name(

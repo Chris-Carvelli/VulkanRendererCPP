@@ -1,5 +1,7 @@
 #include "shader_base.glsl"
 
+const int MAX_LOD_LEVEL = 2;
+
 struct DataMaterial {
 	vec3 albedo;
 	float opacity;
@@ -11,11 +13,11 @@ struct DataMaterial {
 };
 
 vec3 BRDFDirect(vec3 L, vec3 N, vec3 V, DataMaterial mat);
-vec3 BRDFIndirect(vec3 L, vec3 N, vec3 V, DataMaterial mat);
+vec3 BRDFIndirect(vec3 L, vec3 N, vec3 V, DataMaterial mat, samplerCube tex_environment);
 
 vec3 GetAlbedo(DataMaterial data);										// Get the surface albedo
 vec3 GetReflectance(DataMaterial data);									// Get the surface reflectance
-vec3 SampleEnvironment(vec3 direction, float lodLevel);					// Sample the EnvironmentTexture cubemap
+vec3 SampleEnvironment(vec3 direction, float lodLevel, samplerCube tex_environment);					// Sample the EnvironmentTexture cubemap
 float DistributionGGX(vec3 N, vec3 H, float roughness);					// GGX equation for distribution function
 float GeometrySmith(vec3 N, vec3 inDir, vec3 outDir, float roughness);	// Geometry term in both directions
 vec3 FresnelSchlick(vec3 f0, vec3 V, vec3 H);							// Schlick simplification of the Fresnel term
@@ -50,9 +52,9 @@ vec3 BRDFDirect(vec3 L, vec3 N, vec3 V, DataMaterial mat) {
 	return lighting;
 }
 
-vec3 BRDFIndirect(vec3 L, vec3 N, vec3 V, DataMaterial mat) {
+vec3 BRDFIndirect(vec3 L, vec3 N, vec3 V, DataMaterial mat, samplerCube tex_environment) {
 	// compute the indirect diffuse term
-	vec3 diffuse = SampleEnvironment(N, 1.0f) * GetAlbedo(mat);
+	vec3 diffuse = SampleEnvironment(N, 1.0, tex_environment) * GetAlbedo(mat);
 	
 	// compute the indirect specular term
 	// Compute the reflection vector with the viewDir and the normal
@@ -63,7 +65,7 @@ vec3 BRDFIndirect(vec3 L, vec3 N, vec3 V, DataMaterial mat) {
 	float lodLevel = pow(mat.roughness, 0.25f);
 	
 	vec3 specular = 
-		SampleEnvironment(reflectionDir, lodLevel) *
+		SampleEnvironment(reflectionDir, lodLevel, tex_environment) *
 		GeometrySmith(N, reflectionDir, V, mat.roughness);
 	
 	// combine diffuse and specular, mantaining energy conservation
@@ -88,14 +90,12 @@ vec3 GetReflectance(DataMaterial data)
 
 // Sample the EnvironmentTexture cubemap
 // lodLevel: between 0 and 1 to select from the highest to the lowest mipmap
-vec3 SampleEnvironment(vec3 direction, float lodLevel)
+vec3 SampleEnvironment(vec3 direction, float lodLevel, samplerCube tex_environment)
 {
 	// Flip the Z direction, because the cubemap is left-handed
 	direction.z *= -1;
 
-	// Sample the specified mip-level
-	// TODO is EnvironmentTexture part of the light uniforms?
-	return vec3(0.3, 0.3, 0.3); // TODO FIXME compute average color from scene
+	return textureLod(tex_environment, direction, lodLevel * MAX_LOD_LEVEL).rgb;
 }
 
 // Geometry term in one direction, for GGX equation

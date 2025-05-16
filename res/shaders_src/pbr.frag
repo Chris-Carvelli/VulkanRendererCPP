@@ -9,7 +9,11 @@ const int TEX_SPECULAR = 1;
 const int TEX_NORMAL   = 2;
 //const int TEX_EMISSIVE = 3;
 
-layout(binding = 2) uniform sampler2D textures[3];
+layout(binding = 2) uniform sampler2D   tex_albedo;
+layout(binding = 3) uniform sampler2D   tex_specular;
+layout(binding = 4) uniform sampler2D   tex_normal;
+//layout(binding = TODO) uniform sampler2D   tex_emissive;
+layout(binding = 5) uniform samplerCube tex_environment;
 
 layout(location = 0) in vec3 fragPosition;
 layout(location = 1) in vec3 fragColor;
@@ -20,11 +24,11 @@ layout(location = 4) in vec2 fragTexCoord;
 layout(location = 0) out vec4 outColor;
 
 void main() {
-	vec4 albedo = texture(textures[TEX_ALBEDO], fragTexCoord);
-//	vec4 emissive = texture(textures[TEX_EMISSIVE], fragTexCoord);
-	vec4 params_specular = texture(textures[TEX_SPECULAR], fragTexCoord);
+	vec4 albedo = texture(tex_albedo, fragTexCoord);
+//	vec4 emissive = texture(tex_emissive, fragTexCoord);
+	vec4 params_specular = texture(tex_specular, fragTexCoord);
 
-	vec3 N = sample_normal_map(textures[TEX_NORMAL], fragTexCoord, fragNormal, fragTangent);;
+	vec3 N = sample_normal_map(tex_normal, fragTexCoord, fragNormal, fragTangent);;
 	vec3 V = normalize(data_frame.view[3].xyz - fragPosition);
 	vec3 L = normalize(data_frame.light_dir);
 
@@ -36,7 +40,7 @@ void main() {
 
 	outColor = vec4(
 		BRDFDirect(L, N, V, mat)
-		 + BRDFIndirect(L, N, V, mat)
+		 + BRDFIndirect(L, N, V, mat, tex_environment)
 		// + emissive.rgb
 		, 1.0
 	);

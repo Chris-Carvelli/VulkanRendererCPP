@@ -188,10 +188,10 @@ class TestRenderer : public VKRenderer {
     void init() override {
         // load mesh and textures
         TMP_Update::TMP_mesh_idxs = std::vector<vkc::Assets::IdAssetMesh>(1);
-        TMP_Update::TMP_mesh_idxs[0] = vkc::Assets::load_mesh("res/models/camera/camera.obj", "res/models/camera");
-        auto TMP_tex_idx_arm      = vkc::Assets::load_texture("res/models/camera/Camera_body_diffuse.png", vkc::Assets::TEX_CHANNELS_RGB_A);
-        auto TMP_tex_idx_diffuse  = vkc::Assets::load_texture("res/models/camera/Camera_body_arm.png", vkc::Assets::TEX_CHANNELS_RGB_A);
-        auto TMP_tex_idx_normal   = vkc::Assets::load_texture("res/models/camera/Camera_body_normal.png", vkc::Assets::TEX_CHANNELS_RGB_A);
+        TMP_Update::TMP_mesh_idxs[0] = vkc::Assets::load_mesh("res/models/treasure_chest/treasure_chest.obj", "res/models/treasure_chest");
+        auto TMP_tex_idx_arm      = vkc::Assets::load_texture("res/models/treasure_chest/treasure_chest_diffuse.png", vkc::Assets::TEX_CHANNELS_RGB_A);
+        auto TMP_tex_idx_diffuse  = vkc::Assets::load_texture("res/models/treasure_chest/treasure_chest_arm.png", vkc::Assets::TEX_CHANNELS_RGB_A);
+        auto TMP_tex_idx_normal   = vkc::Assets::load_texture("res/models/treasure_chest/treasure_chest_normal.png", vkc::Assets::TEX_CHANNELS_RGB_A);
 
 
         // create uniform data for each model
