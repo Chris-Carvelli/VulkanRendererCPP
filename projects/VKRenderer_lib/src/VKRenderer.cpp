@@ -116,7 +116,7 @@ void VKRenderer::TMP_create_renderpasses() {
 				.frag_path = "res/shaders/skybox.frag.spv",
 				.size_uniform_data_frame    = sizeof(DataUniformFrame),
 				.size_uniform_data_material = 0,
-				.size_push_constant_model   = sizeof(DataUniformSkybox),
+				.size_push_constant_model   = 0,
 				.vertex_binding_descriptors         = vertexData_getBindingDescriptions_Skybox(),
 				.vertex_binding_descriptors_count   = vertexData_getBindingDescriptionsCount_Skybox(),
 				.vertex_attribute_descriptors       = vertexData_getAttributeDescriptions_Skybox(),

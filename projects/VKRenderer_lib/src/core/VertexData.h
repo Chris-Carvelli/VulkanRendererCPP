@@ -29,15 +29,19 @@ struct DataUniformFrame {
     // camera
     glm::mat4 view;
     glm::mat4 proj;
+    glm::vec3 cam_pos;
+    uint32_t padding_0;
 
     // lighting
     glm::vec3 light_ambient;
-    uint32_t padding_0;
-    glm::vec3 light_dir;
     uint32_t padding_1;
+
+    glm::vec3 light_dir;
+    uint32_t padding_2;
+
     glm::vec3 light_color;
     float light_intensity;
-    //uint32_t padding_2;
+
     // application
     uint32_t frame;
 };
@@ -181,10 +185,6 @@ struct DataUniformTrail {
 typedef struct {
     glm::vec3 position;
 } VertexDataSkybox;
-
-typedef struct {
-    glm::vec3 pos_camera;
-} DataUniformSkybox;
 
 static const VkVertexInputAttributeDescription attributeDescriptions_skybox[] = {
     (VkVertexInputAttributeDescription) {

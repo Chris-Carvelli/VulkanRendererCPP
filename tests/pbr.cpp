@@ -175,6 +175,7 @@ namespace TMP_Update {
         camera_proj = glm::perspective(glm::radians(45.0f), fow, 0.1f, 100.0f);
         //perspective_projection = glm::perspective(glm::radians(45.0f), fow, 0.1f, 10.0f);
 
+        ubo.cam_pos = camera_pos;
         ubo.view = camera_view;
         ubo.proj = camera_proj;
 
@@ -245,8 +246,8 @@ class TestRenderer : public VKRenderer {
         drawcall_add(
             vkc::Assets::BuiltinPrimitives::IDX_FULLSCREEN_TRI,
             TMP_Update::idMaterialSkybox,
-            &TMP_Update::camera_pos,
-            sizeof(glm::vec3)
+            nullptr,
+            0
         );
     }
 

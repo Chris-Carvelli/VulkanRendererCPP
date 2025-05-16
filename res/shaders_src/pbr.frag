@@ -4,11 +4,6 @@
 #include "utils.glsl"
 #include "pbr_functions.glsl"
 
-const int TEX_ALBEDO   = 0;
-const int TEX_SPECULAR = 1;
-const int TEX_NORMAL   = 2;
-//const int TEX_EMISSIVE = 3;
-
 layout(binding = 2) uniform sampler2D   tex_albedo;
 layout(binding = 3) uniform sampler2D   tex_specular;
 layout(binding = 4) uniform sampler2D   tex_normal;
@@ -29,7 +24,7 @@ void main() {
 	vec4 params_specular = texture(tex_specular, fragTexCoord);
 
 	vec3 N = sample_normal_map(tex_normal, fragTexCoord, fragNormal, fragTangent);;
-	vec3 V = normalize(data_frame.view[3].xyz - fragPosition);
+	vec3 V = normalize(data_frame.cam_pos - fragPosition);
 	vec3 L = normalize(data_frame.light_dir);
 
 	DataMaterial mat;
