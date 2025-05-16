@@ -149,14 +149,16 @@ namespace vkc {
 			Drawcall::ModelDataGPU model_data_gpu = Drawcall::get_model_data(drawcall.idx_data_attributes);
 			VkBuffer vertexBuffers[] = { model_data_gpu.vertex_buffer };
 			VkDeviceSize offsets[] = { 0 };
-			vkCmdPushConstants(
-				m_command_buffer,
-				obj_curr_pipeline->get_layout(),
-				VK_SHADER_STAGE_VERTEX_BIT,
-				0,
-				drawcall.data_uniform_model_size,
-				drawcall.data_uniform_model
-			);
+
+			if (drawcall.data_uniform_model_size > 0)
+				vkCmdPushConstants(
+					m_command_buffer,
+					obj_curr_pipeline->get_layout(),
+					VK_SHADER_STAGE_VERTEX_BIT,
+					0,
+					drawcall.data_uniform_model_size,
+					drawcall.data_uniform_model
+				);
 
 			vkCmdBindVertexBuffers(m_command_buffer, 0, 1, vertexBuffers, offsets);
 			vkCmdBindIndexBuffer(m_command_buffer, model_data_gpu.index_buffer, 0, VK_INDEX_TYPE_UINT32);

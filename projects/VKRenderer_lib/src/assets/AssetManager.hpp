@@ -35,6 +35,11 @@ namespace vkc::Assets {
 		TEX_CHANNELS_RGB_A = 0x4
 	} TexChannelTypes;
 
+	typedef enum : uint8_t {
+		TEX_VIEW_TYPE_2D   = VK_IMAGE_VIEW_TYPE_2D,
+		TEX_VIEW_TYPE_CUBE = VK_IMAGE_VIEW_TYPE_CUBE
+	} TexViewTypes;
+
 	// TODO fix ids for serialization
 	//      ATM, ids are simple incrementail counters. We already have maps to store assets,
 	//      what we need is a fast and safe way to get a new free id
@@ -45,7 +50,9 @@ namespace vkc::Assets {
 	namespace BuiltinPrimitives {
 		// TODO better indices for mesh and texture assets (separated from debug/builtin ones)
 		const IdAssetMesh IDX_DEBUG_CUBE = 0;
-		const IdAssetMesh IDX_DEBUG_RAY = 1;
+		const IdAssetMesh IDX_DEBUG_RAY  = 1;
+
+		const IdAssetMesh IDX_FULLSCREEN_TRI = 2;
 	}
 
 	struct MeshData {
@@ -66,6 +73,7 @@ namespace vkc::Assets {
 		uint8_t channelsCount;
 		TexChannelTypes channels;
 		std::vector<unsigned char> data;
+		VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_2D;
 	};
 
 	struct MaterialData {
@@ -93,7 +101,7 @@ namespace vkc::Assets {
 	std::vector<IdAssetMesh> load_meshes(const char** paths);
 	std::vector<IdAssetMesh> load_meshes_from_folder(const char* folder_path);
 
-	IdAssetTexture load_texture(const char* path, TexChannelTypes channels);
+	IdAssetTexture load_texture(const char* path, TexChannelTypes channels, TexViewTypes viewType = TEX_VIEW_TYPE_2D);
 
 	// ===================================================================================
 	// create

@@ -49,6 +49,13 @@ namespace vkc::Assets {
         // indices for line topology
         static uint32_t debug_ray_index_data[] = { 0, 1 };
 
+        // fullscreen triangle
+        static glm::vec3 builtin_fullscreen_tri_vertex_data[] = {
+            glm::vec3(-1.0f, -1.0f, 0.0f),
+            glm::vec3( 3.0f, -1.0f, 0.0f),
+            glm::vec3(-1.0f,  3.0f, 0.0f)
+        };
+        static uint32_t builtin_fullscreen_tri_index_data[] = { 0, 1, 2 };
 
         static const MeshData DEBUG_CUBE_MESH_DATA = {
             .vertex_data = debug_cube_vertex_data,
@@ -65,6 +72,14 @@ namespace vkc::Assets {
             .index_data = debug_ray_index_data,
             .index_count = sizeof(debug_ray_index_data) / sizeof(uint32_t)
         };
+
+        static const MeshData BUILTIN_FULLSCREEN_TRI = {
+            .vertex_data = builtin_fullscreen_tri_vertex_data,
+            .vertex_count = sizeof(builtin_fullscreen_tri_vertex_data) / sizeof(glm::vec3),
+            .vertex_data_size = sizeof(glm::vec3),
+            .index_data = builtin_fullscreen_tri_index_data,
+            .index_count = sizeof(builtin_fullscreen_tri_index_data) / sizeof(uint32_t)
+        };
     }
 
     uint32_t num_mesh_assets = 0;
@@ -79,6 +94,7 @@ namespace vkc::Assets {
         // create assets on CPU
         create_mesh(BuiltinPrimitives::DEBUG_CUBE_MESH_DATA);
         create_mesh(BuiltinPrimitives::DEBUG_RAY_MESH_DATA);
+        create_mesh(BuiltinPrimitives::BUILTIN_FULLSCREEN_TRI);
     }
 
     uint32_t get_num_mesh_assets() {
@@ -190,7 +206,7 @@ namespace vkc::Assets {
         return ret;
     }
 
-    IdAssetTexture load_texture(const char* path, TexChannelTypes channels) {
+    IdAssetTexture load_texture(const char* path, TexChannelTypes channels, TexViewTypes viewType) {
         int texWidth = 0;
         int texHeight = 0;
         int texChannels = 0;
@@ -202,6 +218,7 @@ namespace vkc::Assets {
 
         IdAssetTexture tex_idx = num_texture_assets++;
         TextureData data;
+        data.viewType = (VkImageViewType)viewType;
         data.width = (uint16_t)texWidth;
         data.height = (uint16_t)texHeight;
         data.channelsCount = (uint8_t)texChannels;
@@ -211,6 +228,10 @@ namespace vkc::Assets {
 
         stbi_image_free(pixels);
 
+        if (viewType == TEX_VIEW_TYPE_CUBE) {
+            data.width /= 4;
+            data.height /= 3;
+        }
         texture_data[tex_idx] = data;
         return tex_idx;
     }

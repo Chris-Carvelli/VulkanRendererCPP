@@ -52,6 +52,7 @@ namespace TMP_Update {
     int TMP_object_curr_idx = 0;
 
     vkc::Assets::IdAssetMaterial idMaterialModels;
+    vkc::Assets::IdAssetMaterial idMaterialSkybox;
 
     void TMP_update_gui(vkc::Rect2DI window_size, DataUniformFrame& ubo) {
         ImGui::Begin("tmp_update_info");
@@ -192,6 +193,7 @@ class TestRenderer : public VKRenderer {
         auto TMP_tex_idx_diffuse  = vkc::Assets::load_texture("res/models/camera/Camera_body_arm.png", vkc::Assets::TEX_CHANNELS_RGB_A);
         auto TMP_tex_idx_normal   = vkc::Assets::load_texture("res/models/camera/Camera_body_normal.png", vkc::Assets::TEX_CHANNELS_RGB_A);
 
+
         // create uniform data for each model
         TMP_Update::model_data.resize(TMP_Update::drawcall_cout);
         int l = glm::sqrt(TMP_Update::drawcall_cout);
@@ -208,6 +210,16 @@ class TestRenderer : public VKRenderer {
             .id_pipeline = 0,
             .uniform_data_material = &TMP_Update::tmp_data_uniform_material
          });
+
+
+
+        // skybox
+        auto TMP_tex_idx_skybox = vkc::Assets::load_texture("res/textures/default_cubemap.png", vkc::Assets::TEX_CHANNELS_RGB_A, vkc::Assets::TEX_VIEW_TYPE_CUBE);
+        TMP_Update::idMaterialSkybox = vkc::Assets::create_material(vkc::Assets::MaterialData{
+            .id_render_pass = 0,
+            .id_pipeline = 1,
+            .uniform_data_material = nullptr
+        });
     }
 
     void update() override {
@@ -227,6 +239,14 @@ class TestRenderer : public VKRenderer {
             TMP_Update::idMaterialModels,
             &TMP_Update::model_data[0],
             sizeof(TMP_Update::model_data[0])
+        );
+
+        // skybox
+        drawcall_add(
+            vkc::Assets::BuiltinPrimitives::IDX_FULLSCREEN_TRI,
+            TMP_Update::idMaterialSkybox,
+            &TMP_Update::camera_pos,
+            sizeof(glm::vec3)
         );
     }
 

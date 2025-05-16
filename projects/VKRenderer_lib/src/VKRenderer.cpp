@@ -88,12 +88,12 @@ void VKRenderer::TMP_create_renderpasses() {
 	uint32_t default_pipeline = m_render_context->get_renderpass(0)->add_pipeline(new vkc::PipelineConfig{
 				.vert_path = "res/shaders/pbr.vert.spv",
 				.frag_path = "res/shaders/pbr.frag.spv",
-				.size_uniform_data_frame = sizeof(DataUniformFrame),
+				.size_uniform_data_frame    = sizeof(DataUniformFrame),
 				.size_uniform_data_material = sizeof(DataUniformMaterial),
-				.size_push_constant_model = sizeof(DataUniformModel),
-				.vertex_binding_descriptors = vertexData_getBindingDescriptions(),
-				.vertex_binding_descriptors_count = vertexData_getBindingDescriptionsCount(),
-				.vertex_attribute_descriptors = vertexData_getAttributeDescriptions(),
+				.size_push_constant_model   = sizeof(DataUniformModel),
+				.vertex_binding_descriptors         = vertexData_getBindingDescriptions(),
+				.vertex_binding_descriptors_count   = vertexData_getBindingDescriptionsCount(),
+				.vertex_attribute_descriptors       = vertexData_getAttributeDescriptions(),
 				.vertex_attribute_descriptors_count = vertexData_getAttributeDescriptionsCount(),
 				.texture_image_views = new VkImageView[] {
 					vkc::Drawcall::get_texture_image_view(0),
@@ -110,28 +110,28 @@ void VKRenderer::TMP_create_renderpasses() {
 		"default pipeline"
 	);
 
-	uint32_t trail_pipeline = m_render_context->get_renderpass(0)->add_pipeline(new vkc::PipelineConfig{
-				.vert_path = "res/shaders/trail.vert.spv",
-				.frag_path = "res/shaders/trail.frag.spv",
-				.size_uniform_data_frame = sizeof(DataUniformFrame),
-				.size_uniform_data_material = sizeof(DataUniformMaterial),
-				.size_push_constant_model = sizeof(DataUniformTrail),
-				.vertex_binding_descriptors = vertexData_getBindingDescriptions(),
-				.vertex_binding_descriptors_count = vertexData_getBindingDescriptionsCount(),
-				.vertex_attribute_descriptors = vertexData_getAttributeDescriptions(),
-				.vertex_attribute_descriptors_count = vertexData_getAttributeDescriptionsCount(),
+	uint32_t skybox_pipeline = m_render_context->get_renderpass(0)->add_pipeline(new vkc::PipelineConfig {
+				.vert_path = "res/shaders/skybox.vert.spv",
+				.frag_path = "res/shaders/skybox.frag.spv",
+				.size_uniform_data_frame    = sizeof(DataUniformFrame),
+				.size_uniform_data_material = 0,
+				.size_push_constant_model   = sizeof(DataUniformSkybox),
+				.vertex_binding_descriptors         = vertexData_getBindingDescriptions_Skybox(),
+				.vertex_binding_descriptors_count   = vertexData_getBindingDescriptionsCount_Skybox(),
+				.vertex_attribute_descriptors       = vertexData_getAttributeDescriptions_Skybox(),
+				.vertex_attribute_descriptors_count = vertexData_getAttributeDescriptions_SkyboxCount(),
 				.texture_image_views = new VkImageView[] {
-					//vkc::Drawcall::get_texture_image_view(1)
+					vkc::Drawcall::get_texture_image_view(3)
 				},
-				.texture_image_views_count = 0,
-				.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,
-				.face_culling_mode = VK_CULL_MODE_NONE
+				.texture_image_views_count = 1,
+				.face_culling_mode = VK_CULL_MODE_NONE,
+				.compare_op = VK_COMPARE_OP_EQUAL
 		});
 	vkc::Instance::TMP_get_singleton_instance()->add_object_debug_name(
-		(uint64_t)m_render_context->get_renderpass(0)->get_pipeline_handle(trail_pipeline),
+		(uint64_t)m_render_context->get_renderpass(0)->get_pipeline_handle(skybox_pipeline),
 		VK_OBJECT_TYPE_PIPELINE,
 		m_device->get_handle(),
-		"trail pipeline"
+		"skybox pipeline"
 	);
 }
 

@@ -39,6 +39,12 @@ namespace vkc::Drawcall {
     void createTextureImage(Assets::IdAssetTexture texture_id, VkDevice device, vkc::RenderContext* obj_render_context) {
         const Assets::TextureData& texture_data = Assets::get_texture_data(texture_id);
 
+        // TODO FIXME clean up texture creation pipeline
+        if (texture_data.viewType == VK_IMAGE_VIEW_TYPE_CUBE)
+        {
+            createTextureCubemap(texture_id, device, obj_render_context);
+            return;
+        }
         TextureDataGPU new_gpu_data = { 0 };
 
         VkDeviceSize imageSize = texture_data.width * texture_data.height * 4;
@@ -64,6 +70,7 @@ namespace vkc::Drawcall {
         obj_render_context->create_image(
             texture_data.width,
             texture_data.height,
+            texture_data.viewType == VK_IMAGE_VIEW_TYPE_CUBE ? 6 : 1,
             VK_FORMAT_R8G8B8A8_SRGB,
             VK_IMAGE_TILING_OPTIMAL,
             VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
@@ -74,6 +81,7 @@ namespace vkc::Drawcall {
 
         obj_render_context->transition_image_layout(
             new_gpu_data.image,
+            1,
             VK_FORMAT_R8G8B8A8_SRGB,
             VK_IMAGE_LAYOUT_UNDEFINED,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
@@ -83,11 +91,13 @@ namespace vkc::Drawcall {
             stagingBuffer,
             new_gpu_data.image,
             texture_data.width,
-            texture_data.height
+            texture_data.height,
+            1
         );
 
         obj_render_context->transition_image_layout(
             new_gpu_data.image,
+            1,
             VK_FORMAT_R8G8B8A8_SRGB,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
@@ -100,7 +110,120 @@ namespace vkc::Drawcall {
         new_gpu_data.image_view = obj_render_context->create_imge_view(
             new_gpu_data.image,
             VK_FORMAT_R8G8B8A8_SRGB,
-            VK_IMAGE_ASPECT_COLOR_BIT
+            VK_IMAGE_ASPECT_COLOR_BIT,
+            texture_data.viewType
+        );
+
+        texture_data_gpu[texture_id] = new_gpu_data;
+    }
+
+    void createTextureCubemap(Assets::IdAssetTexture texture_id, VkDevice device, vkc::RenderContext* obj_render_context) {
+        const uint32_t NUM_FACES_TOT = 6;
+        const uint32_t NUM_FACES_ROW = 3;
+        const uint32_t NUM_FACES_COL = 4;
+        const uint32_t SIZE_PIXEL = 4;
+        /*
+        const uint8_t  IDX_FACE_X[] = { 0, 2, 1, 1, 3, 1 };
+        const uint8_t  IDX_FACE_Y[] = { 1, 1, 2, 0, 1, 1 };*/
+        //                shoudl be   : L  R  D  U, B
+        //                cubemap side: R  L  U  D, F
+        const uint8_t  IDX_FACE_X[] = { 2, 0, 1, 1, 1, 3 };
+        const uint8_t  IDX_FACE_Y[] = { 1, 1, 0, 2, 1, 1 };
+
+
+        const Assets::TextureData& texture_data = Assets::get_texture_data(texture_id);
+        
+        TextureDataGPU new_gpu_data = { 0 };
+
+        uint32_t pixel_count_row   = texture_data.width;
+        uint32_t pixel_count_layer = pixel_count_row * pixel_count_row;
+        uint64_t stride = pixel_count_row * NUM_FACES_COL * SIZE_PIXEL;
+        VkDeviceSize size_row   = pixel_count_row   * SIZE_PIXEL;
+        VkDeviceSize size_layer = pixel_count_layer * SIZE_PIXEL;
+        VkDeviceSize size_image = size_layer * NUM_FACES_TOT;
+        VkDeviceSize size_source_image = texture_data.width * NUM_FACES_COL * texture_data.height * NUM_FACES_ROW * SIZE_PIXEL;
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        obj_render_context->createBuffer(
+            size_image,
+            VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+            &stagingBuffer,
+            &stagingBufferMemory
+        );
+
+        int TMP_C = 0;
+        void* data;
+        vkMapMemory(device, stagingBufferMemory, 0, size_image, 0, &data);
+        unsigned char* dst = (unsigned char*)data;
+        const unsigned char* src = texture_data.data.data();
+        for(int i = 0; i < NUM_FACES_TOT; ++i)
+        {
+            VkDeviceSize dst_offset = size_layer * i;
+            VkDeviceSize src_offset = IDX_FACE_Y[i] * stride * pixel_count_row + IDX_FACE_X[i] * pixel_count_row * SIZE_PIXEL;
+
+            for(int j = 0; j < pixel_count_row; ++j)
+            {
+                assert(src_offset + size_row <= size_source_image);
+                assert(dst_offset + size_row <= size_image);
+                TMP_C++;
+                memcpy(dst + dst_offset, src + src_offset, size_row);
+                dst_offset += size_row;
+                src_offset += stride;
+            }
+        }
+        vkUnmapMemory(device, stagingBufferMemory);
+        
+
+        // // no free, we can't fit all our scene in GPU memory at the same time
+        //res_tex_free(textureId);
+
+        obj_render_context->create_image(
+            texture_data.width,
+            texture_data.height,
+            texture_data.viewType == VK_IMAGE_VIEW_TYPE_CUBE ? 6 : 1,
+            VK_FORMAT_R8G8B8A8_SRGB,
+            VK_IMAGE_TILING_OPTIMAL,
+            VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+            VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+            &new_gpu_data.image,
+            &new_gpu_data.image_memory
+        );
+
+        obj_render_context->transition_image_layout(
+            new_gpu_data.image,
+            6,
+            VK_FORMAT_R8G8B8A8_SRGB,
+            VK_IMAGE_LAYOUT_UNDEFINED,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+        );
+
+        obj_render_context->copy_buffer_to_image(
+            stagingBuffer,
+            new_gpu_data.image,
+            texture_data.width,
+            texture_data.height,
+            NUM_FACES_TOT
+        );
+
+        obj_render_context->transition_image_layout(
+            new_gpu_data.image,
+            6,
+            VK_FORMAT_R8G8B8A8_SRGB,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+        );
+
+        vkDestroyBuffer(device, stagingBuffer, NULL);
+        vkFreeMemory(device, stagingBufferMemory, NULL);
+
+        // view
+        new_gpu_data.image_view = obj_render_context->create_imge_view(
+            new_gpu_data.image,
+            VK_FORMAT_R8G8B8A8_SRGB,
+            VK_IMAGE_ASPECT_COLOR_BIT,
+            texture_data.viewType
         );
 
         texture_data_gpu[texture_id] = new_gpu_data;

@@ -4,11 +4,6 @@
 #include <core/RenderContext.hpp>
 #include <core/DrawCall.hpp>
 
-// hardcoded 2 is
-// - frame UBO
-// - material UBO
-const uint32_t TEXTURE_BINDING_OFFSET = 2;
-
 namespace vkc {
 	Pipeline::Pipeline(
 		VkDevice handle_device,
@@ -94,7 +89,7 @@ namespace vkc {
 		VkPipelineDepthStencilStateCreateInfo depthStencil = { VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO };
 		depthStencil.depthTestEnable = VK_TRUE;
 		depthStencil.depthWriteEnable = VK_TRUE;
-		depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+		depthStencil.depthCompareOp = m_config->compare_op;
 		depthStencil.depthBoundsTestEnable = VK_FALSE;
 		depthStencil.minDepthBounds = 0.0f; // Optional
 		depthStencil.maxDepthBounds = 1.0f; // Optional
@@ -125,16 +120,22 @@ namespace vkc {
 		colorBlending.blendConstants[3] = 0.0f; // Optional
 
 		// push constants
-		VkPushConstantRange range = { VK_SHADER_STAGE_VERTEX_BIT };
-		range.offset = 0;
-		range.size = config->size_push_constant_model;
+		VkPushConstantRange push_constant_range;
+		uint32_t push_constant_range_count = 0;
+		if (config->size_push_constant_model > 0)
+		{
+			push_constant_range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+			push_constant_range.offset     = 0;
+			push_constant_range.size       = config->size_push_constant_model;
+			push_constant_range_count = 1;
+		}
 
 		// pipeline assembly
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = { VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO };
 		pipelineLayoutInfo.setLayoutCount = 1;
 		pipelineLayoutInfo.pSetLayouts = &m_handle_descriptor_set_layout;
-		pipelineLayoutInfo.pushConstantRangeCount = 1;
-		pipelineLayoutInfo.pPushConstantRanges = &range;
+		pipelineLayoutInfo.pushConstantRangeCount = push_constant_range_count;
+		pipelineLayoutInfo.pPushConstantRanges = &push_constant_range;
 
 		if (vkCreatePipelineLayout(m_handle_device, &pipelineLayoutInfo, NULL, &m_handle_pipeline_layout) != VK_SUCCESS)
 			CC_LOG(ERROR, "failed to create pipeline layout!");
@@ -202,6 +203,9 @@ namespace vkc {
 	}
 
 	void Pipeline::update_uniform_buffer_material(void* ubo, uint32_t current_frame) {
+		if (ubo == nullptr)
+			return;
+
 		memcpy(m_uniform_buffers_mapped_material[current_frame], ubo, m_config->size_uniform_data_material);
 	}
 
@@ -222,7 +226,7 @@ namespace vkc {
 		VkWriteDescriptorSet descriptor_writes = (VkWriteDescriptorSet){ // texture sampler
 			.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 			.dstSet = m_descriptor_sets[current_frame],
-			.dstBinding = TEXTURE_BINDING_OFFSET,
+			.dstBinding = m_first_texture_binding_slot,
 			.dstArrayElement = 0,
 			.descriptorCount = m_config->texture_image_views_count,
 			.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
@@ -245,33 +249,39 @@ namespace vkc {
 	}
 
 	void Pipeline::create_descriptor_set_layout() {
+		std::vector<VkDescriptorSetLayoutBinding> bindings;
+		uint32_t idx_binding = 0;
+
 		VkDescriptorSetLayoutBinding uboLayoutBinding_frame = { 0 };
-		uboLayoutBinding_frame.binding = 0;
+		uboLayoutBinding_frame.binding = idx_binding++;
 		uboLayoutBinding_frame.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		uboLayoutBinding_frame.descriptorCount = 1;
 		uboLayoutBinding_frame.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+		bindings.push_back(uboLayoutBinding_frame);
 
-		VkDescriptorSetLayoutBinding uboLayoutBinding_material = { 0 };
-		uboLayoutBinding_material.binding = 1;
-		uboLayoutBinding_material.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		uboLayoutBinding_material.descriptorCount = 1;
-		uboLayoutBinding_material.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		if (m_config->size_uniform_data_material > 0)
+		{
+			VkDescriptorSetLayoutBinding uboLayoutBinding_material = { 0 };
+			uboLayoutBinding_material.binding = idx_binding++;
+			uboLayoutBinding_material.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			uboLayoutBinding_material.descriptorCount = 1;
+			uboLayoutBinding_material.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+			bindings.push_back(uboLayoutBinding_material);
+		}
 
-		VkDescriptorSetLayoutBinding samplerLayoutBinding = { 0 };
-		samplerLayoutBinding.binding = 2;
-		samplerLayoutBinding.descriptorCount = m_config->texture_image_views_count;
-		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		if (m_config->texture_image_views_count > 0)
+		{
+			VkDescriptorSetLayoutBinding samplerLayoutBinding = { 0 };
+			samplerLayoutBinding.binding = idx_binding++;
+			samplerLayoutBinding.descriptorCount = m_config->texture_image_views_count;
+			samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+			bindings.push_back(samplerLayoutBinding);
+		}
 
-		VkDescriptorSetLayoutBinding bindings[] = {
-			uboLayoutBinding_frame,
-			uboLayoutBinding_material,
-			samplerLayoutBinding
-		};
-		static const uint32_t bindingsCount = sizeof(bindings) / sizeof(VkDescriptorSetLayoutBinding);
 		VkDescriptorSetLayoutCreateInfo layoutInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO };
-		layoutInfo.bindingCount = bindingsCount;
-		layoutInfo.pBindings = bindings;
+		layoutInfo.bindingCount = bindings.size();
+		layoutInfo.pBindings = bindings.data();
 
 		if (vkCreateDescriptorSetLayout(m_handle_device, &layoutInfo, NULL, &m_handle_descriptor_set_layout) != VK_SUCCESS) {
 			CC_LOG(ERROR, "failed to create descriptor set layout!");
@@ -282,28 +292,35 @@ namespace vkc {
 		uint8_t num_swapchain_images = m_obj_render_context->get_num_render_frames();
 
 		// descriptor pool
-		VkDescriptorPoolSize poolSize[] = {
-			(VkDescriptorPoolSize) {
+		std::vector<VkDescriptorPoolSize> poolSize = {
+			(VkDescriptorPoolSize) {  // frame uniform - always present (for now)
 				.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
 				.descriptorCount = num_swapchain_images
-			},
-				(VkDescriptorPoolSize) {
-				.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-				.descriptorCount = num_swapchain_images
-			},
-			(VkDescriptorPoolSize) {
-				.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-				.descriptorCount = num_swapchain_images * m_config->texture_image_views_count
 			}
 		};
-		//static const uint32_t poolSizeCount = sizeof(poolSize) / sizeof(VkDescriptorPoolSize);
-		uint32_t poolSizeCount = sizeof(poolSize) / sizeof(VkDescriptorPoolSize);
-		if (m_config->texture_image_views_count == 0)
-			--poolSizeCount;
+
+		// material - onlt if material uniform size > 0
+		if (m_config->size_uniform_data_material > 0) {
+			poolSize.push_back((VkDescriptorPoolSize) {
+				.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+				.descriptorCount = num_swapchain_images
+			});
+		}
+
+		// texture - only if num textures > 0
+		if (m_config->texture_image_views_count > 0) {
+			m_first_texture_binding_slot = poolSize.size(); 
+			poolSize.push_back((VkDescriptorPoolSize) {
+				.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+				.descriptorCount = num_swapchain_images * m_config->texture_image_views_count
+			});
+		}
+
+		uint32_t poolSizeCount = poolSize.size();
 
 		VkDescriptorPoolCreateInfo poolInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO };
 		poolInfo.poolSizeCount = poolSizeCount;
-		poolInfo.pPoolSizes = poolSize;
+		poolInfo.pPoolSizes = poolSize.data();
 		poolInfo.maxSets = num_swapchain_images;
 
 		if (vkCreateDescriptorPool(m_handle_device, &poolInfo, NULL, &m_descriptor_pool) != VK_SUCCESS) {
@@ -325,21 +342,12 @@ namespace vkc {
 
 
 		for (size_t i = 0; i < num_swapchain_images; ++i) {
-			uint32_t descriptro_writes_count = TEXTURE_BINDING_OFFSET;
-			if (m_config->texture_image_views_count > 0)
-				++descriptro_writes_count;
-
-			std::vector< VkWriteDescriptorSet> descriptor_writes(descriptro_writes_count);
+			std::vector< VkWriteDescriptorSet> descriptor_writes(poolSizeCount);
 
 			VkDescriptorBufferInfo bufferInfo_frame = { 0 };
 			bufferInfo_frame.buffer = m_uniform_buffers[i];
 			bufferInfo_frame.offset = 0;
 			bufferInfo_frame.range = m_config->size_uniform_data_frame;
-
-			VkDescriptorBufferInfo bufferInfo_material = { 0 };
-			bufferInfo_material.buffer = m_uniform_buffers_material[i];
-			bufferInfo_material.offset = 0;
-			bufferInfo_material.range = m_config->size_uniform_data_material;
 
 			descriptor_writes[0] = (VkWriteDescriptorSet){ // uniforms buffer - frame
 					.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
@@ -351,15 +359,21 @@ namespace vkc {
 					.pBufferInfo = &bufferInfo_frame
 			};
 
-			descriptor_writes[1] = (VkWriteDescriptorSet){ // uniforms buffer - material
-					.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-					.dstSet = m_descriptor_sets[i],
-					.dstBinding = 1,
-					.dstArrayElement = 0,
-					.descriptorCount = 1,
-					.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-					.pBufferInfo = &bufferInfo_material
-			};
+			if (m_config->size_uniform_data_material > 0) {
+				VkDescriptorBufferInfo bufferInfo_material = { 0 };
+				bufferInfo_material.buffer = m_uniform_buffers_material[i];
+				bufferInfo_material.offset = 0;
+				bufferInfo_material.range = m_config->size_uniform_data_material;
+				descriptor_writes[1] = (VkWriteDescriptorSet){ // uniforms buffer - material
+						.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+						.dstSet = m_descriptor_sets[i],
+						.dstBinding = 1,
+						.dstArrayElement = 0,
+						.descriptorCount = 1,
+						.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+						.pBufferInfo = &bufferInfo_material
+				};
+			}
 
 			std::vector<VkDescriptorImageInfo> imageInfo = std::vector<VkDescriptorImageInfo>(m_config->texture_image_views_count);
 			if (m_config->texture_image_views_count > 0)
@@ -371,10 +385,10 @@ namespace vkc {
 					imageInfo[j].sampler = m_texture_samplers[j];
 				}
 
-				descriptor_writes[TEXTURE_BINDING_OFFSET] = (VkWriteDescriptorSet){ // texture sampler
+				descriptor_writes[m_first_texture_binding_slot] = (VkWriteDescriptorSet){ // texture sampler
 					.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 					.dstSet = m_descriptor_sets[i],
-					.dstBinding = TEXTURE_BINDING_OFFSET,
+					.dstBinding = m_first_texture_binding_slot,
 					.dstArrayElement = 0,
 					.descriptorCount = m_config->texture_image_views_count,
 					.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
@@ -382,7 +396,7 @@ namespace vkc {
 				};
 			}
 
-			vkUpdateDescriptorSets(m_handle_device, descriptro_writes_count, descriptor_writes.data(), 0, NULL);
+			vkUpdateDescriptorSets(m_handle_device, poolSizeCount, descriptor_writes.data(), 0, NULL);
 		}
 	}
 
@@ -410,6 +424,7 @@ namespace vkc {
 		}
 
 		// material data
+		if(m_config->size_uniform_data_material > 0)
 		{
 			VkDeviceSize bufferSize = m_config->size_uniform_data_material;
 			uint8_t num_swapchain_images = m_obj_render_context->get_num_render_frames();

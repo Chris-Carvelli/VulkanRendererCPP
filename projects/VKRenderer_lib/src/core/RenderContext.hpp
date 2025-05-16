@@ -52,7 +52,8 @@ namespace vkc {
 			VkBuffer buffer,
 			VkImage image,
 			uint32_t width,
-			uint32_t height
+			uint32_t height,
+			uint32_t layers
 		);
 		void createBuffer(
 			VkDeviceSize size,
@@ -63,6 +64,7 @@ namespace vkc {
 		);
 		void transition_image_layout(
 			VkImage image,
+			uint32_t layers,
 			VkFormat format,
 			VkImageLayout oldLayout,
 			VkImageLayout newLayout
@@ -70,6 +72,7 @@ namespace vkc {
 		void create_image(
 			uint32_t width,
 			uint32_t height,
+			uint32_t layers,
 			VkFormat format,
 			VkImageTiling tiling,
 			VkImageUsageFlags usage,
@@ -80,7 +83,8 @@ namespace vkc {
 		VkImageView create_imge_view(
 			VkImage image,
 			VkFormat format,
-			VkImageAspectFlags aspectFlags
+			VkImageAspectFlags aspectFlags,
+			VkImageViewType viewType
 		);
 
 		VkCommandBuffer beginSingleTimeCommands();

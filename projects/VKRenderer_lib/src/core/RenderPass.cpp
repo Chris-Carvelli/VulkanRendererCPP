@@ -171,6 +171,7 @@ namespace vkc {
 		m_obj_render_context->create_image(
 			extent.width,
 			extent.height,
+			1,
 			depthFormat,
 			VK_IMAGE_TILING_OPTIMAL,
 			VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
@@ -181,7 +182,8 @@ namespace vkc {
 		m_depth_image_view = m_obj_render_context->create_imge_view(
 			m_depth_image,
 			depthFormat,
-			VK_IMAGE_ASPECT_DEPTH_BIT
+			VK_IMAGE_ASPECT_DEPTH_BIT,
+			VK_IMAGE_VIEW_TYPE_2D
 		);
 	}
 

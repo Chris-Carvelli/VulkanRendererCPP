@@ -27,8 +27,9 @@ namespace vkc {
 		const uint32_t texture_image_views_count;
 
 		// fixed pipeline config
-		const VkPrimitiveTopology topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		const VkPrimitiveTopology topology      = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		const VkCullModeFlags face_culling_mode = VK_CULL_MODE_FRONT_BIT;
+		const VkCompareOp compare_op            = VK_COMPARE_OP_LESS;
 	};
 
 	class Pipeline {
@@ -90,5 +91,9 @@ namespace vkc {
 		std::vector<VkDeviceMemory>		m_uniform_buffers_memory_material;
 		std::vector<void*>				m_uniform_buffers_mapped_material;
 		std::vector<VkSampler>			m_texture_samplers;
+
+		// aux
+		// first texture binding slot
+		uint32_t m_first_texture_binding_slot;
 	};
 }

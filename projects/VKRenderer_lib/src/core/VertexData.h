@@ -169,8 +169,55 @@ inline const VkVertexInputAttributeDescription* vertexDebug_getAttributeDescript
 // =================================================================
 // Trail
 // =================================================================
-
 struct DataUniformTrail {
     float radius;
     int offset_dir;
 };
+
+
+// =================================================================
+// Skybox
+// =================================================================
+typedef struct {
+    glm::vec3 position;
+} VertexDataSkybox;
+
+typedef struct {
+    glm::vec3 pos_camera;
+} DataUniformSkybox;
+
+static const VkVertexInputAttributeDescription attributeDescriptions_skybox[] = {
+    (VkVertexInputAttributeDescription) {
+        .location = 0,
+        .binding = 0,
+        .format = VK_FORMAT_R32G32B32_SFLOAT,
+        .offset = offsetof(VertexDataSkybox, position),
+    }
+};
+
+static const VkVertexInputBindingDescription bindingDescriptions_skybox[] = {
+    (VkVertexInputBindingDescription) {
+        .binding = 0,
+        .stride = sizeof(VertexDataSkybox),
+        .inputRate = VK_VERTEX_INPUT_RATE_VERTEX
+    }
+};
+static const uint32_t bindingDescriptionsCount_skybox = sizeof(bindingDescriptions_skybox) / sizeof(VkVertexInputBindingDescription);
+
+static const uint32_t attributeDescriptions_skyboxCount = sizeof(attributeDescriptions_skybox) / sizeof(VkVertexInputAttributeDescription);
+
+inline const VkVertexInputBindingDescription* vertexData_getBindingDescriptions_Skybox() {
+    return bindingDescriptions_skybox;
+}
+
+inline const uint32_t vertexData_getBindingDescriptionsCount_Skybox() {
+    return bindingDescriptionsCount_skybox;
+}
+
+inline const VkVertexInputAttributeDescription* vertexData_getAttributeDescriptions_Skybox() {
+    return attributeDescriptions_skybox;
+}
+
+inline const uint32_t vertexData_getAttributeDescriptions_SkyboxCount() {
+    return attributeDescriptions_skyboxCount;
+}

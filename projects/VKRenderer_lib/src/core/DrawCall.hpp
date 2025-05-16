@@ -46,6 +46,11 @@ namespace vkc {
 			VkDevice device,
 			vkc::RenderContext* obj_render_context
 		);
+		void createTextureCubemap(
+			Assets::IdAssetTexture texture_id,
+			VkDevice device,
+			vkc::RenderContext* obj_render_context
+		);
 
 		void updateModelVertexBuffer(
 			uint32_t model_index,
