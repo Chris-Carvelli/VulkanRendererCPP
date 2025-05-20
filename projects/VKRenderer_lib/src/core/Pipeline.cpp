@@ -194,7 +194,7 @@ namespace vkc {
 		// pipeline either acquires ALL config arrays, or none
 		// a good idea could be to follow Box2D pattern and just memcpy
 		// config data, so we can take care of all our stuff
-		delete m_config->texture_image_views;
+		//delete m_config->texture_image_views;
 		delete m_config;
 	}
 
