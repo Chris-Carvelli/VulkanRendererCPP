@@ -49,21 +49,35 @@ namespace vkc {
 	{
 #ifdef ENABLE_VALID_LAYERS
 
-		VKAPI_ATTR VkBool32 VKAPI_CALL debug_utils_messenger_callback(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity, VkDebugUtilsMessageTypeFlagsEXT message_type,
+		VKAPI_ATTR VkBool32 VKAPI_CALL debug_utils_messenger_callback(
+			VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+			VkDebugUtilsMessageTypeFlagsEXT message_type,
 			const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
-			void* user_data)
+			void* user_data
+		)
 		{
-			// Log debug message
-			if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+			if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+			{
+				//CC_LOG(ERROR, "%d - %s: %s", callback_data->messageIdNumber, callback_data->pMessageIdName, callback_data->pMessage);
+				CC_LOG(ERROR, callback_data->pMessage);
+			}
+			else if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
 			{
 				//CC_LOG(WARNING, "%d - %s: %s", callback_data->messageIdNumber, callback_data->pMessageIdName, callback_data->pMessage);
 				CC_LOG(WARNING, callback_data->pMessage);
 
 			}
-			else if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+			else if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
 			{
-				//CC_LOG(ERROR, "%d - %s: %s", callback_data->messageIdNumber, callback_data->pMessageIdName, callback_data->pMessage);
-				CC_LOG(ERROR, callback_data->pMessage);
+				//CC_LOG(WARNING, "%d - %s: %s", callback_data->messageIdNumber, callback_data->pMessageIdName, callback_data->pMessage);
+				CC_LOG(LOG, callback_data->pMessage);
+
+			}
+			if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
+			{
+				//CC_LOG(WARNING, "%d - %s: %s", callback_data->messageIdNumber, callback_data->pMessageIdName, callback_data->pMessage);
+				CC_LOG(VERBOSE, callback_data->pMessage);
+
 			}
 			return VK_FALSE;
 		}

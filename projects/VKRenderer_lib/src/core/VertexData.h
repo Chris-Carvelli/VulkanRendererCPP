@@ -30,7 +30,6 @@ struct DataUniformFrame {
     glm::mat4 view;
     glm::mat4 proj;
     glm::vec3 cam_pos;
-    uint32_t padding_0;
 
     // lighting
     glm::vec3 light_ambient;

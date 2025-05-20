@@ -29,9 +29,9 @@ namespace vkc {
 			vkc::RenderPass* obj_render_pass;
 			vkc::Pipeline*   obj_pipeline;
 			DataUniformMaterial* data_uniform_material;
-			void* data_uniform_model;
 			uint32_t data_uniform_model_size;
 			uint32_t idx_data_attributes;
+			void* data_uniform_model;
 		};
 
 		void add_drawcall(DrawcallData data);

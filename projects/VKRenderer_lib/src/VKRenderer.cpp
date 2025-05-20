@@ -69,9 +69,9 @@ void VKRenderer::drawcall_add(
 		.obj_render_pass = obj_renderpass,
 		.obj_pipeline = obj_pipeline,
 		.idx_data_attributes = id_mesh,
-		.data_uniform_material = (DataUniformMaterial*)material.uniform_data_material,
 		.data_uniform_model = uniform_data_model,
-		.data_uniform_model_size = uniform_data_model_size
+		.data_uniform_model_size = uniform_data_model_size,
+		.data_uniform_material = (DataUniformMaterial*)material.uniform_data_material
 	});
 }
 
@@ -81,37 +81,23 @@ void VKRenderer::TMP_force_gpu_upload_all() {
 
 	for (int i = 0; i < vkc::Assets::get_num_texture_assets(); ++i)
 		vkc::Drawcall::createTextureImage(i, m_device->get_handle(), m_render_context.get());
+
+	for (int i = 0; i < vkc::Assets::get_num_material_assets(); ++i) {
+		auto& material_data = vkc::Assets::get_material_data(i);
+
+		std::vector<VkImageView> image_views(material_data.image_views.size());
+		for(int j = 0; j < image_views.size(); ++j)
+			image_views[j] = vkc::Drawcall::get_texture_image_view(material_data.image_views[j]);
+
+		vkc::PipelineConfig config = vkc::PIPELINE_CONFIGS[material_data.id_pipeline_config];
+		config.texture_image_views = image_views.data();
+		config.texture_image_views_count = image_views.size();
+		material_data.id_pipeline = m_render_context->get_renderpass(0)->add_pipeline(new vkc::PipelineConfig(config));
+	}
 }
 
 void VKRenderer::TMP_create_renderpasses() {
-
-	uint32_t default_pipeline = m_render_context->get_renderpass(0)->add_pipeline(new vkc::PipelineConfig{
-				.vert_path = "res/shaders/pbr.vert.spv",
-				.frag_path = "res/shaders/pbr.frag.spv",
-				.size_uniform_data_frame    = sizeof(DataUniformFrame),
-				.size_uniform_data_material = sizeof(DataUniformMaterial),
-				.size_push_constant_model   = sizeof(DataUniformModel),
-				.vertex_binding_descriptors         = vertexData_getBindingDescriptions(),
-				.vertex_binding_descriptors_count   = vertexData_getBindingDescriptionsCount(),
-				.vertex_attribute_descriptors       = vertexData_getAttributeDescriptions(),
-				.vertex_attribute_descriptors_count = vertexData_getAttributeDescriptionsCount(),
-				.texture_image_views = new VkImageView[] {
-					vkc::Drawcall::get_texture_image_view(0), // albedo
-					vkc::Drawcall::get_texture_image_view(1), // diffuse
-					vkc::Drawcall::get_texture_image_view(2), // normal map
-					vkc::Drawcall::get_texture_image_view(3)  // enviroment map
-				},
-				.texture_image_views_count = 4,
-				.face_culling_mode = VK_CULL_MODE_BACK_BIT
-		});
-	vkc::Instance::TMP_get_singleton_instance()->add_object_debug_name(
-		(uint64_t)m_render_context->get_renderpass(0)->get_pipeline_handle(default_pipeline),
-		VK_OBJECT_TYPE_PIPELINE,
-		m_device->get_handle(),
-		"default pipeline"
-	);
-
-	uint32_t skybox_pipeline = m_render_context->get_renderpass(0)->add_pipeline(new vkc::PipelineConfig {
+	/*uint32_t skybox_pipeline = m_render_context->get_renderpass(0)->add_pipeline(new vkc::PipelineConfig {
 				.vert_path = "res/shaders/skybox.vert.spv",
 				.frag_path = "res/shaders/skybox.frag.spv",
 				.size_uniform_data_frame    = sizeof(DataUniformFrame),
@@ -133,7 +119,7 @@ void VKRenderer::TMP_create_renderpasses() {
 		VK_OBJECT_TYPE_PIPELINE,
 		m_device->get_handle(),
 		"skybox pipeline"
-	);
+	);*/
 }
 
 void VKRenderer::init_base()

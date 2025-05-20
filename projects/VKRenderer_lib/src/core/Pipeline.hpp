@@ -9,13 +9,18 @@ namespace vkc {
 	class RenderContext;
 	class RenderPass;
 
+	enum PipelineConfigFlags : uint8_t {
+		DYNAMIC = 0b0001,
+		MULTI   = 0b0010
+	};
+
 	struct PipelineConfig {
 		const char* vert_path;
 		const char* frag_path;
 
 		const VkVertexInputBindingDescription* vertex_binding_descriptors;
 		const VkVertexInputAttributeDescription* vertex_attribute_descriptors;
-		const VkImageView* texture_image_views;
+		VkImageView* texture_image_views;
 
 		const uint32_t size_uniform_data_frame;
 		const uint32_t size_uniform_data_material;
@@ -24,12 +29,43 @@ namespace vkc {
 		const uint32_t vertex_binding_descriptors_count;
 
 		const uint32_t vertex_attribute_descriptors_count;
-		const uint32_t texture_image_views_count;
+		uint32_t texture_image_views_count;
 
+		const uint8_t flags;
 		// fixed pipeline config
 		const VkPrimitiveTopology topology      = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		const VkCullModeFlags face_culling_mode = VK_CULL_MODE_FRONT_BIT;
 		const VkCompareOp compare_op            = VK_COMPARE_OP_LESS;
+	};
+
+	const uint32_t PIPELINE_CONFIG_ID_SKYBOX = 0;
+	const uint32_t PIPELINE_CONFIG_ID_PBR = 1;
+	const PipelineConfig PIPELINE_CONFIGS[] = {
+		{
+			.vert_path = "res/shaders/skybox.vert.spv",
+			.frag_path = "res/shaders/skybox.frag.spv",
+			.size_uniform_data_frame    = sizeof(DataUniformFrame),
+			.size_uniform_data_material = 0,
+			.size_push_constant_model   = 0,
+			.vertex_binding_descriptors         = vertexData_getBindingDescriptions_Skybox(),
+			.vertex_binding_descriptors_count   = vertexData_getBindingDescriptionsCount_Skybox(),
+			.vertex_attribute_descriptors       = vertexData_getAttributeDescriptions_Skybox(),
+			.vertex_attribute_descriptors_count = vertexData_getAttributeDescriptions_SkyboxCount(),
+			.face_culling_mode = VK_CULL_MODE_NONE,
+			.compare_op = VK_COMPARE_OP_EQUAL
+		},
+		{
+			.vert_path = "res/shaders/pbr.vert.spv",
+			.frag_path = "res/shaders/pbr.frag.spv",
+			.size_uniform_data_frame    = sizeof(DataUniformFrame),
+			.size_uniform_data_material = sizeof(DataUniformMaterial),
+			.size_push_constant_model   = sizeof(DataUniformModel),
+			.vertex_binding_descriptors         = vertexData_getBindingDescriptions(),
+			.vertex_binding_descriptors_count   = vertexData_getBindingDescriptionsCount(),
+			.vertex_attribute_descriptors       = vertexData_getAttributeDescriptions(),
+			.vertex_attribute_descriptors_count = vertexData_getAttributeDescriptionsCount(),
+			.face_culling_mode = VK_CULL_MODE_BACK_BIT
+		}
 	};
 
 	class Pipeline {

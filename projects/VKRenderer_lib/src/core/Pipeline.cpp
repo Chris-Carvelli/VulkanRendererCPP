@@ -211,7 +211,9 @@ namespace vkc {
 
 
 	void Pipeline::update_material_textures(std::vector<VkImageView> image_views, uint32_t current_frame) {
-		for (int j = 0; j < m_config->texture_image_views_count; ++j)
+		assert(image_views.size() <= m_config->texture_image_views_count);
+
+		for (int j = 0; j < image_views.size(); ++j)
 		{
 			VkDescriptorImageInfo imageInfo;
 			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -448,10 +450,14 @@ namespace vkc {
 	void Pipeline::create_texture_samplers() {
 		m_texture_samplers.resize(m_config->texture_image_views_count);
 
-
 		VkSamplerCreateInfo samplerInfo = { VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO };
 		samplerInfo.magFilter = VK_FILTER_LINEAR;
 		samplerInfo.minFilter = VK_FILTER_LINEAR;
+		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+		samplerInfo.minLod = 0.0f; // Optional
+		samplerInfo.maxLod = static_cast<float>(0); // TMP_HARDODED_MIPMAP_LEVELS
+		samplerInfo.mipLodBias = 0.0f; // Optional
+
 		samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 		samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 		samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;

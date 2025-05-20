@@ -72,10 +72,12 @@ target_include_directories(VKRenderer_lib PUBLIC
     ${LIBRARIES_SOURCE_PATH}/tinyobj
     #${LIBRARIES_SOURCE_PATH}/vulkan/include
     ${LIBRARIES_SOURCE_PATH}/ccstructs
+    ${LIBRARIES_SOURCE_PATH}/assimp
 )
 
 target_link_libraries(VKRenderer_lib Vulkan::Vulkan)
 target_link_libraries(VKRenderer_lib imgui)
+target_link_libraries(VKRenderer_lib assimp)
 
 ## Asset baker
 

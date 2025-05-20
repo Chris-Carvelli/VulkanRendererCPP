@@ -172,6 +172,7 @@ namespace vkc {
 			extent.width,
 			extent.height,
 			1,
+			1,
 			depthFormat,
 			VK_IMAGE_TILING_OPTIMAL,
 			VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
@@ -183,7 +184,8 @@ namespace vkc {
 			m_depth_image,
 			depthFormat,
 			VK_IMAGE_ASPECT_DEPTH_BIT,
-			VK_IMAGE_VIEW_TYPE_2D
+			VK_IMAGE_VIEW_TYPE_2D,
+			1
 		);
 	}
 

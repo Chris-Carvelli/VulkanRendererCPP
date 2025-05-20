@@ -47,34 +47,14 @@ namespace TMP_Update {
     const uint32_t drawcall_cout = 1;
     std::vector<DataUniformModel> model_data;
 
-    std::vector<std::string> TMP_mesh_names;
     std::vector<vkc::Assets::IdAssetMesh> TMP_mesh_idxs;
-    int TMP_object_curr_idx = 0;
+    std::vector<vkc::Assets::IdAssetMesh> TMP_mat_idxs;
 
-    vkc::Assets::IdAssetMaterial idMaterialModels;
     vkc::Assets::IdAssetMaterial idMaterialSkybox;
 
     void TMP_update_gui(vkc::Rect2DI window_size, DataUniformFrame& ubo) {
         ImGui::Begin("tmp_update_info");
         ImGui::SeparatorText("Object data");
-        const char* current_item = TMP_mesh_names[TMP_object_curr_idx].c_str();
-
-        if (ImGui::BeginCombo("##combo", current_item)) // The second parameter is the label previewed before opening the combo.
-        {
-            for (int n = 0; n < TMP_mesh_names.size(); n++)
-            {
-                const char* entry_item = TMP_mesh_names[n].c_str();
-                bool is_selected = (current_item == entry_item); // You can store your selection however you want, outside or inside your objects
-                if (ImGui::Selectable(TMP_mesh_names[n].c_str(), is_selected))
-                {
-                    current_item = entry_item;
-                    TMP_object_curr_idx = n;
-                }
-                if (is_selected)
-                    ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
-            }
-            ImGui::EndCombo();
-        }
 
         ImGui::SeparatorText("Frame data");
         ImGui::DragFloat3("Light Color Ambient", &ubo.light_ambient.x);
@@ -187,12 +167,34 @@ namespace TMP_Update {
 
 class TestRenderer : public VKRenderer {
     void init() override {
+        // load tech textures
+        // TODO engine should do this
+        vkc::Assets::load_texture("res/textures/tex_white.png", vkc::Assets::TEX_CHANNELS_RGB_A);
+        vkc::Assets::load_texture("res/textures/tex_blue_norm.png", vkc::Assets::TEX_CHANNELS_RGB, vkc::Assets::TEX_VIEW_TYPE_2D, VK_FORMAT_R8G8B8_UNORM);
+
+
+        // skybox
+        auto TMP_tex_idx_skybox = vkc::Assets::load_texture("res/textures/default_cubemap.png", vkc::Assets::TEX_CHANNELS_RGB_A, vkc::Assets::TEX_VIEW_TYPE_CUBE);
+        auto mat = vkc::Assets::MaterialData{
+            .id_pipeline_config = vkc::PIPELINE_CONFIG_ID_SKYBOX,
+            .id_render_pass = 0,
+            .id_pipeline = 1,
+            .uniform_data_material = nullptr,
+            .image_views = { TMP_tex_idx_skybox }
+        };
+        TMP_Update::idMaterialSkybox = vkc::Assets::create_material(mat);
+
+
         // load mesh and textures
-        TMP_Update::TMP_mesh_idxs = std::vector<vkc::Assets::IdAssetMesh>(1);
-        TMP_Update::TMP_mesh_idxs[0] = vkc::Assets::load_mesh("res/models/treasure_chest/treasure_chest.obj", "res/models/treasure_chest");
-        auto TMP_tex_idx_arm      = vkc::Assets::load_texture("res/models/treasure_chest/treasure_chest_diffuse.png", vkc::Assets::TEX_CHANNELS_RGB_A);
-        auto TMP_tex_idx_diffuse  = vkc::Assets::load_texture("res/models/treasure_chest/treasure_chest_arm.png", vkc::Assets::TEX_CHANNELS_RGB_A);
-        auto TMP_tex_idx_normal   = vkc::Assets::load_texture("res/models/treasure_chest/treasure_chest_normal.png", vkc::Assets::TEX_CHANNELS_RGB_A);
+        std::vector<vkc::Assets::IdAssetMesh> meshes; 
+        std::vector<vkc::Assets::IdAssetMaterial> materials;
+        vkc::Assets::load_model(
+            "res/models/camera/camera.obj",
+            "res/models/camera/",
+            TMP_tex_idx_skybox,
+            TMP_Update::TMP_mesh_idxs,
+            TMP_Update::TMP_mat_idxs
+        );
 
 
         // create uniform data for each model
@@ -200,27 +202,6 @@ class TestRenderer : public VKRenderer {
         int l = glm::sqrt(TMP_Update::drawcall_cout);
         for (int i = 0; i < TMP_Update::drawcall_cout; ++i)
             TMP_Update::model_data[i] = DataUniformModel{ .model = glm::translate(glm::mat4(1.0f), glm::vec3(i % l - l / 2, 0, i / l - l / 2)) };
-
-        // set mesh names for GUI
-        TMP_Update::TMP_mesh_names.resize(TMP_Update::TMP_mesh_idxs.size());
-        for (int i = 0; i < TMP_Update::TMP_mesh_idxs.size(); ++i)
-            TMP_Update::TMP_mesh_names[i] = std::to_string(TMP_Update::TMP_mesh_idxs[i]);
-
-        TMP_Update::idMaterialModels = vkc::Assets::create_material(vkc::Assets::MaterialData{
-            .id_render_pass = 0,
-            .id_pipeline = 0,
-            .uniform_data_material = &TMP_Update::tmp_data_uniform_material
-         });
-
-
-
-        // skybox
-        auto TMP_tex_idx_skybox = vkc::Assets::load_texture("res/textures/default_cubemap.png", vkc::Assets::TEX_CHANNELS_RGB_A, vkc::Assets::TEX_VIEW_TYPE_CUBE);
-        TMP_Update::idMaterialSkybox = vkc::Assets::create_material(vkc::Assets::MaterialData{
-            .id_render_pass = 0,
-            .id_pipeline = 1,
-            .uniform_data_material = nullptr
-        });
     }
 
     void update() override {
@@ -235,12 +216,15 @@ class TestRenderer : public VKRenderer {
 
     void render() override {
         // model
-        drawcall_add(
-            TMP_Update::TMP_mesh_idxs[TMP_Update::TMP_object_curr_idx],
-            TMP_Update::idMaterialModels,
-            &TMP_Update::model_data[0],
-            sizeof(TMP_Update::model_data[0])
-        );
+        for(int i = 0; i < TMP_Update::TMP_mesh_idxs.size(); ++i)
+        {
+            drawcall_add(
+                TMP_Update::TMP_mesh_idxs[i],
+                TMP_Update::TMP_mat_idxs[i],
+                &TMP_Update::model_data[0],
+                sizeof(TMP_Update::model_data[0])
+            );
+        }
 
         // skybox
         drawcall_add(

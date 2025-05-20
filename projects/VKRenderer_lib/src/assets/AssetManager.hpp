@@ -1,7 +1,8 @@
 #pragma once
 
 #include <core/VertexData.h>
-
+#include <cc_logger.h>
+#include <core/Pipeline.hpp>
 #include <vector>
 
 namespace vkc::Assets {
@@ -47,12 +48,26 @@ namespace vkc::Assets {
 	typedef uint32_t IdAssetTexture;
 	typedef uint32_t IdAssetMaterial;
 
+	const IdAssetTexture IDX_MISSING_TEXTURE = -1;
+
+	inline uint8_t tex_get_num_channels(TexChannelTypes t) {
+		switch(t) {
+			case TEX_CHANNELS_GREY   : return 1;
+			case TEX_CHANNELS_GREY_A : return 2;
+			case TEX_CHANNELS_RGB    : return 3;
+			case TEX_CHANNELS_RGB_A  : return 4;
+			case TEX_CHANNELS_NONE   : CC_ASSERT(false, "Invalid texture channel type");
+		}
+	}
 	namespace BuiltinPrimitives {
 		// TODO better indices for mesh and texture assets (separated from debug/builtin ones)
 		const IdAssetMesh IDX_DEBUG_CUBE = 0;
 		const IdAssetMesh IDX_DEBUG_RAY  = 1;
 
 		const IdAssetMesh IDX_FULLSCREEN_TRI = 2;
+
+		const IdAssetTexture IDX_TEX_WHITE     = 0;
+		const IdAssetTexture IDX_TEX_BLUE_NORM = 1;
 	}
 
 	struct MeshData {
@@ -73,21 +88,24 @@ namespace vkc::Assets {
 		uint8_t channelsCount;
 		TexChannelTypes channels;
 		std::vector<unsigned char> data;
-		VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_2D;
+		VkImageViewType viewType;
+		VkFormat format;
 	};
 
 	struct MaterialData {
+		uint32_t id_pipeline_config;
 		// TODO replace with IdRenderPass and IdPipeline
 		uint32_t id_render_pass;
 		uint32_t id_pipeline;
 		void* uniform_data_material;
-		std::vector<VkImageView> image_views;
+		std::vector<IdAssetTexture> image_views;
 	};
 
 	void asset_manager_init();
 
 	uint32_t get_num_mesh_assets();
 	uint32_t get_num_texture_assets();
+	uint32_t get_num_material_assets();
 
 	MeshData& get_mesh_data(IdAssetMesh id);
 	TextureData& get_texture_data(IdAssetTexture id);
@@ -101,7 +119,15 @@ namespace vkc::Assets {
 	std::vector<IdAssetMesh> load_meshes(const char** paths);
 	std::vector<IdAssetMesh> load_meshes_from_folder(const char* folder_path);
 
-	IdAssetTexture load_texture(const char* path, TexChannelTypes channels, TexViewTypes viewType = TEX_VIEW_TYPE_2D);
+	uint32_t load_model(
+		const char* path,
+		const char* base_path_textures,
+		IdAssetTexture TMP_tex_environment_id,
+		std::vector<IdAssetMesh>&     out_loaded_mesh_idxs,
+		std::vector<IdAssetMaterial>& out_loaded_materials_idxs
+	);
+
+	IdAssetTexture load_texture(const char* path, TexChannelTypes channels, TexViewTypes viewType = TEX_VIEW_TYPE_2D, VkFormat format = VK_FORMAT_R8G8B8A8_SRGB, bool flip_vertical=false);
 
 	// ===================================================================================
 	// create
@@ -111,5 +137,5 @@ namespace vkc::Assets {
 	IdAssetMesh create_mesh(MeshData data);
 
 	// resources inside MaterialData will be acquired by the Asset Manager system
-	IdAssetMaterial create_material(MaterialData data);
+	IdAssetMaterial create_material(MaterialData& data);
 }

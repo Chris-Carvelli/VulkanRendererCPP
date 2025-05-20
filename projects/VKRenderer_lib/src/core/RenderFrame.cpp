@@ -163,7 +163,6 @@ namespace vkc {
 			vkCmdBindVertexBuffers(m_command_buffer, 0, 1, vertexBuffers, offsets);
 			vkCmdBindIndexBuffer(m_command_buffer, model_data_gpu.index_buffer, 0, VK_INDEX_TYPE_UINT32);
 
-
 			vkCmdDrawIndexed(m_command_buffer, model_data_gpu.indices_count, 1, 0, 0, 0);
 		}
 		vkc::Instance::TMP_get_singleton_instance()->end_cmd_buffer_util_label(m_command_buffer);

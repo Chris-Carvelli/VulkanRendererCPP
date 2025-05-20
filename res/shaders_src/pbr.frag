@@ -23,16 +23,18 @@ void main() {
 //	vec4 emissive = texture(tex_emissive, fragTexCoord);
 	vec4 params_specular = texture(tex_specular, fragTexCoord);
 
-	vec3 N = sample_normal_map(tex_normal, fragTexCoord, fragNormal, fragTangent);;
+	vec3 N = sample_normal_map(tex_normal, fragTexCoord, normalize(fragNormal), normalize(fragTangent));
+//	vec3 N = normalize(fragNormal);
 	vec3 V = normalize(data_frame.cam_pos - fragPosition);
 	vec3 L = normalize(data_frame.light_dir);
 
 	DataMaterial mat;
 	mat.albedo = albedo.rgb;
-	mat.occlusion = params_specular.r;
+	mat.occlusion = params_specular.x;
 	mat.roughness = params_specular.y;
 	mat.metalness = params_specular.z;
 
+	//outColor = vec4(N.rgb, 1.0);
 	outColor = vec4(
 		BRDFDirect(L, N, V, mat)
 		 + BRDFIndirect(L, N, V, mat, tex_environment)

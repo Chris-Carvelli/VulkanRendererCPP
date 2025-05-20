@@ -1,6 +1,6 @@
 #include "shader_base.glsl"
 
-const int MAX_LOD_LEVEL = 2;
+const int MAX_LOD_LEVEL = 1;
 
 struct DataMaterial {
 	vec3 albedo;
@@ -73,7 +73,7 @@ vec3 BRDFIndirect(vec3 L, vec3 N, vec3 V, DataMaterial mat, samplerCube tex_envi
 	vec3 fresnel = FresnelSchlick(GetReflectance(mat), V, N);
 
 	// Linearly interpolate between the diffuse and specular term
-	return mix(diffuse, specular, fresnel);
+	return mix(diffuse, specular, fresnel) * mat.occlusion;
 }
 
 // Get the surface albedo
@@ -95,6 +95,7 @@ vec3 SampleEnvironment(vec3 direction, float lodLevel, samplerCube tex_environme
 	// Flip the Z direction, because the cubemap is left-handed
 	direction.z *= -1;
 
+//	return texture(tex_environment, direction).rgb;
 	return textureLod(tex_environment, direction, lodLevel * MAX_LOD_LEVEL).rgb;
 }
 

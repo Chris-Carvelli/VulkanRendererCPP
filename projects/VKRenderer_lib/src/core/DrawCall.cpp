@@ -10,6 +10,8 @@
 #include <vector>
 #include <map>
 
+const int TMP_HARDCODED_MIP_LEVELS = VK_REMAINING_MIP_LEVELS;
+
 namespace vkc::Drawcall {
     std::map<uint32_t, ModelDataGPU> model_data_gpu;
     std::map<uint32_t, TextureDataGPU> texture_data_gpu;
@@ -47,7 +49,7 @@ namespace vkc::Drawcall {
         }
         TextureDataGPU new_gpu_data = { 0 };
 
-        VkDeviceSize imageSize = texture_data.width * texture_data.height * 4;
+        VkDeviceSize imageSize = texture_data.width * texture_data.height * texture_data.channelsCount;
 
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
@@ -71,7 +73,8 @@ namespace vkc::Drawcall {
             texture_data.width,
             texture_data.height,
             texture_data.viewType == VK_IMAGE_VIEW_TYPE_CUBE ? 6 : 1,
-            VK_FORMAT_R8G8B8A8_SRGB,
+            TMP_HARDCODED_MIP_LEVELS,
+            texture_data.format,
             VK_IMAGE_TILING_OPTIMAL,
             VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -82,7 +85,8 @@ namespace vkc::Drawcall {
         obj_render_context->transition_image_layout(
             new_gpu_data.image,
             1,
-            VK_FORMAT_R8G8B8A8_SRGB,
+            TMP_HARDCODED_MIP_LEVELS,
+            texture_data.format,
             VK_IMAGE_LAYOUT_UNDEFINED,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
         );
@@ -98,7 +102,8 @@ namespace vkc::Drawcall {
         obj_render_context->transition_image_layout(
             new_gpu_data.image,
             1,
-            VK_FORMAT_R8G8B8A8_SRGB,
+            TMP_HARDCODED_MIP_LEVELS,
+            texture_data.format,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
         );
@@ -109,9 +114,10 @@ namespace vkc::Drawcall {
         // view
         new_gpu_data.image_view = obj_render_context->create_imge_view(
             new_gpu_data.image,
-            VK_FORMAT_R8G8B8A8_SRGB,
+            texture_data.format,
             VK_IMAGE_ASPECT_COLOR_BIT,
-            texture_data.viewType
+            texture_data.viewType,
+            TMP_HARDCODED_MIP_LEVELS
         );
 
         texture_data_gpu[texture_id] = new_gpu_data;
@@ -183,6 +189,7 @@ namespace vkc::Drawcall {
             texture_data.width,
             texture_data.height,
             texture_data.viewType == VK_IMAGE_VIEW_TYPE_CUBE ? 6 : 1,
+            TMP_HARDCODED_MIP_LEVELS,
             VK_FORMAT_R8G8B8A8_SRGB,
             VK_IMAGE_TILING_OPTIMAL,
             VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
@@ -194,6 +201,7 @@ namespace vkc::Drawcall {
         obj_render_context->transition_image_layout(
             new_gpu_data.image,
             6,
+            TMP_HARDCODED_MIP_LEVELS,
             VK_FORMAT_R8G8B8A8_SRGB,
             VK_IMAGE_LAYOUT_UNDEFINED,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
@@ -210,6 +218,7 @@ namespace vkc::Drawcall {
         obj_render_context->transition_image_layout(
             new_gpu_data.image,
             6,
+            TMP_HARDCODED_MIP_LEVELS,
             VK_FORMAT_R8G8B8A8_SRGB,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
@@ -223,7 +232,8 @@ namespace vkc::Drawcall {
             new_gpu_data.image,
             VK_FORMAT_R8G8B8A8_SRGB,
             VK_IMAGE_ASPECT_COLOR_BIT,
-            texture_data.viewType
+            texture_data.viewType,
+            TMP_HARDCODED_MIP_LEVELS
         );
 
         texture_data_gpu[texture_id] = new_gpu_data;
