@@ -265,7 +265,7 @@ namespace vkc::Assets {
         std::vector<IdAssetMaterial>& out_loaded_materials_idxs
     ) {
 
-        
+        CC_LOG(IMPORTANT, "Loading model %s...", path);
 
         // Read the file using Assimp importer
         Assimp::Importer importer;
@@ -275,7 +275,9 @@ namespace vkc::Assets {
         );
 
         CC_ASSERT(scene, "[assimp] could not load %s", path);
-
+        CC_LOG(LOG, "assimp scene loaded");
+        CC_LOG(LOG, "materials: %d", scene->mNumMaterials);
+        CC_LOG(LOG, "meshes: %d", scene->mNumMeshes);
 
 
         out_loaded_mesh_idxs.resize(scene->mNumMeshes);
@@ -287,18 +289,28 @@ namespace vkc::Assets {
             // load textures
             const aiMaterial& ai_material_data = *scene->mMaterials[i];
 
-            debug_print_material_info(ai_material_data);
+            if (i < 3)
+                debug_print_material_info(ai_material_data);
                         
             // TMP cannon model has unused materials that do not conform with the texture setup of
             // the PBR material. Skipping for now
             int illum_type_idx;
-            CC_ASSERT(aiGetMaterialInteger(&ai_material_data, "$mat.illum", aiTextureType_NONE, 0, &illum_type_idx) == aiReturn_SUCCESS, "error retrieving assimp property $mat.illum from material %d, model %s", i, path);
 
-            if (illum_type_idx == 1)
-            {
-                CC_LOG(WARNING, "unrecognized illumination model `2` for for material id %d, model %s", i, path);
-                continue;
-            }
+
+            //// ad-hoc check for models taken from ituGL
+            //{
+            //    if(aiGetMaterialInteger(&ai_material_data, "$mat.illum", aiTextureType_NONE, 0, &illum_type_idx) != aiReturn_SUCCESS)
+            //    {
+            //        CC_LOG(WARNING, "error retrieving assimp property $mat.illum from material %d, model %s", i, path);
+            //        continue;
+            //    }
+
+            //    if (illum_type_idx == 1)
+            //    {
+            //        CC_LOG(WARNING, "unrecognized illumination model `2` for for material id %d, model %s", i, path);
+            //        continue;
+            //    }
+            //}
 
             // TODO hardcoded textures
             std::string base_path(base_path_textures);
@@ -321,7 +333,7 @@ namespace vkc::Assets {
             };
             // TODO hardcoded PBR material
             auto tmp = create_material(mat);
-            CC_LOG(VERBOSE, "mat %d: %d", i, tmp);
+            CC_LOG(VERBOSE, "loading materials %d/%d", i+1, scene->mNumMaterials);
             material_map[i] = tmp;
         }
 
@@ -384,7 +396,7 @@ namespace vkc::Assets {
            mesh_data[mesh_idx] = data;
            out_loaded_mesh_idxs[i] = mesh_idx;
            out_loaded_materials_idxs[i] = material_map[ai_mesh_data.mMaterialIndex];
-           CC_LOG(IMPORTANT, "file: %d, actual: %d", ai_mesh_data.mMaterialIndex, out_loaded_materials_idxs[i]);
+           CC_LOG(VERBOSE, "loading mesh %d/%d", i+1, scene->mNumMeshes);
         }
 
         return scene->mNumMeshes;

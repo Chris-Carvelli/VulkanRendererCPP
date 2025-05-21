@@ -115,8 +115,10 @@ namespace vkc {
 		VkRenderPassBeginInfo begin_info;
 
 		vkc::Instance::TMP_get_singleton_instance()->begin_cmd_buffer_util_label(m_command_buffer, "drawcalls", (float[4]){ 1.0f, 0.0f, 0.0f, 1.0f });
-		for(const auto& drawcall : drawcalls)
+		//for(const auto& drawcall : drawcalls)
+		for(int i =0; i < drawcalls.size(); ++i)
 		{
+			const auto& drawcall = drawcalls[i];
 			if (drawcall.obj_render_pass != obj_curr_render_pass)
 			{
 				if (obj_curr_render_pass != nullptr)

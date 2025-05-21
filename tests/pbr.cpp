@@ -190,8 +190,10 @@ class TestRenderer : public VKRenderer {
         std::vector<vkc::Assets::IdAssetMesh> meshes; 
         std::vector<vkc::Assets::IdAssetMaterial> materials;
         vkc::Assets::load_model(
-            "res/models/treasure_chest/treasure_chest.obj",
-            "res/models/treasure_chest/",
+            "res/models/Bistro_v5_2/BistroInterior.fbx",
+            "res/models/Bistro_v5_2/",
+            /*"res/models/camera/camera.obj",
+            "res/models/camera/",*/
             TMP_tex_idx_skybox,
             TMP_Update::TMP_mesh_idxs,
             TMP_Update::TMP_mat_idxs
