@@ -67,7 +67,8 @@ namespace vkc::Assets {
 		const IdAssetMesh IDX_FULLSCREEN_TRI = 2;
 
 		const IdAssetTexture IDX_TEX_WHITE     = 0;
-		const IdAssetTexture IDX_TEX_BLUE_NORM = 1;
+		const IdAssetTexture IDX_TEX_BLACK     = 1;
+		const IdAssetTexture IDX_TEX_BLUE_NORM = 2;
 	}
 
 	struct MeshData {

@@ -34,11 +34,17 @@ void main() {
 	mat.roughness = params_specular.y;
 	mat.metalness = params_specular.z;
 
-	//outColor = vec4(N.rgb, 1.0);
+//	outColor = vec4(
+////		N,
+//		SampleEnvironment( reflect(-V, N), 0, tex_environment),
+//		1.0
+//	);
+
 	outColor = vec4(
 		BRDFDirect(L, N, V, mat)
 		 + BRDFIndirect(L, N, V, mat, tex_environment)
 		// + emissive.rgb
 		, 1.0
 	);
+
 }

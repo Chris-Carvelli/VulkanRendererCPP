@@ -246,10 +246,10 @@ namespace vkc::Assets {
         }
     }
 
-    IdAssetTexture load_tex(const aiTextureType type, const aiMaterial& mat, const TexChannelTypes channels, const VkFormat format, const std::string base_path) {
+    IdAssetTexture load_tex(const aiTextureType type, const aiMaterial& mat, const TexChannelTypes channels, const VkFormat format, IdAssetTexture tex_fallback, const std::string base_path) {
         aiString path;
         if (mat.GetTextureCount(type) == 0)
-            return BuiltinPrimitives::IDX_TEX_WHITE;
+            return tex_fallback;
         mat.GetTexture(type, 0, &path);
         path = base_path + path.C_Str();
         return vkc::Assets::load_texture(path.C_Str(), channels, vkc::Assets::TEX_VIEW_TYPE_2D, format, true);
@@ -303,9 +303,9 @@ namespace vkc::Assets {
             // TODO hardcoded textures
             std::string base_path(base_path_textures);
 
-            IdAssetTexture tex_idx_arm     = load_tex(aiTextureType_SHININESS, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB_A, VK_FORMAT_R8G8B8A8_SRGB, base_path);
-            IdAssetTexture tex_idx_diffuse = load_tex(aiTextureType_DIFFUSE, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB_A, VK_FORMAT_R8G8B8A8_SRGB, base_path);
-            IdAssetTexture tex_idx_normal   = load_tex(aiTextureType_NORMALS, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB, VK_FORMAT_R8G8B8_UNORM, base_path);
+            IdAssetTexture tex_idx_arm     = load_tex(aiTextureType_SHININESS, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB_A, VK_FORMAT_R8G8B8A8_SRGB, BuiltinPrimitives::IDX_TEX_BLACK, base_path);
+            IdAssetTexture tex_idx_diffuse = load_tex(aiTextureType_DIFFUSE, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB_A, VK_FORMAT_R8G8B8A8_SRGB, BuiltinPrimitives::IDX_TEX_WHITE, base_path);
+            IdAssetTexture tex_idx_normal  = load_tex(aiTextureType_NORMALS, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB, VK_FORMAT_R8G8B8_UNORM, BuiltinPrimitives::IDX_TEX_BLUE_NORM, base_path);
 
             auto mat = (MaterialData) {
                 .id_pipeline_config = vkc::PIPELINE_CONFIG_ID_PBR,

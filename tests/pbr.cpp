@@ -170,6 +170,7 @@ class TestRenderer : public VKRenderer {
         // load tech textures
         // TODO engine should do this
         vkc::Assets::load_texture("res/textures/tex_white.png", vkc::Assets::TEX_CHANNELS_RGB_A);
+        vkc::Assets::load_texture("res/textures/tex_black.png", vkc::Assets::TEX_CHANNELS_RGB_A);
         vkc::Assets::load_texture("res/textures/tex_blue_norm.png", vkc::Assets::TEX_CHANNELS_RGB, vkc::Assets::TEX_VIEW_TYPE_2D, VK_FORMAT_R8G8B8_UNORM);
 
 
@@ -189,8 +190,8 @@ class TestRenderer : public VKRenderer {
         std::vector<vkc::Assets::IdAssetMesh> meshes; 
         std::vector<vkc::Assets::IdAssetMaterial> materials;
         vkc::Assets::load_model(
-            "res/models/camera/camera.obj",
-            "res/models/camera/",
+            "res/models/treasure_chest/treasure_chest.obj",
+            "res/models/treasure_chest/",
             TMP_tex_idx_skybox,
             TMP_Update::TMP_mesh_idxs,
             TMP_Update::TMP_mat_idxs
@@ -201,7 +202,10 @@ class TestRenderer : public VKRenderer {
         TMP_Update::model_data.resize(TMP_Update::drawcall_cout);
         int l = glm::sqrt(TMP_Update::drawcall_cout);
         for (int i = 0; i < TMP_Update::drawcall_cout; ++i)
-            TMP_Update::model_data[i] = DataUniformModel{ .model = glm::translate(glm::mat4(1.0f), glm::vec3(i % l - l / 2, 0, i / l - l / 2)) };
+            TMP_Update::model_data[i] = DataUniformModel{
+                .model = glm::translate(glm::mat4(1.0f), glm::vec3(i % l - l / 2, 0, i / l - l / 2))
+                //.model = glm::scale(glm::mat4(1.0f), glm::vec3(3.0f))
+            };
     }
 
     void update() override {
