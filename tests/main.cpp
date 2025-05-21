@@ -1,7 +1,7 @@
 #include <VKRenderer.hpp>
 
 #include <core/DrawCall.hpp>
-#include <assets/AssetManager.hpp>
+#include <AssetManager.hpp>
 
 // TMP_Update includes
 #include <glm/glm.hpp>

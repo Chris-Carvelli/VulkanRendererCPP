@@ -1,11 +1,23 @@
 #pragma once
 
-#include <core/VertexData.h>
 #include <cc_logger.h>
-#include <core/Pipeline.hpp>
+
+#include <glm/glm.hpp>
+
 #include <vector>
 
+
+typedef struct {
+	glm::vec3 position;
+	glm::vec3 color;
+	glm::vec3 normal;
+	glm::vec3 tangent;
+	glm::vec2 texCoords;
+} VertexData;
+
 namespace vkc::Assets {
+
+
 	enum VertexAttrib : uint8_t {
 		POSITION,
 		NORMAL,
@@ -37,9 +49,14 @@ namespace vkc::Assets {
 	} TexChannelTypes;
 
 	typedef enum : uint8_t {
-		TEX_VIEW_TYPE_2D   = VK_IMAGE_VIEW_TYPE_2D,
-		TEX_VIEW_TYPE_CUBE = VK_IMAGE_VIEW_TYPE_CUBE
+		TEX_VIEW_TYPE_2D   = 1,	// VK_IMAGE_VIEW_TYPE_2D
+		TEX_VIEW_TYPE_CUBE = 3	// VK_IMAGE_VIEW_TYPE_CUBE
 	} TexViewTypes;
+
+	typedef enum : uint8_t {
+		TEX_FORMAT_RGB_A = 43,	// VK_FORMAT_R8G8B8A8_SRGB
+		TEX_FORMAT_NORM  = 23	// VK_FORMAT_R8G8B8_UNORM
+	} TexFormat;
 
 	// TODO fix ids for serialization
 	//      ATM, ids are simple incrementail counters. We already have maps to store assets,
@@ -60,15 +77,16 @@ namespace vkc::Assets {
 		}
 	}
 	namespace BuiltinPrimitives {
-		// TODO better indices for mesh and texture assets (separated from debug/builtin ones)
-		const IdAssetMesh IDX_DEBUG_CUBE = 0;
-		const IdAssetMesh IDX_DEBUG_RAY  = 1;
+		// built-in asset ids grow backward from MAX_INT to avoid asset baking making messes
+		// eventually, we would like to have multiple storages to dynamically load-unload in batches
+		const IdAssetMesh IDX_DEBUG_CUBE = -1;
+		const IdAssetMesh IDX_DEBUG_RAY  = -2;
 
-		const IdAssetMesh IDX_FULLSCREEN_TRI = 2;
+		const IdAssetMesh IDX_FULLSCREEN_TRI = -3;
 
-		const IdAssetTexture IDX_TEX_WHITE     = 0;
-		const IdAssetTexture IDX_TEX_BLACK     = 1;
-		const IdAssetTexture IDX_TEX_BLUE_NORM = 2;
+		const IdAssetTexture IDX_TEX_WHITE     = -1;
+		const IdAssetTexture IDX_TEX_BLACK     = -2;
+		const IdAssetTexture IDX_TEX_BLUE_NORM = -3;
 	}
 
 	struct MeshData {
@@ -88,9 +106,9 @@ namespace vkc::Assets {
 		uint16_t height;
 		uint8_t channelsCount;
 		TexChannelTypes channels;
+		TexViewTypes viewType;
+		TexFormat format;
 		std::vector<unsigned char> data;
-		VkImageViewType viewType;
-		VkFormat format;
 	};
 
 	struct MaterialData {
@@ -128,15 +146,23 @@ namespace vkc::Assets {
 		std::vector<IdAssetMaterial>& out_loaded_materials_idxs
 	);
 
-	IdAssetTexture load_texture(const char* path, TexChannelTypes channels, TexViewTypes viewType = TEX_VIEW_TYPE_2D, VkFormat format = VK_FORMAT_R8G8B8A8_SRGB, bool flip_vertical=false);
+	IdAssetTexture load_texture(const char* path, TexChannelTypes channels, TexViewTypes viewType = TEX_VIEW_TYPE_2D, TexFormat format = TEX_FORMAT_RGB_A, bool flip_vertical=false);
 
 	// ===================================================================================
 	// create
 	// ===================================================================================
 
 	// resources inside MeshData will be acquired by the Asset Manager system
-	IdAssetMesh create_mesh(MeshData data);
+	IdAssetMesh create_mesh(MeshData& data);
 
 	// resources inside MaterialData will be acquired by the Asset Manager system
 	IdAssetMaterial create_material(MaterialData& data);
+
+	// ===================================================================================
+	// serialization
+	// ===================================================================================
+	void asset_db_dump(const char *path);
+	void asset_db_load(const char *path);
+
+
 }

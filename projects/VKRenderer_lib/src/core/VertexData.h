@@ -11,18 +11,13 @@
 
 #include <vulkan/vulkan.h>
 
+#include <AssetManager.hpp>
+
 #include <glm/glm.hpp>
 
 // =================================================================
 // base forward pass
 // =================================================================
-typedef struct {
-    glm::vec3 position;
-    glm::vec3 color;
-    glm::vec3 normal;
-    glm::vec3 tangent;
-    glm::vec2 texCoords;
-} VertexData;
 
 // TODO where to pit this? Together with vertexData?
 struct DataUniformFrame {

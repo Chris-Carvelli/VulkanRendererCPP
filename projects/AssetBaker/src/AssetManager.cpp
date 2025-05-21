@@ -1,11 +1,5 @@
 #include "AssetManager.hpp"
 
-#include <core/DrawCall.hpp>
-
-// tiny obj
-#define TINYOBJLOADER_IMPLEMENTATION
-#include <tiny_obj_loader.h>
-
 // assimp
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -15,11 +9,18 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include <glm/glm.hpp>
+
 #include <map>
-#include <filesystem>
 #include <string.h>
 
 namespace vkc::Assets {
+    // private creation/loading API, to allow creating assets with specific IDs
+    // used for built-in and debug aasets, until we have multime asset storages
+    void create_mesh(const IdAssetMesh id, const MeshData& data);
+    void create_material(const IdAssetMaterial id, const MaterialData& data);
+    IdAssetTexture load_texture(const IdAssetTexture id, const char* path, TexChannelTypes channels, TexViewTypes viewType = TEX_VIEW_TYPE_2D, TexFormat format = TEX_FORMAT_RGB_A, bool flip_vertical=false);
+
     namespace BuiltinPrimitives {
         //// filled cube with triangle topology
         /*static uint32_t debug_cube_index_data[] = {
@@ -100,9 +101,13 @@ namespace vkc::Assets {
 
     void asset_manager_init() {
         // create assets on CPU
-        create_mesh(BuiltinPrimitives::DEBUG_CUBE_MESH_DATA);
-        create_mesh(BuiltinPrimitives::DEBUG_RAY_MESH_DATA);
-        create_mesh(BuiltinPrimitives::BUILTIN_FULLSCREEN_TRI);
+        create_mesh(BuiltinPrimitives::IDX_DEBUG_CUBE, BuiltinPrimitives::DEBUG_CUBE_MESH_DATA);
+        create_mesh(BuiltinPrimitives::IDX_DEBUG_RAY, BuiltinPrimitives::DEBUG_RAY_MESH_DATA);
+        create_mesh(BuiltinPrimitives::IDX_FULLSCREEN_TRI, BuiltinPrimitives::BUILTIN_FULLSCREEN_TRI);
+
+        load_texture(BuiltinPrimitives::IDX_TEX_WHITE, "res/textures/tex_white.png", vkc::Assets::TEX_CHANNELS_RGB_A);
+        load_texture(BuiltinPrimitives::IDX_TEX_BLACK, "res/textures/tex_black.png", vkc::Assets::TEX_CHANNELS_RGB_A);
+        load_texture(BuiltinPrimitives::IDX_TEX_BLUE_NORM, "res/textures/tex_blue_norm.png", vkc::Assets::TEX_CHANNELS_RGB, vkc::Assets::TEX_VIEW_TYPE_2D, vkc::Assets::TexFormat::TEX_FORMAT_NORM);
     }
 
     uint32_t get_num_mesh_assets() {
@@ -129,89 +134,6 @@ namespace vkc::Assets {
         return material_data[id];
     }
 
-    IdAssetMesh load_mesh(const char* path) {
-        return load_mesh(path, "");
-    }
-
-    void load_mesh_tinyobj(const char* path, const char* path_material, MeshData& data) {
-
-        const int offset_x = 2;
-        const int offset_y = 1;
-        const int offset_z = 0;
-
-        tinyobj::attrib_t attrib;
-        std::vector<tinyobj::shape_t> shapes;
-        std::vector<tinyobj::material_t> materials;
-        std::string err;
-        std::string warn;
-
-        CC_ASSERT(tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path, path_material), "[tinyobj] could not load %s", path);
-        int n_indices = 0;
-
-        // cunt indices (vertices will be the same number because we're cutting corners)
-        for (const auto& shape : shapes)
-            n_indices += shape.mesh.indices.size();
-
-        data.vertex_data_size = sizeof(VertexData);
-        data.vertex_count = n_indices;
-        data.index_count = n_indices;
-
-        // TMP no need for full semantics yet.
-        // We will assume that all meshes from file have the same format,
-        // and have custom ones only for debug and procecural mehses
-        data.vertex_data = new VertexData[n_indices];
-        data.index_data = new uint32_t[n_indices];
-
-        // TODO RIGHTNOW
-        // - [x] allocate vertex and index data 
-        // - [ ] free vertex and index data on asset destruction
-        // - [x] update usages of MeshData in `RenderFrame`
-
-        int i = 0;
-        VertexData* p_vertex_data = (VertexData*)data.vertex_data;
-        for (const auto& shape : shapes) 
-            for (const auto& index : shape.mesh.indices) {
-                data.index_data[i] = i;
-                p_vertex_data[i].position = glm::vec3(
-                    attrib.vertices[3 * index.vertex_index + offset_x],
-                    attrib.vertices[3 * index.vertex_index + offset_y],
-                    -attrib.vertices[3 * index.vertex_index + offset_z]
-                );
-
-                p_vertex_data[i].color = glm::vec3(1.0f);
-
-
-                p_vertex_data[i].normal = glm::vec3(
-                    attrib.normals[3 * index.normal_index + offset_x],
-                    attrib.normals[3 * index.normal_index + offset_y],
-                    attrib.normals[3 * index.normal_index + offset_z]
-                );
-
-                //CC_LOG(LOG, "%0.3f, %0.3fm %0.3f", p_vertex_data[i].normal.x, p_vertex_data[i].normal.y,p_vertex_data[i].normal.z);
-
-                p_vertex_data[i].texCoords = glm::vec2(
-                    attrib.texcoords[2 * index.texcoord_index + 0],
-                    1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
-                );
-
-                ++i;
-            }
-    }
-
-    // flipp X and Z to match Kenney assets orientation
-    // (prob. default blender)
-    // this should probably be an import util + cooking anyway
-    IdAssetMesh load_mesh(const char* path, const char* path_material) {
-
-        MeshData data;
-        IdAssetMesh mesh_idx = num_mesh_assets++;
-
-        load_mesh_tinyobj(path, path_material, data);
-        //load_mesh_assimp(path, data);
-
-        mesh_data[mesh_idx] = data;
-        return mesh_idx;
-    }
 
     void debug_print_material_info(const aiMaterial& ai_material_data) {
         // TMP print material properties
@@ -246,12 +168,18 @@ namespace vkc::Assets {
         }
     }
 
-    IdAssetTexture load_tex(const aiTextureType type, const aiMaterial& mat, const TexChannelTypes channels, const VkFormat format, IdAssetTexture tex_fallback, const std::string base_path) {
+    IdAssetTexture load_tex(const aiTextureType type, const aiMaterial& mat, const TexChannelTypes channels, const TexFormat format, IdAssetTexture tex_fallback, const std::string base_path) {
         aiString path;
         if (mat.GetTextureCount(type) == 0)
             return tex_fallback;
         mat.GetTexture(type, 0, &path);
-        path = base_path + path.C_Str();
+
+
+        // TMP fix backslashes
+        std::string TMP(path.C_Str());
+        std::replace(TMP.begin(), TMP.end(), '\\', '/');
+
+        path = base_path + TMP;
         return vkc::Assets::load_texture(path.C_Str(), channels, vkc::Assets::TEX_VIEW_TYPE_2D, format, true);
     }
 
@@ -315,12 +243,12 @@ namespace vkc::Assets {
             // TODO hardcoded textures
             std::string base_path(base_path_textures);
 
-            IdAssetTexture tex_idx_arm     = load_tex(aiTextureType_SHININESS, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB_A, VK_FORMAT_R8G8B8A8_SRGB, BuiltinPrimitives::IDX_TEX_BLACK, base_path);
-            IdAssetTexture tex_idx_diffuse = load_tex(aiTextureType_DIFFUSE, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB_A, VK_FORMAT_R8G8B8A8_SRGB, BuiltinPrimitives::IDX_TEX_WHITE, base_path);
-            IdAssetTexture tex_idx_normal  = load_tex(aiTextureType_NORMALS, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB, VK_FORMAT_R8G8B8_UNORM, BuiltinPrimitives::IDX_TEX_BLUE_NORM, base_path);
+            IdAssetTexture tex_idx_arm     = load_tex(aiTextureType_SHININESS, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB_A, TEX_FORMAT_RGB_A, BuiltinPrimitives::IDX_TEX_BLACK, base_path);
+            IdAssetTexture tex_idx_diffuse = load_tex(aiTextureType_DIFFUSE, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB_A, TEX_FORMAT_RGB_A, BuiltinPrimitives::IDX_TEX_WHITE, base_path);
+            IdAssetTexture tex_idx_normal  = load_tex(aiTextureType_NORMALS, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB, TEX_FORMAT_NORM, BuiltinPrimitives::IDX_TEX_BLUE_NORM, base_path);
 
             auto mat = (MaterialData) {
-                .id_pipeline_config = vkc::PIPELINE_CONFIG_ID_PBR,
+                .id_pipeline_config = 1,
                 .id_render_pass = 0,
                 .id_pipeline = 0,
                 .uniform_data_material = nullptr,
@@ -402,23 +330,149 @@ namespace vkc::Assets {
         return scene->mNumMeshes;
     }
 
-    std::vector<IdAssetMesh> load_meshes(const char** paths) {
-        return {}; // TODO
+    IdAssetTexture load_texture(const char* path, TexChannelTypes channels, TexViewTypes viewType, TexFormat format, bool flip_vertical) {
+        IdAssetTexture tex_idx = num_texture_assets;
+        
+        if(load_texture(tex_idx, path, channels, viewType, format, flip_vertical) == IDX_MISSING_TEXTURE)
+            return IDX_MISSING_TEXTURE;
+
+        ++num_texture_assets;
+        return tex_idx;
     }
 
-    std::vector<IdAssetMesh> load_meshes_from_folder(const char* folder_path) {
-        std::vector<IdAssetMesh> ret = std::vector<IdAssetMesh>();
-        for (const auto& entry : std::filesystem::directory_iterator(folder_path))
-        {
-            ret.push_back(load_mesh(entry.path().string().c_str()));
-            // TMP
-            break;
+    inline IdAssetMesh create_mesh(MeshData data) {
+
+        IdAssetMesh mesh_idx = num_mesh_assets++;
+        create_mesh(mesh_idx, data);
+        return mesh_idx;
+    }
+
+    inline IdAssetMaterial create_material(MaterialData& data) {
+        IdAssetMaterial material_idx = num_material_assets++;
+        create_material(material_idx, data);
+        return material_idx;
+    }
+
+    // ===================================================================================
+    // serialization
+    // ===================================================================================
+    void asset_db_dump(const char *path) {
+        FILE* fp = fopen(path, "wb+");
+        
+        CC_ASSERT(fp, "error opening file");
+
+        uint32_t sizes[] = {
+            num_mesh_assets,
+            num_texture_assets,
+            num_material_assets
+        };
+
+        fwrite(sizes, sizeof(uint32_t), 3, fp);
+
+        for(auto& kp : mesh_data) {
+            IdAssetMesh id = kp.first;
+            MeshData& data = kp.second;
+            fwrite(&id,              sizeof(IdAssetMesh), 1,                 fp);
+            fwrite(&data,            sizeof(MeshData),    1,                 fp);
+            fwrite(data.vertex_data, sizeof(VertexData),  data.vertex_count, fp);
+            fwrite(data.index_data,  sizeof(uint32_t),    data.index_count,  fp);
         }
 
-        return ret;
+        for(auto& kp : texture_data) {
+            IdAssetTexture id = kp.first;
+            TextureData& data = kp.second;
+            fwrite(&id,              sizeof(IdAssetTexture), 1,                fp);
+            fwrite(&data,            sizeof(TextureData) - sizeof(std::vector<unsigned char>),    1,                fp);
+            // annoying, we have to manually write size if we use std
+            size_t num_bytes = data.data.size();
+            fwrite(&num_bytes, sizeof(size_t), 1, fp);
+            fwrite(data.data.data(), sizeof(unsigned char),  data.data.size(), fp);
+        }
+
+        for(auto& kp : material_data) {
+            IdAssetMaterial id = kp.first;
+            MaterialData& data = kp.second;
+            fwrite(&id,                     sizeof(IdAssetMaterial), 1,                       fp);
+            fwrite(&data,                   sizeof(MaterialData) - sizeof(std::vector<IdAssetTexture>),    1,                       fp);
+            // annoying, we have to manually write size if we use std::vector
+            size_t num_views = data.image_views.size();
+            fwrite(&num_views, sizeof(size_t), 1, fp);
+            fwrite(data.image_views.data(), sizeof(IdAssetTexture),  data.image_views.size(), fp);
+        }
+
+        fclose(fp);
+        CC_LOG_SYS_ERROR();
+        //CC_ASSERT(fclose(fp) == 0, "error closing file");
+    }
+    void asset_db_load(const char *path) {
+        FILE* fp = fopen(path, "rb+");
+
+        CC_ASSERT(fp, "error opening file");
+
+        uint32_t sizes[3];
+
+        fread(sizes, sizeof(uint32_t), 3, fp);
+        num_mesh_assets     = sizes[0];
+        num_texture_assets  = sizes[1];
+        num_material_assets = sizes[2];
+
+        for(int i = 0; i < num_mesh_assets; ++i) {
+            IdAssetMesh id;
+            MeshData data;
+            fread(&id,              sizeof(IdAssetMesh), 1,                 fp);
+            fread(&data,            sizeof(MeshData),    1,                 fp);
+            data.vertex_data = new VertexData[data.vertex_count];
+            data.index_data  = new uint32_t[data.index_count];
+            fread(data.vertex_data, sizeof(VertexData),  data.vertex_count, fp);
+            fread(data.index_data,  sizeof(uint32_t),    data.index_count,  fp);
+
+            mesh_data[id] = data;
+        }
+
+        for(int i = 0; i < num_texture_assets; ++i) {
+            IdAssetTexture id;
+            TextureData data;
+            fread(&id,              sizeof(IdAssetTexture), 1,                fp);
+            fread(&data,            sizeof(TextureData) - sizeof(std::vector<unsigned char>),    1,                fp);
+            // annoying, we have to manually read size if we use std::vector
+            size_t num_bytes;
+            fread(&num_bytes, sizeof(size_t), 1, fp);
+            data.data.resize(num_bytes);
+            fread(data.data.data(), sizeof(unsigned char), data.data.size(), fp);
+
+            texture_data[id] = data;
+        }
+
+        for(int i = 0; i < num_material_assets; ++i) {
+            IdAssetMaterial id;
+            MaterialData data;
+            fread(&id,                     sizeof(IdAssetMaterial), 1,                       fp);
+            fread(&data,                   sizeof(MaterialData) - sizeof(std::vector<IdAssetTexture>),    1,                       fp);
+            // annoying, we have to manually read size if we use std::vector
+            size_t num_views;
+            fread(&num_views, sizeof(size_t), 1, fp);
+            data.image_views.resize(num_views);
+            fread(data.image_views.data(), sizeof(IdAssetTexture), data.image_views.size(), fp);
+
+            material_data[id] = data;
+        }
+        fclose(fp);
+        CC_LOG_SYS_ERROR();
+        //CC_ASSERT(fclose(fp) == 0, "error closing file");
     }
 
-    IdAssetTexture load_texture(const char* path, TexChannelTypes channels, TexViewTypes viewType, VkFormat format, bool flip_vertical) {
+    // ===================================================================================
+    // private
+    // ===================================================================================
+    inline void create_mesh(const IdAssetMesh id, const MeshData& data) {
+        mesh_data[id] = data;
+    }
+
+    inline void create_material(const IdAssetMaterial id, const MaterialData& data) {
+        material_data[id] = data;
+    }
+
+    IdAssetTexture load_texture(IdAssetTexture id, const char* path, TexChannelTypes channels, TexViewTypes viewType, TexFormat format, bool flip_vertical) {
         const uint8_t requested_channels_count = tex_get_num_channels(channels);
 
         int texWidth = 0;
@@ -433,12 +487,11 @@ namespace vkc::Assets {
             return IDX_MISSING_TEXTURE;
         }
 
-        // TODO get number of ACTUAL channels based on requested channels (`channels` parameter)
+
         size_t size = texWidth * texHeight * requested_channels_count;
 
-        IdAssetTexture tex_idx = num_texture_assets++;
         TextureData data;
-        data.viewType = (VkImageViewType)viewType;
+        data.viewType = viewType;
         data.width = (uint16_t)texWidth;
         data.height = (uint16_t)texHeight;
         data.channelsCount = (uint8_t)requested_channels_count;
@@ -453,22 +506,7 @@ namespace vkc::Assets {
             data.width /= 4;
             data.height /= 3;
         }
-        texture_data[tex_idx] = data;
-        return tex_idx;
-    }
-
-    IdAssetMesh create_mesh(MeshData data) {
-        data.flags |= MeshData::FLAG_DYNAMIC;
-
-        IdAssetMesh mesh_idx = num_mesh_assets++;
-        mesh_data[mesh_idx] = data;
-        return mesh_idx;
-    }
-
-    IdAssetMaterial create_material(MaterialData& data) {
-        IdAssetMaterial material_idx = num_material_assets++;
-        //memcpy(&material_data[material_idx], &data, sizeof(MaterialData));
-        material_data[material_idx] = data;
-        return material_idx;
+        texture_data[id] = data;
+        return id;
     }
 }

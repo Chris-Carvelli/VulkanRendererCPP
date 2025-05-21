@@ -12,7 +12,6 @@ void VKRenderer::run() {
 
 	// TODO FIXME force upload of assets to GPU
 	TMP_force_gpu_upload_all();
-	TMP_create_renderpasses();
 
 	while (!m_window->should_quit())
 	{
@@ -76,9 +75,15 @@ void VKRenderer::drawcall_add(
 }
 
 void VKRenderer::TMP_force_gpu_upload_all() {
+	vkc::Drawcall::createModelBuffers(vkc::Assets::BuiltinPrimitives::IDX_DEBUG_CUBE, m_device->get_handle(), m_render_context.get());
+	vkc::Drawcall::createModelBuffers(vkc::Assets::BuiltinPrimitives::IDX_DEBUG_RAY, m_device->get_handle(), m_render_context.get());
+	vkc::Drawcall::createModelBuffers(vkc::Assets::BuiltinPrimitives::IDX_FULLSCREEN_TRI, m_device->get_handle(), m_render_context.get());
 	for (int i = 0; i < vkc::Assets::get_num_mesh_assets(); ++i)
 		vkc::Drawcall::createModelBuffers(i, m_device->get_handle(), m_render_context.get());
 
+	vkc::Drawcall::createTextureImage(vkc::Assets::BuiltinPrimitives::IDX_TEX_WHITE, m_device->get_handle(), m_render_context.get());
+	vkc::Drawcall::createTextureImage(vkc::Assets::BuiltinPrimitives::IDX_TEX_BLACK, m_device->get_handle(), m_render_context.get());
+	vkc::Drawcall::createTextureImage(vkc::Assets::BuiltinPrimitives::IDX_TEX_BLUE_NORM, m_device->get_handle(), m_render_context.get());
 	for (int i = 0; i < vkc::Assets::get_num_texture_assets(); ++i)
 		vkc::Drawcall::createTextureImage(i, m_device->get_handle(), m_render_context.get());
 
@@ -94,32 +99,6 @@ void VKRenderer::TMP_force_gpu_upload_all() {
 		config.texture_image_views_count = image_views.size();
 		material_data.id_pipeline = m_render_context->get_renderpass(0)->add_pipeline(new vkc::PipelineConfig(config));
 	}
-}
-
-void VKRenderer::TMP_create_renderpasses() {
-	/*uint32_t skybox_pipeline = m_render_context->get_renderpass(0)->add_pipeline(new vkc::PipelineConfig {
-				.vert_path = "res/shaders/skybox.vert.spv",
-				.frag_path = "res/shaders/skybox.frag.spv",
-				.size_uniform_data_frame    = sizeof(DataUniformFrame),
-				.size_uniform_data_material = 0,
-				.size_push_constant_model   = 0,
-				.vertex_binding_descriptors         = vertexData_getBindingDescriptions_Skybox(),
-				.vertex_binding_descriptors_count   = vertexData_getBindingDescriptionsCount_Skybox(),
-				.vertex_attribute_descriptors       = vertexData_getAttributeDescriptions_Skybox(),
-				.vertex_attribute_descriptors_count = vertexData_getAttributeDescriptions_SkyboxCount(),
-				.texture_image_views = new VkImageView[] {
-					vkc::Drawcall::get_texture_image_view(3)
-				},
-				.texture_image_views_count = 1,
-				.face_culling_mode = VK_CULL_MODE_NONE,
-				.compare_op = VK_COMPARE_OP_EQUAL
-		});
-	vkc::Instance::TMP_get_singleton_instance()->add_object_debug_name(
-		(uint64_t)m_render_context->get_renderpass(0)->get_pipeline_handle(skybox_pipeline),
-		VK_OBJECT_TYPE_PIPELINE,
-		m_device->get_handle(),
-		"skybox pipeline"
-	);*/
 }
 
 void VKRenderer::init_base()

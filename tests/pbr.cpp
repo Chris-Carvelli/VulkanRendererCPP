@@ -1,7 +1,7 @@
 #include <VKRenderer.hpp>
 
 #include <core/DrawCall.hpp>
-#include <assets/AssetManager.hpp>
+#include <AssetManager.hpp>
 
 // TMP_Update includes
 #include <glm/glm.hpp>
@@ -167,37 +167,7 @@ namespace TMP_Update {
 
 class TestRenderer : public VKRenderer {
     void init() override {
-        // load tech textures
-        // TODO engine should do this
-        vkc::Assets::load_texture("res/textures/tex_white.png", vkc::Assets::TEX_CHANNELS_RGB_A);
-        vkc::Assets::load_texture("res/textures/tex_black.png", vkc::Assets::TEX_CHANNELS_RGB_A);
-        vkc::Assets::load_texture("res/textures/tex_blue_norm.png", vkc::Assets::TEX_CHANNELS_RGB, vkc::Assets::TEX_VIEW_TYPE_2D, VK_FORMAT_R8G8B8_UNORM);
-
-
-        // skybox
-        auto TMP_tex_idx_skybox = vkc::Assets::load_texture("res/textures/default_cubemap.png", vkc::Assets::TEX_CHANNELS_RGB_A, vkc::Assets::TEX_VIEW_TYPE_CUBE);
-        auto mat = vkc::Assets::MaterialData{
-            .id_pipeline_config = vkc::PIPELINE_CONFIG_ID_SKYBOX,
-            .id_render_pass = 0,
-            .id_pipeline = 1,
-            .uniform_data_material = nullptr,
-            .image_views = { TMP_tex_idx_skybox }
-        };
-        TMP_Update::idMaterialSkybox = vkc::Assets::create_material(mat);
-
-
-        // load mesh and textures
-        std::vector<vkc::Assets::IdAssetMesh> meshes; 
-        std::vector<vkc::Assets::IdAssetMaterial> materials;
-        vkc::Assets::load_model(
-            "res/models/Bistro_v5_2/BistroInterior.fbx",
-            "res/models/Bistro_v5_2/",
-            /*"res/models/camera/camera.obj",
-            "res/models/camera/",*/
-            TMP_tex_idx_skybox,
-            TMP_Update::TMP_mesh_idxs,
-            TMP_Update::TMP_mat_idxs
-        );
+        vkc::Assets::asset_db_load("res/asset_db.bin");
 
 
         // create uniform data for each model

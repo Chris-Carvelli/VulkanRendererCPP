@@ -7,7 +7,7 @@
 
 #include <core/VertexData.h>
 
-#include <assets/AssetManager.hpp>
+#include <AssetManager.hpp>
 
 namespace vkc {
 

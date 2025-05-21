@@ -2,7 +2,7 @@
 
 #include <vulkan/vulkan.h>
 
-#include <assets/AssetManager.hpp>
+#include <AssetManager.hpp>
 #include <core/Instance.hpp>
 #include <core/RenderContext.hpp>
 #include <core/VertexData.h>
@@ -56,19 +56,6 @@ namespace vkc {
 			uint32_t model_index,
 			void* vertex_buffer_content,
 			uint32_t vertex_buffer_size,
-			VkDevice device,
-			vkc::RenderContext* obj_render_context
-		);
-		uint32_t createModelBuffers(
-			void* vertex_buffer_content,
-			uint32_t vertex_buffer_size,
-			uint32_t* index_buffer_content,
-			uint32_t  index_buffer_size,
-			VkDevice device,
-			vkc::RenderContext* obj_render_context
-		);
-		uint32_t createModelBuffers(
-			Assets::MeshData& mesh_data,
 			VkDevice device,
 			vkc::RenderContext* obj_render_context
 		);

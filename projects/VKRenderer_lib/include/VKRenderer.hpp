@@ -3,7 +3,7 @@
 #include <vulkan/vulkan.h>
 
 #include <VulkanUtils.h>
-#include <assets/AssetManager.hpp>
+#include <AssetManager.hpp>
 #include <core/DataStructures.hpp>
 #include <core/Instance.hpp>
 #include <core/Device.hpp>
@@ -69,16 +69,6 @@ protected:
 	// upload ALL buffers to GPU, without checking if already done
 	void TMP_force_gpu_upload_all();
 
-	// temporary method to create default renderpasses and pipelines
-	// needed because with combined texture samples we can't create pipelines
-	// before we create the textures, pipeline creation is baked in with the entire render context,
-	// and we can't create textures without render context
-	// possible solutions:
-	// 1. use split textures and samplers
-	// 2. textures as variable pipeline context?
-	// 3. split `VKRenderer::init_base()` in pre-init and post-init, to do before and after application init
-	void TMP_create_renderpasses();
-	
 	// retrieve info
 	vkc::Rect2DI get_window_size() const { return m_window_size; };
 	int get_current_frame() const { return m_app_stats.curr_frame; };

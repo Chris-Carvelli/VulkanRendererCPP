@@ -91,14 +91,15 @@ inline void CC_PRINT(LogType level, const char* msg, ...) {
 }
 
 
-#define CC_ASSERT(x, msg, ...) assert(x);
-#define CC_EXIT(x, msg, ...) { CC_LOG(LogType::ERROR, msg, __VA_ARGS__); exit(x); }
-
 inline void CC_LOG_SYS_ERROR() {
     char buffer[MAX_LOG_CHARS];
     strerror_s(buffer, MAX_LOG_CHARS, errno);
     printf("[%d] %s\n", errno, buffer);
 }
+
+
+#define CC_ASSERT(x, msg, ...) if(!x) { CC_LOG_SYS_ERROR(); CC_LOG(LogType::ERROR, msg, __VA_ARGS__); } assert(x);
+#define CC_EXIT(x, msg, ...) { CC_LOG(LogType::ERROR, msg, __VA_ARGS__); exit(x); }
 
 inline void formatSize(uint64_t size, char* buffer) {
     const char* suffix[] = { "B", "KB", "MB", "GB", "TB" };
