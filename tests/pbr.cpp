@@ -152,7 +152,7 @@ namespace TMP_Update {
         float l = glm::sqrt(drawcall_cout);
         //float l = 2;
         float fow = (float)window_size.width / window_size.height;
-        camera_proj = glm::perspective(glm::radians(45.0f), fow, 0.1f, 100.0f);
+        camera_proj = glm::perspective(glm::radians(45.0f), fow, 0.1f, 1000.0f);
         //perspective_projection = glm::perspective(glm::radians(45.0f), fow, 0.1f, 10.0f);
 
         ubo.cam_pos = camera_pos;
@@ -192,11 +192,12 @@ class TestRenderer : public VKRenderer {
 
     void render() override {
         // model
-        for(int i = 0; i < TMP_Update::TMP_mesh_idxs.size(); ++i)
+        auto model_data = vkc::Assets::get_model_data(0);
+        for(int i = 0; i < model_data.meshes_count; ++i)
         {
             drawcall_add(
-                TMP_Update::TMP_mesh_idxs[i],
-                TMP_Update::TMP_mat_idxs[i],
+                model_data.meshes[i],
+                model_data.meshes_material[i],
                 &TMP_Update::model_data[0],
                 sizeof(TMP_Update::model_data[0])
             );

@@ -94,10 +94,12 @@ namespace vkc::Assets {
     uint32_t num_mesh_assets = 0;
     uint32_t num_texture_assets = 0;
     uint32_t num_material_assets = 0;
+    uint32_t num_model_assets = 0;
 
     std::map<IdAssetMesh, MeshData> mesh_data;
     std::map<IdAssetTexture, TextureData> texture_data;
     std::map<IdAssetMaterial, MaterialData> material_data;
+    std::map<IdAssetModel, ModelData> model_data;
 
     void asset_manager_init() {
         // create assets on CPU
@@ -134,6 +136,9 @@ namespace vkc::Assets {
         return material_data[id];
     }
 
+    ModelData& get_model_data(IdAssetModel id) {
+        return model_data[id];
+    }
 
     void debug_print_material_info(const aiMaterial& ai_material_data) {
         // TMP print material properties
@@ -188,12 +193,11 @@ namespace vkc::Assets {
     uint32_t load_model(
         const char* path,
         const char* base_path_textures,
-        IdAssetTexture TMP_tex_environment_id,
-        std::vector<IdAssetMesh>&     out_loaded_mesh_idxs,
-        std::vector<IdAssetMaterial>& out_loaded_materials_idxs
+        IdAssetTexture TMP_tex_environment_id
     ) {
-
         CC_LOG(IMPORTANT, "Loading model %s...", path);
+        uint32_t model_idx = num_model_assets++;
+        ModelData new_model_data;
 
         // Read the file using Assimp importer
         Assimp::Importer importer;
@@ -206,10 +210,6 @@ namespace vkc::Assets {
         CC_LOG(LOG, "assimp scene loaded");
         CC_LOG(LOG, "materials: %d", scene->mNumMaterials);
         CC_LOG(LOG, "meshes: %d", scene->mNumMeshes);
-
-
-        out_loaded_mesh_idxs.resize(scene->mNumMeshes);
-        out_loaded_materials_idxs.resize(scene->mNumMeshes);
 
         // create material
         std::map<unsigned int, IdAssetMaterial> material_map;
@@ -265,17 +265,20 @@ namespace vkc::Assets {
             material_map[i] = tmp;
         }
 
+        new_model_data.meshes_count = scene->mNumMeshes;
+        new_model_data.meshes = new IdAssetMesh[scene->mNumMeshes];
+        new_model_data.meshes_material = new IdAssetMesh[scene->mNumMeshes];
         for(int i = 0; i < scene->mNumMeshes; ++i) {
             IdAssetMesh mesh_idx = num_mesh_assets++;
-            MeshData data { };
+            MeshData new_submesh_data { };
             const aiMesh& ai_mesh_data = *scene->mMeshes[i];
 
             uint64_t stride_uv = sizeof(*ai_mesh_data.mTextureCoords[0]);
 
-            data.vertex_data_size = sizeof(VertexData);
-            data.vertex_data = new VertexData[ai_mesh_data.mNumVertices];
-            data.vertex_count = ai_mesh_data.mNumVertices;
-            VertexData* p = (VertexData*)data.vertex_data;
+            new_submesh_data.vertex_data_size = sizeof(VertexData);
+            new_submesh_data.vertex_data = new VertexData[ai_mesh_data.mNumVertices];
+            new_submesh_data.vertex_count = ai_mesh_data.mNumVertices;
+            VertexData* p = (VertexData*)new_submesh_data.vertex_data;
             for(int j = 0; j < ai_mesh_data.mNumVertices; ++j) {
                 VertexData vertex_data = { };
                 p[j].position.x = ai_mesh_data.mVertices[j].x;
@@ -310,24 +313,25 @@ namespace vkc::Assets {
             uint32_t num_indices = ai_mesh_data.mNumFaces * 3;
 
             // allocate worst case scenario
-            data.index_data = (uint32_t*)malloc(sizeof(uint32_t) * num_indices);
-            data.index_count = num_indices;
+            new_submesh_data.index_data = (uint32_t*)malloc(sizeof(uint32_t) * num_indices);
+            new_submesh_data.index_count = num_indices;
             uint32_t idx = 0;
             for(int j = 0; j < ai_mesh_data.mNumFaces; ++j) {
-                data.index_data[idx + 0] = ai_mesh_data.mFaces[j].mIndices[0];
-                data.index_data[idx + 1] = ai_mesh_data.mFaces[j].mIndices[1];
-                data.index_data[idx + 2] = ai_mesh_data.mFaces[j].mIndices[2];
+                new_submesh_data.index_data[idx + 0] = ai_mesh_data.mFaces[j].mIndices[0];
+                new_submesh_data.index_data[idx + 1] = ai_mesh_data.mFaces[j].mIndices[1];
+                new_submesh_data.index_data[idx + 2] = ai_mesh_data.mFaces[j].mIndices[2];
 
                 idx += 3;
             }
 
-           mesh_data[mesh_idx] = data;
-           out_loaded_mesh_idxs[i] = mesh_idx;
-           out_loaded_materials_idxs[i] = material_map[ai_mesh_data.mMaterialIndex];
-           CC_LOG(VERBOSE, "loading mesh %d/%d", i+1, scene->mNumMeshes);
+           mesh_data[mesh_idx] = new_submesh_data;
+           new_model_data.meshes[i] = mesh_idx;
+           new_model_data.meshes_material[i] = material_map[ai_mesh_data.mMaterialIndex];
+           CC_LOG(VERBOSE, "loaded mesh %d/%d", i+1, scene->mNumMeshes);
         }
 
-        return scene->mNumMeshes;
+        model_data[model_idx] = new_model_data;
+        return model_idx;
     }
 
     IdAssetTexture load_texture(const char* path, TexChannelTypes channels, TexViewTypes viewType, TexFormat format, bool flip_vertical) {
@@ -364,10 +368,11 @@ namespace vkc::Assets {
         uint32_t sizes[] = {
             num_mesh_assets,
             num_texture_assets,
-            num_material_assets
+            num_material_assets,
+            num_model_assets
         };
 
-        fwrite(sizes, sizeof(uint32_t), 3, fp);
+        fwrite(sizes, sizeof(uint32_t), 4, fp);
 
         for(auto& kp : mesh_data) {
             IdAssetMesh id = kp.first;
@@ -382,7 +387,7 @@ namespace vkc::Assets {
             IdAssetTexture id = kp.first;
             TextureData& data = kp.second;
             fwrite(&id,              sizeof(IdAssetTexture), 1,                fp);
-            fwrite(&data,            sizeof(TextureData) - sizeof(std::vector<unsigned char>),    1,                fp);
+            fwrite(&data,            sizeof(TextureData) - sizeof(std::vector<unsigned char>), 1, fp);
             // annoying, we have to manually write size if we use std
             size_t num_bytes = data.data.size();
             fwrite(&num_bytes, sizeof(size_t), 1, fp);
@@ -393,11 +398,20 @@ namespace vkc::Assets {
             IdAssetMaterial id = kp.first;
             MaterialData& data = kp.second;
             fwrite(&id,                     sizeof(IdAssetMaterial), 1,                       fp);
-            fwrite(&data,                   sizeof(MaterialData) - sizeof(std::vector<IdAssetTexture>),    1,                       fp);
+            fwrite(&data,                   sizeof(MaterialData) - sizeof(std::vector<IdAssetTexture>), 1, fp);
             // annoying, we have to manually write size if we use std::vector
             size_t num_views = data.image_views.size();
             fwrite(&num_views, sizeof(size_t), 1, fp);
             fwrite(data.image_views.data(), sizeof(IdAssetTexture),  data.image_views.size(), fp);
+        }
+
+        for(auto& kp : model_data) {
+            IdAssetModel id = kp.first;
+            ModelData& data = kp.second;
+            fwrite(&id,                  sizeof(IdAssetModel),    1,                 fp);
+            fwrite(&data,                sizeof(ModelData),       1,                 fp);
+            fwrite(data.meshes,          sizeof(IdAssetMesh),     data.meshes_count, fp);
+            fwrite(data.meshes_material, sizeof(IdAssetMaterial), data.meshes_count, fp);
         }
 
         fclose(fp);
@@ -409,12 +423,13 @@ namespace vkc::Assets {
 
         CC_ASSERT(fp, "error opening file");
 
-        uint32_t sizes[3];
+        uint32_t sizes[4];
 
-        fread(sizes, sizeof(uint32_t), 3, fp);
+        fread(sizes, sizeof(uint32_t), 4, fp);
         num_mesh_assets     = sizes[0];
         num_texture_assets  = sizes[1];
         num_material_assets = sizes[2];
+        num_model_assets    = sizes[3];
 
         for(int i = 0; i < num_mesh_assets; ++i) {
             IdAssetMesh id;
@@ -456,6 +471,20 @@ namespace vkc::Assets {
 
             material_data[id] = data;
         }
+
+        for(int i = 0; i < num_model_assets; ++i) {
+            IdAssetModel id;
+            ModelData data;
+            fread(&id,                  sizeof(IdAssetModel),    1,                 fp);
+            fread(&data,                sizeof(ModelData),       1,                 fp);
+            data.meshes          = new IdAssetMesh[data.meshes_count];
+            data.meshes_material = new IdAssetMaterial[data.meshes_count];
+            fread(data.meshes,          sizeof(IdAssetMesh),     data.meshes_count, fp);
+            fread(data.meshes_material, sizeof(IdAssetMaterial), data.meshes_count, fp);
+
+            model_data[id] = data;
+        }
+
         fclose(fp);
         CC_LOG_SYS_ERROR();
         //CC_ASSERT(fclose(fp) == 0, "error closing file");

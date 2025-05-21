@@ -26,9 +26,7 @@ int main() {
         "res/models/Bistro_v5_2/",
         /*"res/models/camera/camera.obj",
         "res/models/camera/",*/
-        TMP_tex_idx_skybox,
-        loaded_meshes,
-        loaded_materials
+        TMP_tex_idx_skybox
     );
 
     vkc::Assets::asset_db_dump("res/asset_db.bin");

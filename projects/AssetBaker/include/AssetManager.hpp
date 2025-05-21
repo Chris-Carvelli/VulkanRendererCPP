@@ -17,6 +17,14 @@ typedef struct {
 
 namespace vkc::Assets {
 
+	// TODO fix ids for serialization
+	//      ATM, ids are simple incrementail counters. We already have maps to store assets,
+	//      what we need is a fast and safe way to get a new free id
+	typedef uint32_t IdAssetMesh;
+	typedef uint32_t IdAssetTexture;
+	typedef uint32_t IdAssetMaterial;
+	typedef int32_t IdAssetModel;
+
 
 	enum VertexAttrib : uint8_t {
 		POSITION,
@@ -57,13 +65,6 @@ namespace vkc::Assets {
 		TEX_FORMAT_RGB_A = 43,	// VK_FORMAT_R8G8B8A8_SRGB
 		TEX_FORMAT_NORM  = 23	// VK_FORMAT_R8G8B8_UNORM
 	} TexFormat;
-
-	// TODO fix ids for serialization
-	//      ATM, ids are simple incrementail counters. We already have maps to store assets,
-	//      what we need is a fast and safe way to get a new free id
-	typedef uint32_t IdAssetMesh;
-	typedef uint32_t IdAssetTexture;
-	typedef uint32_t IdAssetMaterial;
 
 	const IdAssetTexture IDX_MISSING_TEXTURE = -1;
 
@@ -120,6 +121,13 @@ namespace vkc::Assets {
 		std::vector<IdAssetTexture> image_views;
 	};
 
+	struct ModelData {
+		glm::mat4 transform;
+		uint32_t meshes_count;
+		IdAssetMesh* meshes;
+		IdAssetMaterial* meshes_material;
+	};
+
 	void asset_manager_init();
 
 	uint32_t get_num_mesh_assets();
@@ -129,6 +137,7 @@ namespace vkc::Assets {
 	MeshData& get_mesh_data(IdAssetMesh id);
 	TextureData& get_texture_data(IdAssetTexture id);
 	MaterialData& get_material_data(IdAssetMaterial id);
+	ModelData& get_model_data(IdAssetModel id);
 
 	// ===================================================================================
 	// load
@@ -141,9 +150,7 @@ namespace vkc::Assets {
 	uint32_t load_model(
 		const char* path,
 		const char* base_path_textures,
-		IdAssetTexture TMP_tex_environment_id,
-		std::vector<IdAssetMesh>&     out_loaded_mesh_idxs,
-		std::vector<IdAssetMaterial>& out_loaded_materials_idxs
+		IdAssetTexture TMP_tex_environment_id
 	);
 
 	IdAssetTexture load_texture(const char* path, TexChannelTypes channels, TexViewTypes viewType = TEX_VIEW_TYPE_2D, TexFormat format = TEX_FORMAT_RGB_A, bool flip_vertical=false);
