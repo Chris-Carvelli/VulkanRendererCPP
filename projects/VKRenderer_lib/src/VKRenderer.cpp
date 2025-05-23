@@ -75,14 +75,15 @@ void VKRenderer::drawcall_add(
 }
 
 void VKRenderer::TMP_force_gpu_upload_all() {
-	vkc::Drawcall::createModelBuffers(vkc::Assets::BuiltinPrimitives::IDX_DEBUG_CUBE, m_device->get_handle(), m_render_context.get());
-	vkc::Drawcall::createModelBuffers(vkc::Assets::BuiltinPrimitives::IDX_DEBUG_RAY, m_device->get_handle(), m_render_context.get());
+	vkc::Drawcall::createModelBuffers(vkc::Assets::BuiltinPrimitives::IDX_DEBUG_CUBE,     m_device->get_handle(), m_render_context.get());
+	vkc::Drawcall::createModelBuffers(vkc::Assets::BuiltinPrimitives::IDX_DEBUG_RAY,      m_device->get_handle(), m_render_context.get());
 	vkc::Drawcall::createModelBuffers(vkc::Assets::BuiltinPrimitives::IDX_FULLSCREEN_TRI, m_device->get_handle(), m_render_context.get());
+	vkc::Drawcall::createModelBuffers(vkc::Assets::BuiltinPrimitives::IDX_QUAD,           m_device->get_handle(), m_render_context.get());
 	for (int i = 0; i < vkc::Assets::get_num_mesh_assets(); ++i)
 		vkc::Drawcall::createModelBuffers(i, m_device->get_handle(), m_render_context.get());
 
-	vkc::Drawcall::createTextureImage(vkc::Assets::BuiltinPrimitives::IDX_TEX_WHITE, m_device->get_handle(), m_render_context.get());
-	vkc::Drawcall::createTextureImage(vkc::Assets::BuiltinPrimitives::IDX_TEX_BLACK, m_device->get_handle(), m_render_context.get());
+	vkc::Drawcall::createTextureImage(vkc::Assets::BuiltinPrimitives::IDX_TEX_WHITE,     m_device->get_handle(), m_render_context.get());
+	vkc::Drawcall::createTextureImage(vkc::Assets::BuiltinPrimitives::IDX_TEX_BLACK,     m_device->get_handle(), m_render_context.get());
 	vkc::Drawcall::createTextureImage(vkc::Assets::BuiltinPrimitives::IDX_TEX_BLUE_NORM, m_device->get_handle(), m_render_context.get());
 	for (int i = 0; i < vkc::Assets::get_num_texture_assets(); ++i)
 		vkc::Drawcall::createTextureImage(i, m_device->get_handle(), m_render_context.get());

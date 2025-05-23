@@ -210,36 +210,73 @@ namespace vkc {
         endSingleTimeCommands(cmdbuf);
     }
 
-    void RenderContext::copy_buffer_to_image(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layers) {
+    void RenderContext::copy_buffer_to_image(VkBuffer buffer, VkImage image, const vkc::Assets::TextureData& data) {
         VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
-        VkBufferImageCopy region = { 0 };
-        region.bufferOffset = 0;
-        region.bufferRowLength = 0;
-        region.bufferImageHeight = 0;
-        region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        region.imageSubresource.mipLevel = 0;
-        region.imageSubresource.baseArrayLayer = 0;
-        region.imageSubresource.layerCount = layers;
-        region.imageOffset = (VkOffset3D){
-            .x = 0,
-            .y = 0,
-            .z = 0
-        };
-        region.imageExtent = (VkExtent3D){
-            .width = width,
-            .height = height,
-            .depth = 1
-        };
+        VkBufferImageCopy* regions = (VkBufferImageCopy*)calloc(data.mipmaps, sizeof(VkBufferImageCopy));
+
+        uint32_t block_w, block_h;
+        size_t bytes_per_texel;
+
+
+        VkFormat f = (VkFormat)data.format;
+        get_block_sizes(f, block_w, block_h, bytes_per_texel);
+        uint32_t mip_level_w = data.width;
+        uint32_t mip_level_h = data.height;
+        VkDeviceSize buffer_offset = 0;
+
+
+        if (data.mipmaps > 1)
+            auto a = 0;
+
+        for(int i = 0; i < data.mipmaps; ++i)
+        {
+            //VkBufferImageCopy& region = regions[i];
+            regions[i].bufferOffset = buffer_offset;
+            regions[i].bufferRowLength = 0;
+            regions[i].bufferImageHeight = 0;
+            regions[i].imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            regions[i].imageSubresource.mipLevel = i;
+            regions[i].imageSubresource.baseArrayLayer = 0;
+            regions[i].imageSubresource.layerCount = data.viewType == VK_IMAGE_VIEW_TYPE_CUBE ? 6 : 1;
+            regions[i].imageOffset = (VkOffset3D){
+                .x = 0,
+                .y = 0,
+                .z = 0
+            };
+            regions[i].imageExtent = (VkExtent3D){
+                .width  = mip_level_w,
+                .height = mip_level_h,
+                .depth = 1
+            };
+
+
+            VkDeviceSize buffer_offset_add;
+            if (bytes_per_texel >= 16)
+                buffer_offset_add = mip_level_w * mip_level_h * bytes_per_texel / 16;
+            else if (bytes_per_texel < 16)
+                buffer_offset_add = mip_level_w * mip_level_h / (16 / bytes_per_texel);
+
+            buffer_offset += glm::max(buffer_offset_add, bytes_per_texel);
+
+            // round
+            //CC_ASSERT(buffer_offset % block_size == 0, "ivalid block alignment");
+            /*if (buffer_offset % texel_size != 0)
+                buffer_offset += texel_size - buffer_offset % texel_size;*/
+            mip_level_w /= 2;
+            mip_level_h /= 2;
+        }
 
         vkCmdCopyBufferToImage(
             commandBuffer,
             buffer,
             image,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-            1,
-            &region
+            data.mipmaps,
+            regions
         );
+
+        free(regions);
 
         endSingleTimeCommands(commandBuffer);
     }
@@ -323,7 +360,7 @@ namespace vkc {
         imageInfo.extent.width = width;
         imageInfo.extent.height = height;
         imageInfo.extent.depth = 1;
-        imageInfo.mipLevels = 1;
+        imageInfo.mipLevels = mip_levels;
         imageInfo.arrayLayers = layers;
         imageInfo.format = format;
         imageInfo.tiling = tiling;

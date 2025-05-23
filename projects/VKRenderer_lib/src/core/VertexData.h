@@ -25,6 +25,7 @@ struct DataUniformFrame {
     glm::mat4 view;
     glm::mat4 proj;
     glm::vec3 cam_pos;
+    uint32_t padding_0;
 
     // lighting
     glm::vec3 light_ambient;
@@ -214,4 +215,50 @@ inline const VkVertexInputAttributeDescription* vertexData_getAttributeDescripti
 
 inline const uint32_t vertexData_getAttributeDescriptions_SkyboxCount() {
     return attributeDescriptions_skyboxCount;
+}
+
+// =================================================================
+// Unit
+// =================================================================
+
+static const VkVertexInputAttributeDescription attributeDescriptions_unlit[] = {
+    (VkVertexInputAttributeDescription) {
+        .location = 0,
+        .binding = 0,
+        .format = VK_FORMAT_R32G32B32_SFLOAT,
+        .offset = offsetof(VertexDataUnlit, position),
+    },
+    (VkVertexInputAttributeDescription) {
+        .location = 1,
+        .binding = 0,
+        .format = VK_FORMAT_R32G32_SFLOAT,
+        .offset = offsetof(VertexDataUnlit, texCoords),
+    }
+};
+
+static const VkVertexInputBindingDescription bindingDescriptions_unlit[] = {
+    (VkVertexInputBindingDescription) {
+        .binding = 0,
+        .stride = sizeof(VertexDataUnlit),
+        .inputRate = VK_VERTEX_INPUT_RATE_VERTEX
+}
+};
+static const uint32_t bindingDescriptionsCount_unlit = sizeof(bindingDescriptions_unlit) / sizeof(VkVertexInputBindingDescription);
+
+static const uint32_t attributeDescriptions_unlitCount = sizeof(attributeDescriptions_unlit) / sizeof(VkVertexInputAttributeDescription);
+
+inline const VkVertexInputBindingDescription* vertexData_getBindingDescriptions_Unlit() {
+    return bindingDescriptions_unlit;
+}
+
+inline const uint32_t vertexData_getBindingDescriptionsCount_Unlit() {
+    return bindingDescriptionsCount_unlit;
+}
+
+inline const VkVertexInputAttributeDescription* vertexData_getAttributeDescriptions_Unlit() {
+    return attributeDescriptions_unlit;
+}
+
+inline const uint32_t vertexData_getAttributeDescriptions_UnlitCount() {
+    return attributeDescriptions_unlitCount;
 }

@@ -1,5 +1,5 @@
 #pragma once
-
+#include <vulkan/vulkan.h>
 #include <cc_logger.h>
 
 #include <glm/glm.hpp>
@@ -14,6 +14,150 @@ typedef struct {
 	glm::vec3 tangent;
 	glm::vec2 texCoords;
 } VertexData;
+
+inline void get_block_sizes(VkFormat fmt, uint32_t& blockWidth, uint32_t blockHeight, size_t& bytesPerBlock)
+{
+    blockWidth     = 1;
+    blockHeight    = 1;
+    bytesPerBlock  = 4;
+    switch(fmt)
+    {
+    case VK_FORMAT_BC1_RGB_UNORM_BLOCK:
+    case VK_FORMAT_BC1_RGB_SRGB_BLOCK:
+    case VK_FORMAT_BC1_RGBA_UNORM_BLOCK:
+    case VK_FORMAT_BC1_RGBA_SRGB_BLOCK:
+    case VK_FORMAT_BC4_UNORM_BLOCK:
+    case VK_FORMAT_BC4_SNORM_BLOCK:
+    case VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK:
+    case VK_FORMAT_ETC2_R8G8B8_SRGB_BLOCK:
+    case VK_FORMAT_ETC2_R8G8B8A1_UNORM_BLOCK:
+    case VK_FORMAT_ETC2_R8G8B8A1_SRGB_BLOCK:
+    case VK_FORMAT_EAC_R11_UNORM_BLOCK:
+    case VK_FORMAT_EAC_R11_SNORM_BLOCK:
+        blockWidth    = 4;
+        blockHeight   = 4;
+        bytesPerBlock = 8;
+        break;
+
+    case VK_FORMAT_BC2_UNORM_BLOCK:
+    case VK_FORMAT_BC2_SRGB_BLOCK:
+    case VK_FORMAT_BC3_UNORM_BLOCK:
+    case VK_FORMAT_BC3_SRGB_BLOCK:
+    case VK_FORMAT_BC5_UNORM_BLOCK:
+    case VK_FORMAT_BC5_SNORM_BLOCK:
+    case VK_FORMAT_BC6H_UFLOAT_BLOCK:
+    case VK_FORMAT_BC6H_SFLOAT_BLOCK:
+    case VK_FORMAT_BC7_UNORM_BLOCK:
+    case VK_FORMAT_BC7_SRGB_BLOCK:
+    case VK_FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK:
+    case VK_FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK:
+    case VK_FORMAT_EAC_R11G11_UNORM_BLOCK:
+    case VK_FORMAT_EAC_R11G11_SNORM_BLOCK:
+    case VK_FORMAT_ASTC_4x4_UNORM_BLOCK:
+    case VK_FORMAT_ASTC_4x4_SRGB_BLOCK:
+        blockWidth    = 4;
+        blockHeight   = 4;
+        bytesPerBlock = 16;
+        break;
+
+    case VK_FORMAT_ASTC_5x4_UNORM_BLOCK:
+    case VK_FORMAT_ASTC_5x4_SRGB_BLOCK:
+        blockWidth    = 5;
+        blockHeight   = 4;
+        bytesPerBlock = 16;
+        break;
+
+    case VK_FORMAT_ASTC_5x5_UNORM_BLOCK:
+    case VK_FORMAT_ASTC_5x5_SRGB_BLOCK:
+        blockWidth    = 5;
+        blockHeight   = 5;
+        bytesPerBlock = 16;
+        break;
+
+    case VK_FORMAT_ASTC_6x5_UNORM_BLOCK:
+    case VK_FORMAT_ASTC_6x5_SRGB_BLOCK:
+        blockWidth    = 6;
+        blockHeight   = 5;
+        bytesPerBlock = 16;
+        break;
+
+    case VK_FORMAT_ASTC_6x6_UNORM_BLOCK:
+    case VK_FORMAT_ASTC_6x6_SRGB_BLOCK:
+        blockWidth    = 6;
+        blockHeight   = 6;
+        bytesPerBlock = 16;
+        break;
+
+    case VK_FORMAT_ASTC_8x5_UNORM_BLOCK:
+    case VK_FORMAT_ASTC_8x5_SRGB_BLOCK:
+        blockWidth    = 8;
+        blockHeight   = 5;
+        bytesPerBlock = 16;
+        break;
+
+    case VK_FORMAT_ASTC_8x6_UNORM_BLOCK:
+    case VK_FORMAT_ASTC_8x6_SRGB_BLOCK:
+        blockWidth    = 8;
+        blockHeight   = 6;
+        bytesPerBlock = 16;
+        break;
+
+    case VK_FORMAT_ASTC_8x8_UNORM_BLOCK:
+    case VK_FORMAT_ASTC_8x8_SRGB_BLOCK:
+        blockWidth    = 8;
+        blockHeight   = 8;
+        bytesPerBlock = 16;
+        break;
+
+    case VK_FORMAT_ASTC_10x5_UNORM_BLOCK:
+    case VK_FORMAT_ASTC_10x5_SRGB_BLOCK:
+        blockWidth    = 10;
+        blockHeight   = 5;
+        bytesPerBlock = 16;
+        break;
+
+    case VK_FORMAT_ASTC_10x6_UNORM_BLOCK:
+    case VK_FORMAT_ASTC_10x6_SRGB_BLOCK:
+        blockWidth    = 10;
+        blockHeight   = 6;
+        bytesPerBlock = 16;
+        break;
+
+    case VK_FORMAT_ASTC_10x8_UNORM_BLOCK:
+    case VK_FORMAT_ASTC_10x8_SRGB_BLOCK:
+        blockWidth    = 10;
+        blockHeight   = 8;
+        bytesPerBlock = 16;
+        break;
+
+    case VK_FORMAT_ASTC_10x10_UNORM_BLOCK:
+    case VK_FORMAT_ASTC_10x10_SRGB_BLOCK:
+        blockWidth    = 10;
+        blockHeight   = 10;
+        bytesPerBlock = 16;
+        break;
+
+    case VK_FORMAT_ASTC_12x10_UNORM_BLOCK:
+    case VK_FORMAT_ASTC_12x10_SRGB_BLOCK:
+        blockWidth    = 12;
+        blockHeight   = 10;
+        bytesPerBlock = 16;
+        break;
+
+    case VK_FORMAT_ASTC_12x12_UNORM_BLOCK:
+    case VK_FORMAT_ASTC_12x12_SRGB_BLOCK:
+        blockWidth    = 12;
+        blockHeight   = 12;
+        bytesPerBlock = 16;
+        break;
+
+    }
+}
+
+typedef struct {
+	glm::vec3 position;
+	glm::vec2 texCoords;
+} VertexDataUnlit;
 
 namespace vkc::Assets {
 
@@ -63,7 +207,14 @@ namespace vkc::Assets {
 
 	typedef enum : uint8_t {
 		TEX_FORMAT_RGB_A = 43,	// VK_FORMAT_R8G8B8A8_SRGB
-		TEX_FORMAT_NORM  = 23	// VK_FORMAT_R8G8B8_UNORM
+		TEX_FORMAT_NORM  = 23,	// VK_FORMAT_R8G8B8_UNORM
+
+		// DDS formats
+		TEX_FORMAT_COMPRESSED_BC1_SRGB  = 132,	// VK_FORMAT_BC1_RGB_SRGB_BLOCK
+		TEX_FORMAT_COMPRESSED_BC1_SRGBA = 134,	// VK_FORMAT_BC1_RGBA_SRGB_BLOCK
+		TEX_FORMAT_COMPRESSED_BC2_SRGB  = 136,	// VK_FORMAT_BC2_UNORM_BLOCK
+		TEX_FORMAT_COMPRESSED_BC3_SRGB  = 138,	// VK_FORMAT_BC3_UNORM_BLOCK
+
 	} TexFormat;
 
 	const IdAssetTexture IDX_MISSING_TEXTURE = -1;
@@ -84,6 +235,7 @@ namespace vkc::Assets {
 		const IdAssetMesh IDX_DEBUG_RAY  = -2;
 
 		const IdAssetMesh IDX_FULLSCREEN_TRI = -3;
+		const IdAssetMesh IDX_QUAD           = -4;
 
 		const IdAssetTexture IDX_TEX_WHITE     = -1;
 		const IdAssetTexture IDX_TEX_BLACK     = -2;
@@ -105,10 +257,11 @@ namespace vkc::Assets {
 	struct TextureData {
 		uint16_t width;
 		uint16_t height;
-		uint8_t channelsCount;
+		uint8_t  channelsCount;
+		uint8_t  mipmaps;
 		TexChannelTypes channels;
-		TexViewTypes viewType;
-		TexFormat format;
+		TexViewTypes    viewType;
+		TexFormat       format;
 		std::vector<unsigned char> data;
 	};
 

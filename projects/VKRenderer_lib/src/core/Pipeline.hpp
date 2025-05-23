@@ -65,6 +65,18 @@ namespace vkc {
 			.vertex_attribute_descriptors       = vertexData_getAttributeDescriptions(),
 			.vertex_attribute_descriptors_count = vertexData_getAttributeDescriptionsCount(),
 			.face_culling_mode = VK_CULL_MODE_BACK_BIT
+		},
+		{
+			.vert_path = "res/shaders/base.vert.spv",
+			.frag_path = "res/shaders/unlit.frag.spv",
+			.size_uniform_data_frame    = sizeof(DataUniformFrame),
+			.size_uniform_data_material = 0,
+			.size_push_constant_model   = sizeof(DataUniformModel),
+			.vertex_binding_descriptors         = vertexData_getBindingDescriptions_Unlit(),
+			.vertex_binding_descriptors_count   = vertexData_getBindingDescriptionsCount_Unlit(),
+			.vertex_attribute_descriptors       = vertexData_getAttributeDescriptions_Unlit(),
+			.vertex_attribute_descriptors_count = vertexData_getAttributeDescriptions_UnlitCount(),
+			.face_culling_mode = VK_CULL_MODE_BACK_BIT
 		}
 	};
 

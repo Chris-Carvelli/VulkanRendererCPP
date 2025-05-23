@@ -1,4 +1,5 @@
 #include "AssetManager.hpp"
+#include "dds.hpp"
 
 // assimp
 #include <assimp/Importer.hpp>
@@ -12,7 +13,7 @@
 #include <glm/glm.hpp>
 
 #include <map>
-#include <string.h>
+#include <filesystem> // for getting file extensions
 
 namespace vkc::Assets {
     // private creation/loading API, to allow creating assets with specific IDs
@@ -66,6 +67,15 @@ namespace vkc::Assets {
         };
         static uint32_t builtin_fullscreen_tri_index_data[] = { 0, 1, 2 };
 
+        // quad
+        static VertexDataUnlit builtin_quad_vertex_data[] = {
+            { glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec2(0.0f, 0.0f) },
+            { glm::vec3( 0.5f, -0.5f, 0.0f), glm::vec2(1.0f, 0.0f) },
+            { glm::vec3( 0.5f,  0.5f, 0.0f), glm::vec2(1.0f, 1.0f) },
+            { glm::vec3(-0.5f,  0.5f, 0.0f), glm::vec2(0.0f, 1.0f) }
+        };
+        static uint32_t builtin_quad_index_data[] = { 0, 2, 3, 0, 1, 2 };
+
         static const MeshData DEBUG_CUBE_MESH_DATA = {
             .vertex_data = debug_cube_vertex_data,
             .vertex_count = sizeof(debug_cube_vertex_data) / sizeof(glm::vec3),
@@ -89,6 +99,14 @@ namespace vkc::Assets {
             .index_data = builtin_fullscreen_tri_index_data,
             .index_count = sizeof(builtin_fullscreen_tri_index_data) / sizeof(uint32_t)
         };
+
+        static const MeshData BUILTIN_QUAD = {
+            .vertex_data = builtin_quad_vertex_data,
+            .vertex_count = sizeof(builtin_quad_vertex_data) / sizeof(VertexDataUnlit),
+            .vertex_data_size = sizeof(VertexDataUnlit),
+            .index_data = builtin_quad_index_data,
+            .index_count = sizeof(builtin_quad_index_data) / sizeof(uint32_t)
+        };
     }
 
     uint32_t num_mesh_assets = 0;
@@ -103,9 +121,10 @@ namespace vkc::Assets {
 
     void asset_manager_init() {
         // create assets on CPU
-        create_mesh(BuiltinPrimitives::IDX_DEBUG_CUBE, BuiltinPrimitives::DEBUG_CUBE_MESH_DATA);
-        create_mesh(BuiltinPrimitives::IDX_DEBUG_RAY, BuiltinPrimitives::DEBUG_RAY_MESH_DATA);
+        create_mesh(BuiltinPrimitives::IDX_DEBUG_CUBE,     BuiltinPrimitives::DEBUG_CUBE_MESH_DATA);
+        create_mesh(BuiltinPrimitives::IDX_DEBUG_RAY,      BuiltinPrimitives::DEBUG_RAY_MESH_DATA);
         create_mesh(BuiltinPrimitives::IDX_FULLSCREEN_TRI, BuiltinPrimitives::BUILTIN_FULLSCREEN_TRI);
+        create_mesh(BuiltinPrimitives::IDX_QUAD,           BuiltinPrimitives::BUILTIN_QUAD);
 
         load_texture(BuiltinPrimitives::IDX_TEX_WHITE, "res/textures/tex_white.png", vkc::Assets::TEX_CHANNELS_RGB_A);
         load_texture(BuiltinPrimitives::IDX_TEX_BLACK, "res/textures/tex_black.png", vkc::Assets::TEX_CHANNELS_RGB_A);
@@ -142,34 +161,50 @@ namespace vkc::Assets {
 
     void debug_print_material_info(const aiMaterial& ai_material_data) {
         // TMP print material properties
-        CC_LOG(IMPORTANT, "%-28s\ttype\tsemantic\tvalue", "name");
+        CC_LOG(IMPORTANT, "%-28s\ttype\tsemantic\tsize\tvalue", "name");
         for (int j = 0; j < ai_material_data.mNumProperties; ++j) {
             const aiMaterialProperty& ai_mat_prop_data = *ai_material_data.mProperties[j];
 
             char buf[64];
+            int buffer_offset = 0;
             aiString path;
-            if (ai_material_data.mNumAllocated < 63)
+            if (ai_mat_prop_data.mDataLength < 63)
             {
                 switch(ai_mat_prop_data.mType) {
-                case aiPTI_Float:   sprintf(buf, "%f", (float)  *ai_mat_prop_data.mData); break;
-                case aiPTI_Double:  sprintf(buf, "%f", (double) *ai_mat_prop_data.mData); break;
-                case aiPTI_Integer: sprintf(buf, "%d", (int)    *ai_mat_prop_data.mData); break;
+                case aiPTI_Float:
+                    for(unsigned int p = 0; p < ai_mat_prop_data.mDataLength; p += sizeof(float))
+                        buffer_offset += sprintf(buf + buffer_offset, "%f   ", (float) *ai_mat_prop_data.mData + p); break;
+                case aiPTI_Double:
+                    for(unsigned int p = 0; p < ai_mat_prop_data.mDataLength; p += sizeof(double))
+                        buffer_offset += sprintf(buf + buffer_offset, "%f   ", (double) *ai_mat_prop_data.mData + p); break;
+                case aiPTI_Integer:
+                    for(unsigned int p = 0; p < ai_mat_prop_data.mDataLength; p += sizeof(int))
+                        buffer_offset += sprintf(buf + buffer_offset, "%d   ", (int)  *ai_mat_prop_data.mData + p); break;
                 case aiPTI_String:
-                    if (ai_mat_prop_data.mSemantic != aiTextureType_NONE) {
+                    if (ai_mat_prop_data.mSemantic != aiTextureType_NONE && ai_mat_prop_data.mSemantic != aiTextureType_UNKNOWN) {
                         ai_material_data.GetTexture(static_cast<aiTextureType>(ai_mat_prop_data.mSemantic), 0, &path);
                         memcpy(buf, path.C_Str(), path.length + 1); // we already ensured that the string is short enough
                     }
                     else
-                        sprintf(buf, "%s", ai_mat_prop_data.mData);
+                    {
+                        //buffer_offset = sprintf(buf, "%s", ai_mat_prop_data.mData);
+                        memcpy(buf, ai_mat_prop_data.mData, ai_mat_prop_data.mDataLength);
+                        // some string are prefixe with garbage. temporary solution: remove all terminators
+                        for(int i = 0; i < ai_mat_prop_data.mDataLength - 1; ++i)
+                            if(buf[i] == 0)
+                                buf[i] = '_';
+                    }
                     break;
-                case aiPTI_Buffer:  sprintf(buf, "%s", ai_mat_prop_data.mData); break;
+                //case aiPTI_Buffer:  sprintf(buf, "%s", ai_mat_prop_data.mData); break;
+                case aiPTI_Buffer:  memcpy(buf, ai_mat_prop_data.mData, ai_mat_prop_data.mDataLength); break;
+
                 default:            sprintf(buf, "<unrecognized buffer type>"); break;
                 }
             }
             else
                 sprintf(buf, "<too much data, check in debug modw>");
 
-            CC_LOG(VERBOSE, "%-28s\t%d\t%d\t\t%s", ai_mat_prop_data.mKey.C_Str(), ai_mat_prop_data.mType, ai_mat_prop_data.mSemantic, buf);
+            CC_LOG(VERBOSE, "%-28s\t%d\t%d\t\t%d\t%s", ai_mat_prop_data.mKey.C_Str(), ai_mat_prop_data.mType, ai_mat_prop_data.mSemantic, ai_mat_prop_data.mDataLength, buf);
         }
     }
 
@@ -203,7 +238,14 @@ namespace vkc::Assets {
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(
             path,
-            aiProcess_CalcTangentSpace | aiProcess_GenNormals | aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_SortByPType
+            aiProcess_CalcTangentSpace |
+            aiProcess_GenNormals |
+            aiProcess_Triangulate |
+            aiProcess_JoinIdenticalVertices |
+            aiProcess_SortByPType |
+            aiProcess_MakeLeftHanded |
+            aiProcess_FlipWindingOrder |
+            aiProcess_FlipUVs
         );
 
         CC_ASSERT(scene, "[assimp] could not load %s", path);
@@ -217,7 +259,7 @@ namespace vkc::Assets {
             // load textures
             const aiMaterial& ai_material_data = *scene->mMaterials[i];
 
-            if (i < 3)
+            //if (i < 3)
                 debug_print_material_info(ai_material_data);
                         
             // TMP cannon model has unused materials that do not conform with the texture setup of
@@ -243,9 +285,24 @@ namespace vkc::Assets {
             // TODO hardcoded textures
             std::string base_path(base_path_textures);
 
-            IdAssetTexture tex_idx_arm     = load_tex(aiTextureType_SHININESS, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB_A, TEX_FORMAT_RGB_A, BuiltinPrimitives::IDX_TEX_BLACK, base_path);
-            IdAssetTexture tex_idx_diffuse = load_tex(aiTextureType_DIFFUSE, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB_A, TEX_FORMAT_RGB_A, BuiltinPrimitives::IDX_TEX_WHITE, base_path);
-            IdAssetTexture tex_idx_normal  = load_tex(aiTextureType_NORMALS, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB, TEX_FORMAT_NORM, BuiltinPrimitives::IDX_TEX_BLUE_NORM, base_path);
+            
+            IdAssetTexture tex_idx_arm;
+            IdAssetTexture tex_idx_diffuse;
+            IdAssetTexture tex_idx_normal;
+
+            //// had-hoc semantics for models taken from ituGL
+            //{
+            //    tex_idx_arm     = load_tex(aiTextureType_SHININESS, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB_A, TEX_FORMAT_RGB_A, BuiltinPrimitives::IDX_TEX_BLACK, base_path);
+            //    tex_idx_diffuse = load_tex(aiTextureType_DIFFUSE, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB_A, TEX_FORMAT_RGB_A, BuiltinPrimitives::IDX_TEX_WHITE, base_path);
+            //    tex_idx_normal  = load_tex(aiTextureType_NORMALS, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB, TEX_FORMAT_NORM, BuiltinPrimitives::IDX_TEX_BLUE_NORM, base_path);
+            //}
+
+            // had-hoc semantics for bistrot model
+            {
+                tex_idx_diffuse = load_tex(aiTextureType_DIFFUSE,  ai_material_data, vkc::Assets::TEX_CHANNELS_RGB_A, TEX_FORMAT_RGB_A, BuiltinPrimitives::IDX_TEX_WHITE,     base_path);
+                tex_idx_arm     = load_tex(aiTextureType_SPECULAR, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB_A, TEX_FORMAT_RGB_A, BuiltinPrimitives::IDX_TEX_BLACK,     base_path);
+                tex_idx_normal  = load_tex(aiTextureType_NORMALS,  ai_material_data, vkc::Assets::TEX_CHANNELS_RGB,   TEX_FORMAT_NORM,  BuiltinPrimitives::IDX_TEX_BLUE_NORM, base_path);
+            }
 
             auto mat = (MaterialData) {
                 .id_pipeline_config = 1,
@@ -265,6 +322,8 @@ namespace vkc::Assets {
             material_map[i] = tmp;
         }
 
+        print_fourcc_count();
+
         new_model_data.meshes_count = scene->mNumMeshes;
         new_model_data.meshes = new IdAssetMesh[scene->mNumMeshes];
         new_model_data.meshes_material = new IdAssetMesh[scene->mNumMeshes];
@@ -282,8 +341,8 @@ namespace vkc::Assets {
             for(int j = 0; j < ai_mesh_data.mNumVertices; ++j) {
                 VertexData vertex_data = { };
                 p[j].position.x = ai_mesh_data.mVertices[j].x;
-                p[j].position.y = ai_mesh_data.mVertices[j].y;
-                p[j].position.z = ai_mesh_data.mVertices[j].z;
+                p[j].position.y = -ai_mesh_data.mVertices[j].z;
+                p[j].position.z = ai_mesh_data.mVertices[j].y;
 
                 if(ai_mesh_data.mColors[0] != nullptr) {
                     p[j].color.r = ai_mesh_data.mColors[0][j].r;
@@ -507,9 +566,46 @@ namespace vkc::Assets {
         int texWidth = 0;
         int texHeight = 0;
         int texChannels = 0;
+        int mips = 1;
 
-        stbi_set_flip_vertically_on_load(flip_vertical ? 1 : 0);
-        stbi_uc* pixels = stbi_load(path, &texWidth, &texHeight, &texChannels, requested_channels_count);
+        void* pixels;
+        bool use_stbi = std::filesystem::path(path).extension() != ".dds";
+
+        uint32_t size;
+        if (use_stbi) {
+            stbi_set_flip_vertically_on_load(flip_vertical ? 1 : 0);
+            pixels = stbi_load(path, &texWidth, &texHeight, &texChannels, requested_channels_count);
+            size = texWidth * texHeight * requested_channels_count;
+        }
+        else
+        {
+            FILE* fp = fopen(path, "rb");
+            fseek(fp, 0, SEEK_END);
+            size_t file_size = ftell(fp);
+            fseek(fp, 0, SEEK_SET);
+
+            unsigned char * file_buf = (unsigned char *)malloc(file_size);
+            fread(file_buf, 1, file_size, fp);
+            fclose(fp);
+
+            int file_format;
+
+            pixels = rl_load_dds_from_memory(
+                file_buf,
+                file_size,
+                &texWidth,
+                &texHeight,
+                &file_format,
+                &mips,
+                &size
+            );
+
+
+            // overrides format since file carries it in header
+            format = static_cast<TexFormat>(file_format);
+
+            free(file_buf);
+        }
 
         if (pixels == nullptr) {
             CC_LOG(WARNING, "missing texture at path %s", path);
@@ -517,19 +613,22 @@ namespace vkc::Assets {
         }
 
 
-        size_t size = texWidth * texHeight * requested_channels_count;
 
         TextureData data;
         data.viewType = viewType;
         data.width = (uint16_t)texWidth;
         data.height = (uint16_t)texHeight;
         data.channelsCount = (uint8_t)requested_channels_count;
+        data.mipmaps = mips;
         data.channels = channels;
         data.format = format;
         data.data.resize(size);
         memcpy(data.data.data(), pixels, size);
 
-        stbi_image_free(pixels);
+        if (use_stbi)
+            stbi_image_free(pixels);
+        else
+            free(pixels);
 
         if (viewType == TEX_VIEW_TYPE_CUBE) {
             data.width /= 4;

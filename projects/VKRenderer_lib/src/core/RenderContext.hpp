@@ -51,9 +51,7 @@ namespace vkc {
 		void copy_buffer_to_image(
 			VkBuffer buffer,
 			VkImage image,
-			uint32_t width,
-			uint32_t height,
-			uint32_t layers
+			const vkc::Assets::TextureData& data
 		);
 		void createBuffer(
 			VkDeviceSize size,

@@ -18,12 +18,15 @@ layout(location = 3) out vec3 fragTangent;
 layout(location = 4) out vec2 fragTexCoord;
 
 void main() {
-    vec4 world_pos = data_model.model * vec4(inPosition, 1.0);
+    vec4 world_pos     = data_model.model * vec4(inPosition, 1.0);
+    vec4 world_normal  = data_model.model * vec4(inNormal,   0.0);
+    vec4 world_tangent = data_model.model * vec4(inTangent,  0.0);
+
     gl_Position = data_frame.proj * data_frame.view * world_pos;
 
     fragPosition = world_pos.xyz;
-    fragColor = inColor;
-    fragNormal = inNormal;
-    fragTangent = inTangent;
+    fragColor    = inColor;
+    fragNormal   = world_normal.xyz;
+    fragTangent  = world_tangent.xyz;
     fragTexCoord = inTexCoord;
 }

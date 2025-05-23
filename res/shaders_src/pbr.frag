@@ -8,7 +8,9 @@ layout(binding = 2) uniform sampler2D   tex_albedo;
 layout(binding = 3) uniform sampler2D   tex_specular;
 layout(binding = 4) uniform sampler2D   tex_normal;
 //layout(binding = TODO) uniform sampler2D   tex_emissive;
-layout(binding = 5) uniform samplerCube tex_environment;
+
+//layout(binding = 5) uniform samplerCube tex_environment;
+layout(binding = 5) uniform sampler2D tex_environment;
 
 layout(location = 0) in vec3 fragPosition;
 layout(location = 1) in vec3 fragColor;
@@ -28,6 +30,8 @@ void main() {
 	vec3 V = normalize(data_frame.cam_pos - fragPosition);
 	vec3 L = normalize(data_frame.light_dir);
 
+	vec3 H = normalize(L + V);
+
 	DataMaterial mat;
 	mat.albedo = albedo.rgb;
 	mat.occlusion = params_specular.x;
@@ -35,16 +39,24 @@ void main() {
 	mat.metalness = params_specular.z;
 
 //	outColor = vec4(
+////		texture(tex_normal, fragTexCoord).xyz,
+////		data_frame.cam_pos,
+////		params_specular.rgb,
+////		albedo.rgb,
+////		V,
 ////		N,
-//		SampleEnvironment( reflect(-V, N), 0, tex_environment),
+////		SampleEnvironment( reflect(-V, N), 0, tex_environment),
+//		FresnelSchlick(GetReflectance(mat), V, H),
+////		GetAlbedo(mat),
+////		GetReflectance(mat),
 //		1.0
 //	);
 
+
 	outColor = vec4(
 		BRDFDirect(L, N, V, mat)
-		 + BRDFIndirect(L, N, V, mat, tex_environment)
+		+ BRDFIndirect(L, N, V, mat, tex_environment)
 		// + emissive.rgb
 		, 1.0
 	);
-
 }

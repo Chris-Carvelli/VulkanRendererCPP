@@ -90,12 +90,17 @@ target_include_directories(AssetBaker PUBLIC "projects/AssetBaker/include")
 
 target_include_directories(AssetBaker PUBLIC
 	# ${LIBRARIES_SOURCE_PATH}/imgui/include
+    ${LIBRARIES_SOURCE_PATH}/vulkan/include # we need vulkan incude for flags and formats
+                                            # we do NOT need to link vulkan because we are
+                                            # not using any actual functionality
+                                            # (this may change when auto-generating mipmaps)
 	${LIBRARIES_SOURCE_PATH}/glm
 	${LIBRARIES_SOURCE_PATH}/stb/include
     ${LIBRARIES_SOURCE_PATH}/ccstructs
     ${LIBRARIES_SOURCE_PATH}/assimp
 )
 
+target_link_libraries(VKRenderer_lib Vulkan::Vulkan)
 target_link_libraries(AssetBaker assimp)
 
 # =========================================================

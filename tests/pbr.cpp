@@ -34,8 +34,8 @@ namespace TMP_Update {
     glm::mat4 camera_world;
     glm::mat4 camera_proj;
     glm::mat4 camera_view;
-    glm::vec3 camera_pos;
-    glm::vec3 camera_rot;
+    glm::vec3 camera_pos = glm::vec3(0.3f, 2.5f, 0.5f);
+    glm::vec3 camera_rot = glm::vec3(-5.0f, -106.0f, 0.0f);
 
     DataUniformMaterial tmp_data_uniform_material = (DataUniformMaterial) {
         .ambient = 1,
@@ -44,13 +44,31 @@ namespace TMP_Update {
         .specular_exp = 200,
     };
 
-    const uint32_t drawcall_cout = 1;
+    const uint32_t drawcall_cout = 3;
     std::vector<DataUniformModel> model_data;
 
     std::vector<vkc::Assets::IdAssetMesh> TMP_mesh_idxs;
     std::vector<vkc::Assets::IdAssetMesh> TMP_mat_idxs;
 
     vkc::Assets::IdAssetMaterial idMaterialSkybox;
+
+    void set_camera_mtx(glm::vec3 local_camera_pos) {
+        glm::vec3 rot = glm::radians(camera_rot);
+        glm::mat4 rot_matrix = glm::identity<glm::mat4>();
+
+        const glm::vec3 FORWARD = glm::vec3(0, 0, -1);
+        const glm::vec3 UP = glm::vec3(0, 1, 0);
+        rot_matrix = glm::rotate(rot_matrix, rot.y, glm::vec3(0, 1, 0));
+        rot_matrix = glm::rotate(rot_matrix, rot.x, glm::vec3(1, 0, 0));
+        rot_matrix = glm::rotate(rot_matrix, rot.z, glm::vec3(0, 0, 1));
+
+        glm::vec3 global_camera_pos = glm::vec3((rot_matrix)*glm::vec4(local_camera_pos, 1.0f));
+
+        camera_pos += global_camera_pos;
+        glm::mat4 translate_matrix = glm::translate(camera_pos);
+        camera_world = translate_matrix * rot_matrix;
+        camera_view = glm::inverse(camera_world);
+    }
 
     void TMP_update_gui(vkc::Rect2DI window_size, DataUniformFrame& ubo) {
         ImGui::Begin("tmp_update_info");
@@ -126,25 +144,11 @@ namespace TMP_Update {
         if (ImGui::IsKeyDown(ImGuiKey_Q)) { local_camera_pos.y -= SPEED_MOV; dirty = true; }
         if (ImGui::IsKeyDown(ImGuiKey_E)) { local_camera_pos.y += SPEED_MOV; dirty = true; }
 
-        if (dirty)
-        {
-            glm::vec3 rot = glm::radians(camera_rot);
-            glm::mat4 rot_matrix = glm::identity<glm::mat4>();
 
-            const glm::vec3 FORWARD = glm::vec3(0, 0, -1);
-            const glm::vec3 UP = glm::vec3(0, 1, 0);
-            rot_matrix = glm::rotate(rot_matrix, rot.y, glm::vec3(0, 1, 0));
-            rot_matrix = glm::rotate(rot_matrix, rot.x, glm::vec3(1, 0, 0));
-            rot_matrix = glm::rotate(rot_matrix, rot.z, glm::vec3(0, 0, 1));
-
-            glm::vec3 global_camera_pos = glm::vec3((rot_matrix)*glm::vec4(local_camera_pos, 1.0f));
-
-            camera_pos += global_camera_pos;
-            glm::mat4 translate_matrix = glm::translate(glm::identity<glm::mat4>(), camera_pos);
-            camera_world = translate_matrix * rot_matrix;
-            camera_view = glm::inverse(camera_world);
-        }
         ImGui::End();
+
+        if (dirty)
+            set_camera_mtx(local_camera_pos);
     }
 
     void updateUniformBuffer(vkc::Rect2DI window_size, DataUniformFrame& ubo) {
@@ -167,16 +171,18 @@ namespace TMP_Update {
 
 class TestRenderer : public VKRenderer {
     void init() override {
-        vkc::Assets::asset_db_load("res/asset_db.bin");
+        TMP_Update::set_camera_mtx(glm::vec3(0.0f));
 
+        vkc::Assets::asset_db_load("res/asset_db.bin");
 
         // create uniform data for each model
         TMP_Update::model_data.resize(TMP_Update::drawcall_cout);
         int l = glm::sqrt(TMP_Update::drawcall_cout);
         for (int i = 0; i < TMP_Update::drawcall_cout; ++i)
             TMP_Update::model_data[i] = DataUniformModel{
-                .model = glm::translate(glm::mat4(1.0f), glm::vec3(i % l - l / 2, 0, i / l - l / 2))
-                //.model = glm::scale(glm::mat4(1.0f), glm::vec3(3.0f))
+                //.model = glm::translate(glm::mat4(1.0f), glm::vec3(i % l - l / 2, 0, i / l - l / 2))
+                .model = glm::scale(glm::vec3(0.01f))
+                //.model = glm::translate(glm::vec3(i * 2, 0.0f, 0.0f)) * glm::scale(glm::vec3(1.0f))
             };
     }
 
@@ -191,6 +197,15 @@ class TestRenderer : public VKRenderer {
     }
 
     void render() override {
+        // test quads
+        /*for(int i = 0; i < TMP_Update::drawcall_cout; ++i)
+            drawcall_add(
+            vkc::Assets::BuiltinPrimitives::IDX_QUAD,
+            i,
+            &TMP_Update::model_data[i],
+            sizeof(TMP_Update::model_data[i])
+        );*/
+
         // model
         auto model_data = vkc::Assets::get_model_data(0);
         for(int i = 0; i < model_data.meshes_count; ++i)

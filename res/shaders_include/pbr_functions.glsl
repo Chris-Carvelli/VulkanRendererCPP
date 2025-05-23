@@ -1,6 +1,7 @@
 #include "shader_base.glsl"
+#include "utils.glsl"
 
-const int MAX_LOD_LEVEL = 1;
+const int MAX_LOD_LEVEL = 11;
 
 struct DataMaterial {
 	vec3 albedo;
@@ -13,11 +14,11 @@ struct DataMaterial {
 };
 
 vec3 BRDFDirect(vec3 L, vec3 N, vec3 V, DataMaterial mat);
-vec3 BRDFIndirect(vec3 L, vec3 N, vec3 V, DataMaterial mat, samplerCube tex_environment);
+vec3 BRDFIndirect(vec3 L, vec3 N, vec3 V, DataMaterial mat, sampler2D tex_environment);
 
 vec3 GetAlbedo(DataMaterial data);										// Get the surface albedo
 vec3 GetReflectance(DataMaterial data);									// Get the surface reflectance
-vec3 SampleEnvironment(vec3 direction, float lodLevel, samplerCube tex_environment);					// Sample the EnvironmentTexture cubemap
+vec3 SampleEnvironment(vec3 direction, float lodLevel, sampler2D tex_environment);					// Sample the EnvironmentTexture cubemap
 float DistributionGGX(vec3 N, vec3 H, float roughness);					// GGX equation for distribution function
 float GeometrySmith(vec3 N, vec3 inDir, vec3 outDir, float roughness);	// Geometry term in both directions
 vec3 FresnelSchlick(vec3 f0, vec3 V, vec3 H);							// Schlick simplification of the Fresnel term
@@ -52,7 +53,7 @@ vec3 BRDFDirect(vec3 L, vec3 N, vec3 V, DataMaterial mat) {
 	return lighting;
 }
 
-vec3 BRDFIndirect(vec3 L, vec3 N, vec3 V, DataMaterial mat, samplerCube tex_environment) {
+vec3 BRDFIndirect(vec3 L, vec3 N, vec3 V, DataMaterial mat, sampler2D tex_environment) {
 	// compute the indirect diffuse term
 	vec3 diffuse = SampleEnvironment(N, 1.0, tex_environment) * GetAlbedo(mat);
 	
@@ -73,7 +74,7 @@ vec3 BRDFIndirect(vec3 L, vec3 N, vec3 V, DataMaterial mat, samplerCube tex_envi
 	vec3 fresnel = FresnelSchlick(GetReflectance(mat), V, N);
 
 	// Linearly interpolate between the diffuse and specular term
-	return mix(diffuse, specular, fresnel) * mat.occlusion;
+	return mix(diffuse, specular, fresnel);
 }
 
 // Get the surface albedo
@@ -90,13 +91,14 @@ vec3 GetReflectance(DataMaterial data)
 
 // Sample the EnvironmentTexture cubemap
 // lodLevel: between 0 and 1 to select from the highest to the lowest mipmap
-vec3 SampleEnvironment(vec3 direction, float lodLevel, samplerCube tex_environment)
+vec3 SampleEnvironment(vec3 direction, float lodLevel, sampler2D tex_environment)
 {
 	// Flip the Z direction, because the cubemap is left-handed
 	direction.z *= -1;
 
 //	return texture(tex_environment, direction).rgb;
-	return textureLod(tex_environment, direction, lodLevel * MAX_LOD_LEVEL).rgb;
+	vec2 uv = uv_spherical_mapping(direction);
+	return textureLod(tex_environment, uv, lodLevel * MAX_LOD_LEVEL).rgb;
 }
 
 // Geometry term in one direction, for GGX equation
