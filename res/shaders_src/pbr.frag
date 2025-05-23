@@ -52,11 +52,16 @@ void main() {
 //		1.0
 //	);
 
+	vec3 final_color = vec3(0.0);
 
-	outColor = vec4(
-		BRDFDirect(L, N, V, mat)
-		+ BRDFIndirect(L, N, V, mat, tex_environment)
-		// + emissive.rgb
-		, 1.0
-	);
+	if((data_frame.DEBUG_light_components & DEBUG_LIGHT_COMPONENT_DIRECT) != 0)
+		final_color += BRDFDirect(L, N, V, mat);
+
+	if((data_frame.DEBUG_light_components & DEBUG_LIGHT_COMPONENT_INDIRECT) != 0)
+		final_color += BRDFIndirect(L, N, V, mat, tex_environment);
+
+	if((data_frame.DEBUG_light_components & DEBUG_LIGHT_COMPONENT_AMBIENT) != 0)
+		final_color += data_frame.light_ambient;
+
+	outColor = vec4(final_color, 1.0);
 }

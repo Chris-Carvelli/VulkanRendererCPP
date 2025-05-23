@@ -19,6 +19,12 @@
 // base forward pass
 // =================================================================
 
+enum DebugLightComponents : uint32_t {
+    DIRECT   = 0b001,
+    INDIRECT = 0b010,
+    AMBIENT  = 0b100,
+};
+
 // TODO where to pit this? Together with vertexData?
 struct DataUniformFrame {
     // camera
@@ -32,7 +38,8 @@ struct DataUniformFrame {
     uint32_t padding_1;
 
     glm::vec3 light_dir;
-    uint32_t padding_2;
+
+    uint32_t DEBUG_light_components;
 
     glm::vec3 light_color;
     float light_intensity;

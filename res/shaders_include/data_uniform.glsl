@@ -1,3 +1,7 @@
+const uint DEBUG_LIGHT_COMPONENT_DIRECT   = 1;
+const uint DEBUG_LIGHT_COMPONENT_INDIRECT = 2;
+const uint DEBUG_LIGHT_COMPONENT_AMBIENT  = 4;
+
 layout(binding = 0) uniform UniformBufferObject_Frame {
     // camera
     mat4 view;
@@ -7,8 +11,11 @@ layout(binding = 0) uniform UniformBufferObject_Frame {
     // lighting
     vec3  light_ambient;
     vec3  light_dir;
+    uint   DEBUG_light_components;
+
     vec3  light_color;
     float light_intensity;
+
 
     // app
     int frame;

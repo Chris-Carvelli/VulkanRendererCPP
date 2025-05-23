@@ -52,6 +52,10 @@ namespace TMP_Update {
 
     vkc::Assets::IdAssetMaterial idMaterialSkybox;
 
+    bool pbr_use_light_direct = true;
+    bool pbr_use_light_indirect = true;
+    bool pbr_use_light_ambient = false;
+
     void set_camera_mtx(glm::vec3 local_camera_pos) {
         glm::vec3 rot = glm::radians(camera_rot);
         glm::mat4 rot_matrix = glm::identity<glm::mat4>();
@@ -79,6 +83,11 @@ namespace TMP_Update {
         ImGui::DragFloat3("Light Color Light", &ubo.light_color.x);
         ImGui::DragFloat3("Light Direction", &ubo.light_dir.x);
         ImGui::DragFloat("Light Intensity", &ubo.light_intensity);
+
+        ImGui::Checkbox("Use direct light", &pbr_use_light_direct);
+        ImGui::Checkbox("Use indirect light", &pbr_use_light_indirect);
+        ImGui::Checkbox("Use ambient light", &pbr_use_light_ambient);
+
 
         ImGui::SeparatorText("Material Data");
         ImGui::DragFloat("Ambient", &tmp_data_uniform_material.ambient);
@@ -165,6 +174,10 @@ namespace TMP_Update {
 
         // invert up axis
         ubo.proj[1][1] *= -1;
+        ubo.DEBUG_light_components = 0;
+        ubo.DEBUG_light_components |= pbr_use_light_direct   * DebugLightComponents::DIRECT;
+        ubo.DEBUG_light_components |= pbr_use_light_indirect * DebugLightComponents::INDIRECT;
+        ubo.DEBUG_light_components |= pbr_use_light_ambient  * DebugLightComponents::AMBIENT;
     }
 }
 
