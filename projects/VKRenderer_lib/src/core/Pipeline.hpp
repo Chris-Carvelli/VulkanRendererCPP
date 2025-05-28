@@ -18,7 +18,7 @@ namespace vkc {
 		const char* vert_path;
 		const char* frag_path;
 
-		const VkVertexInputBindingDescription* vertex_binding_descriptors;
+		const VkVertexInputBindingDescription*   vertex_binding_descriptors;
 		const VkVertexInputAttributeDescription* vertex_attribute_descriptors;
 
 		const uint32_t size_uniform_data_frame;
@@ -86,18 +86,18 @@ namespace vkc {
 	class Pipeline {
 	public:
 		Pipeline(
-			VkDevice handle_device,
-			vkc::RenderContext* obj_render_context,
-			vkc::RenderPass* obj_render_pass,
-			const PipelineConfig* config
+			VkDevice				handle_device,
+			vkc::RenderContext*		obj_render_context,
+			vkc::RenderPass*		obj_render_pass,
+			const PipelineConfig*	config
 		);
 		~Pipeline();
 
 		const PipelineConfig* get_obj_config() const { return m_config; };
 
-		VkPipeline            get_handle()                          const { return m_handle; };
-		VkPipelineLayout      get_handle_layout()                   const { return m_handle_pipeline_layout; };
-		VkDescriptorSetLayout get_handle_descriptor_set_layout()    const { return m_handle_descriptor_set_layout; };
+		VkPipeline				get_handle()							const { return m_handle; };
+		VkPipelineLayout		get_handle_layout()					const { return m_handle_pipeline_layout; };
+		VkDescriptorSetLayout	get_handle_descriptor_set_layout()	const { return m_handle_descriptor_set_layout; };
 
 		VkBuffer              get_handle_uniform_buffer(uint32_t i) const {
 			CC_ASSERT(i < m_uniform_buffers.size(), "idx out of bounds");
@@ -105,6 +105,8 @@ namespace vkc {
 		}
 
 		void update_uniform_buffer(void* ubo, uint32_t current_frame);
+		void reload();
+		void cleanup();
 
 	private:
 		void create_descriptor_set_layout();
@@ -131,8 +133,8 @@ namespace vkc {
 		const PipelineConfig* m_config;
 
 		// frame data
-		std::vector<VkBuffer>			m_uniform_buffers;
-		std::vector<VkDeviceMemory>		m_uniform_buffers_memory;
-		std::vector<void*>				m_uniform_buffers_mapped;
+		std::vector<VkBuffer>		m_uniform_buffers;
+		std::vector<VkDeviceMemory>	m_uniform_buffers_memory;
+		std::vector<void*>			m_uniform_buffers_mapped;
 	};
 }

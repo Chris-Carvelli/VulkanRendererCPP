@@ -17,12 +17,26 @@ namespace vkc {
 		, m_config { config }
 	{
 		create_descriptor_set_layout();
+		reload();
+	}
 
-		std::vector<char> shaderCodeVert = TMP_VUlkanUtils::read_file_binary(config->vert_path);
-		std::vector<char> shaderCodeFrag = TMP_VUlkanUtils::read_file_binary(config->frag_path);
+	Pipeline::~Pipeline() {
+		cleanup();
+		vkDestroyDescriptorSetLayout(m_handle_device, m_handle_descriptor_set_layout, NULL);
+	}
 
-		VkShaderModule shaderModuleVert = create_shader_module(handle_device, shaderCodeVert.data(), shaderCodeVert.size());
-		VkShaderModule shaderModuleFrag = create_shader_module(handle_device, shaderCodeFrag.data(), shaderCodeFrag.size());
+	void Pipeline::update_uniform_buffer(void* ubo, uint32_t current_frame) {
+		memcpy(m_uniform_buffers_mapped[current_frame], ubo, m_config->size_uniform_data_frame);
+	}
+
+
+	void Pipeline::reload() {
+
+		std::vector<char> shaderCodeVert = TMP_VUlkanUtils::read_file_binary(m_config->vert_path);
+		std::vector<char> shaderCodeFrag = TMP_VUlkanUtils::read_file_binary(m_config->frag_path);
+
+		VkShaderModule shaderModuleVert = create_shader_module(m_handle_device, shaderCodeVert.data(), shaderCodeVert.size());
+		VkShaderModule shaderModuleFrag = create_shader_module(m_handle_device, shaderCodeFrag.data(), shaderCodeFrag.size());
 
 		VkPipelineShaderStageCreateInfo vertShaderStageInfo = { VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO };
 		vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
@@ -52,14 +66,14 @@ namespace vkc {
 
 		// vertex input
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo = { VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO };
-		vertexInputInfo.vertexBindingDescriptionCount = config->vertex_binding_descriptors_count;
-		vertexInputInfo.pVertexBindingDescriptions = config->vertex_binding_descriptors;
-		vertexInputInfo.vertexAttributeDescriptionCount = config->vertex_attribute_descriptors_count;
-		vertexInputInfo.pVertexAttributeDescriptions = config->vertex_attribute_descriptors;
+		vertexInputInfo.vertexBindingDescriptionCount   = m_config->vertex_binding_descriptors_count;
+		vertexInputInfo.pVertexBindingDescriptions      = m_config->vertex_binding_descriptors;
+		vertexInputInfo.vertexAttributeDescriptionCount = m_config->vertex_attribute_descriptors_count;
+		vertexInputInfo.pVertexAttributeDescriptions    = m_config->vertex_attribute_descriptors;
 
 		// input assembly
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly = { VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO };
-		inputAssembly.topology = config->topology;
+		inputAssembly.topology = m_config->topology;
 		inputAssembly.primitiveRestartEnable = VK_FALSE;
 
 		// viewport state
@@ -73,7 +87,7 @@ namespace vkc {
 		// rasterizer.rasterizerDiscardEnable = VK_FALSE; // this should be default false
 		// rasterizer.polygonMode = VK_POLYGON_MODE_FILL; // this should be fill by default
 		rasterizer.lineWidth = 1.0f;
-		rasterizer.cullMode = config->face_culling_mode;
+		rasterizer.cullMode = m_config->face_culling_mode;
 		rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
 
@@ -122,11 +136,11 @@ namespace vkc {
 		// push constants
 		VkPushConstantRange push_constant_range;
 		uint32_t push_constant_range_count = 0;
-		if (config->size_push_constant_model > 0)
+		if (m_config->size_push_constant_model > 0)
 		{
 			push_constant_range.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 			push_constant_range.offset     = 0;
-			push_constant_range.size       = config->size_push_constant_model;
+			push_constant_range.size       = m_config->size_push_constant_model;
 			push_constant_range_count = 1;
 		}
 
@@ -169,20 +183,15 @@ namespace vkc {
 		create_uniform_buffers();
 	}
 
-	Pipeline::~Pipeline() {
+	void Pipeline::cleanup() {
 		if (m_handle == VK_NULL_HANDLE)
 			return;
 		vkDestroyPipelineLayout(m_handle_device, m_handle_pipeline_layout, NULL);
 		vkDestroyPipeline(m_handle_device, m_handle, NULL);
-		vkDestroyDescriptorSetLayout(m_handle_device, m_handle_descriptor_set_layout, NULL);
 		for (auto& handle : m_uniform_buffers)
 			vkDestroyBuffer(m_handle_device, handle, NULL);
 		for (auto& handle : m_uniform_buffers_memory)
 			vkFreeMemory(m_handle_device, handle, NULL);
-	}
-
-	void Pipeline::update_uniform_buffer(void* ubo, uint32_t current_frame) {
-		memcpy(m_uniform_buffers_mapped[current_frame], ubo, m_config->size_uniform_data_frame);
 	}
 
 	void Pipeline::create_descriptor_set_layout() {
@@ -225,20 +234,6 @@ namespace vkc {
 		}
 	}
 
-	VkShaderModule Pipeline::create_shader_module(VkDevice device, const char* code, const size_t codeSize) {
-		VkShaderModuleCreateInfo createInfo = { VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO };
-		createInfo.codeSize = codeSize;
-		createInfo.pCode = (const uint32_t*)code;
-
-		VkShaderModule shaderModule;
-		if (vkCreateShaderModule(device, &createInfo, NULL, &shaderModule) != VK_SUCCESS) {
-			CC_LOG(ERROR, "failed to create shader module!");
-		}
-
-		return shaderModule;
-	}
-
-
 	void Pipeline::create_uniform_buffers() {
 		// frame data
 		{
@@ -260,5 +255,21 @@ namespace vkc {
 				vkMapMemory(m_handle_device, m_uniform_buffers_memory[i], 0, bufferSize, 0, &m_uniform_buffers_mapped[i]);
 			}
 		}
+	}
+
+	VkShaderModule Pipeline::create_shader_module(
+		VkDevice device,
+		const char* code,
+		const size_t codeSize) {
+		VkShaderModuleCreateInfo createInfo = { VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO };
+		createInfo.codeSize = codeSize;
+		createInfo.pCode = (const uint32_t*)code;
+
+		VkShaderModule shaderModule;
+		if (vkCreateShaderModule(device, &createInfo, NULL, &shaderModule) != VK_SUCCESS) {
+			CC_LOG(ERROR, "failed to create shader module!");
+		}
+
+		return shaderModule;
 	}
 }

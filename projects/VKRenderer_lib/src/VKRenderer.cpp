@@ -117,9 +117,26 @@ void VKRenderer::TMP_force_gpu_upload_all() {
 
 		material_data.id_pipeline = obj_renderpass->add_pipeline_instance(
 			material_data.id_pipeline_config,
-			image_views.data(),
-			image_views.size()
+			image_views
 		);
+	}
+}
+
+void VKRenderer::TMP_hot_reload() {
+	vkc::RenderPass* rp = m_render_context->get_renderpass(0);
+	
+	CC_VK_CHECK(vkDeviceWaitIdle(m_device->get_handle()));
+
+	// TODO not working, figure out what's the problem
+	for(int i = 0; i < rp->get_pipelines_count(); ++i)
+	{
+		rp->get_pipeline_ptr(i)->cleanup();
+		rp->get_pipeline_ptr(i)->reload();
+	}
+
+	// update descriptor sets
+	for (int i = 0; i < rp->get_pipeline_instance_count(); ++i) {
+		rp->get_pipeline_instance_ptr(i)->update_descriptor_sets();
 	}
 }
 

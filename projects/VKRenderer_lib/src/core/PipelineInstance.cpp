@@ -9,24 +9,32 @@ namespace vkc {
 		vkc::RenderContext* obj_render_context,
 		vkc::RenderPass* obj_render_pass,
 		vkc::Pipeline* obj_pipeline,
-		VkImageView* image_views,
-		uint32_t image_views_count
+		std::vector<VkImageView> image_views
 	)
 		: m_handle_device      { handle_device }
 		, m_obj_render_context { obj_render_context }
 		, m_obj_render_pass    { obj_render_pass }
 		, m_obj_pipeline       { obj_pipeline }
+		, m_image_views        { image_views }
 	{
 		m_config = obj_pipeline->get_obj_config();
+
+		CC_ASSERT(
+			image_views.size() == m_config->texture_slots_count,
+			"[PipelineInstance] material config expecting %d textures, %d provided",
+			image_views.size(),
+			m_config->texture_slots_count
+		);
 
 		create_texture_samplers();
 		create_material_uniform_buffers();
 
-		create_descriptor_sets(image_views,image_views_count);
+		create_descriptor_sets();
+		update_descriptor_sets();
 	}
 
 	PipelineInstance::~PipelineInstance() {
-		vkDestroyDescriptorPool(m_handle_device, m_descriptor_pool, NULL);
+		destroy_descriptor_sets();
 
 		for (auto& handle : m_uniform_buffers_material)
 			vkDestroyBuffer(m_handle_device, handle, NULL);
@@ -37,23 +45,13 @@ namespace vkc {
 			vkDestroySampler(m_handle_device, sampler, NULL);
 	}
 
-	void PipelineInstance::create_descriptor_sets(
-		VkImageView* image_views,
-		uint32_t image_views_count
-	) {
-		CC_ASSERT(
-			image_views_count == m_config->texture_slots_count,
-			"[PipelineInstance] material config expecting %d textures, %d provided",
-			image_views_count,
-			m_config->texture_slots_count
-		);
-
+	void PipelineInstance::create_descriptor_sets() {
 		uint8_t num_swapchain_images = m_obj_render_context->get_num_render_frames();
 
 		// descriptor pool
 		std::vector<VkDescriptorPoolSize> poolSize = {
 			(VkDescriptorPoolSize) {  // frame uniform - always present (for now)
-			.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+				.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
 				.descriptorCount = num_swapchain_images
 		}
 		};
@@ -61,7 +59,7 @@ namespace vkc {
 		// material - onlt if material uniform size > 0
 		if (m_config->size_uniform_data_material > 0) {
 			poolSize.push_back((VkDescriptorPoolSize) {
-				.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+					.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
 					.descriptorCount = num_swapchain_images
 			});
 		}
@@ -77,10 +75,10 @@ namespace vkc {
 			});
 		}
 
-		uint32_t poolSizeCount = poolSize.size();
+		m_pool_size_count = poolSize.size();
 
 		VkDescriptorPoolCreateInfo poolInfo = { VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO };
-		poolInfo.poolSizeCount = poolSizeCount;
+		poolInfo.poolSizeCount = m_pool_size_count;
 		poolInfo.pPoolSizes = poolSize.data();
 		poolInfo.maxSets = num_swapchain_images;
 
@@ -100,8 +98,13 @@ namespace vkc {
 		m_descriptor_sets.resize(num_swapchain_images);
 
 		CC_VK_CHECK(vkAllocateDescriptorSets(m_handle_device, &allocInfo, m_descriptor_sets.data()));
+	}
+
+	void PipelineInstance::update_descriptor_sets() {
+		uint8_t num_swapchain_images = m_obj_render_context->get_num_render_frames();
+
 		for (size_t i = 0; i < num_swapchain_images; ++i) {
-			std::vector< VkWriteDescriptorSet> descriptor_writes(poolSizeCount);
+			std::vector< VkWriteDescriptorSet> descriptor_writes(m_pool_size_count);
 
 			VkDescriptorBufferInfo bufferInfo_frame = { 0 };
 			bufferInfo_frame.buffer = m_obj_pipeline->get_handle_uniform_buffer(i);
@@ -135,12 +138,10 @@ namespace vkc {
 			}
 
 			std::vector<VkDescriptorImageInfo> imageInfo = std::vector<VkDescriptorImageInfo>(m_config->texture_slots_count);
-
-
 			for (int j = 0; j < m_config->texture_slots_count; ++j)
 			{
 				imageInfo[j].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				imageInfo[j].imageView = image_views[j];
+				imageInfo[j].imageView = m_image_views[j];
 				imageInfo[j].sampler = m_texture_samplers[j];
 
 				uint32_t idx_binding = m_first_texture_binding_slot + j;
@@ -155,9 +156,11 @@ namespace vkc {
 				};
 			}
 
-			vkUpdateDescriptorSets(m_handle_device, poolSizeCount, descriptor_writes.data(), 0, NULL);
+			vkUpdateDescriptorSets(m_handle_device, m_pool_size_count, descriptor_writes.data(), 0, NULL);
 		}
-
+	}
+	void PipelineInstance::destroy_descriptor_sets() {
+		vkDestroyDescriptorPool(m_handle_device, m_descriptor_pool, VK_NULL_HANDLE);
 	}
 
 	void PipelineInstance::create_material_uniform_buffers()

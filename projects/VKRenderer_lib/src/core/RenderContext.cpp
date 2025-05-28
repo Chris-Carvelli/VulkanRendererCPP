@@ -80,6 +80,12 @@ namespace vkc {
         return m_obj_physical_device->get_physical_device_properties();
     }
 
+    void RenderContext::wait_all_frames_idle() {
+        // big downside of encapsulation: cannot builk wait synch primitives
+        for(auto& frame : m_frames)
+            frame->wait_fence();
+    }
+
     void RenderContext::render_begin() {
         // return;
         

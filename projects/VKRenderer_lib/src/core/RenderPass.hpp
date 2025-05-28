@@ -24,6 +24,8 @@ namespace vkc {
 		uint8_t get_pipelines_count() const;
 		VkPipeline get_pipeline_handle(uint8_t i);
 
+		uint32_t get_pipeline_instance_count() const { return m_pipeline_instances.size(); }
+
 		// NOT THREAD SAFE!
 		vkc::Pipeline* get_pipeline_ptr(uint8_t i);
 		vkc::DebugPipeline* get_debug_pipeline_ptr(uint8_t i);
@@ -32,8 +34,7 @@ namespace vkc {
 		uint32_t add_pipeline(const PipelineConfig* config);
 		uint32_t add_pipeline_instance(
 			uint32_t pipeline_config_idx,
-			VkImageView* image_views,
-			uint32_t image_views_count
+			std::vector<VkImageView> image_views
 		);
 
 		// TODO framebuffer only cares about swaphacin recreation

@@ -35,6 +35,16 @@ namespace vkc {
 			const std::vector<Drawcall::DebugDrawcallData>& debug_drawcalls
 		);
 
+		void wait_fence() {
+			vkWaitForFences(
+				m_device,
+				1,
+				&m_fence_in_flight,
+				VK_TRUE,
+				UINT64_MAX
+			);
+		}
+
 	private:
 		// references
 		vkc::RenderContext* m_render_context;

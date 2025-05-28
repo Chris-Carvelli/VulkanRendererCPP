@@ -38,20 +38,6 @@ void main() {
 	mat.roughness = params_specular.y;
 	mat.metalness = params_specular.z;
 
-//	outColor = vec4(
-////		texture(tex_normal, fragTexCoord).xyz,
-////		data_frame.cam_pos,
-////		params_specular.rgb,
-////		albedo.rgb,
-////		V,
-////		N,
-////		SampleEnvironment( reflect(-V, N), 0, tex_environment),
-//		FresnelSchlick(GetReflectance(mat), V, H),
-////		GetAlbedo(mat),
-////		GetReflectance(mat),
-//		1.0
-//	);
-
 	vec3 final_color = vec3(0.0);
 
 	if((data_frame.DEBUG_light_components & DEBUG_LIGHT_COMPONENT_DIRECT) != 0)
@@ -64,4 +50,5 @@ void main() {
 		final_color += data_frame.light_ambient;
 
 	outColor = vec4(final_color, 1.0);
+//	outColor = vec4(N, 1.0);
 }

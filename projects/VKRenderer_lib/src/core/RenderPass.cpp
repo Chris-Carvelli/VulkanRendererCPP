@@ -6,6 +6,8 @@
 
 #include <core/VertexData.h>
 
+#include <vector>
+
 namespace vkc {
 	RenderPass::RenderPass(VkDevice device, RenderContext* obj_render_context)
 		: m_handle_device{ device }
@@ -145,8 +147,7 @@ namespace vkc {
 
 	uint32_t RenderPass::add_pipeline_instance(
 		uint32_t pipeline_config_idx,
-		VkImageView* image_views,
-		uint32_t image_views_count
+		std::vector<VkImageView> image_views
 	) {
 		CC_ASSERT(pipeline_config_idx < m_pipelines.size(), "pipeline_config_idx out of bounds");
 
@@ -157,8 +158,7 @@ namespace vkc {
 			m_obj_render_context,
 			this,
 			m_pipelines[pipeline_config_idx].get(),
-			image_views,
-			image_views_count
+			image_views
 		));
 
 		return ret;

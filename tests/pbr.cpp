@@ -200,6 +200,12 @@ class TestRenderer : public VKRenderer {
     }
 
     void update() override {
+        if (ImGui::IsKeyDown(ImGuiKey_R)) {
+            CC_LOG(IMPORTANT, "TEST HOT RELOAD PIPELINES");
+            TMP_hot_reload();
+        }
+
+
         // TODO the engine should do this
         int f = get_current_frame();
         get_ubo_reference().frame = f;
