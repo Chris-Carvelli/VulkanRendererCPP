@@ -58,23 +58,28 @@ void VKRenderer::drawcall_add(
 	vkc::Assets::MaterialData& material = vkc::Assets::get_material_data(id_material);
 
 	auto obj_renderpass = m_render_context->get_renderpass(material.id_render_pass);
-	auto obj_pipeline = obj_renderpass->get_pipeline_ptr(material.id_pipeline);
+	auto obj_pipeline = obj_renderpass->get_pipeline_ptr(material.id_pipeline_config);
+	auto obj_pipeline_instance = obj_renderpass->get_pipeline_instance_ptr(material.id_pipeline);
 
 	// TODO fix this mess
 	// - ATM renderContext cares about renderpasses and pipeline, let it create the drawcall data
 	// - idx_data_attributes should be of type `IdAssetMesh`
 	// - avoid unecessary casts (we will probably just move them down the call stack, but they make no sense here)
 	vkc::Drawcall::add_drawcall(vkc::Drawcall::DrawcallData{
-		.obj_render_pass = obj_renderpass,
-		.obj_pipeline = obj_pipeline,
-		.idx_data_attributes = id_mesh,
-		.data_uniform_model = uniform_data_model,
+		.obj_render_pass         = obj_renderpass,
+		.obj_pipeline            = obj_pipeline,
+		.obj_pipeline_instance   = obj_pipeline_instance,
+		.idx_data_attributes     = id_mesh,
+		.data_uniform_model      = uniform_data_model,
 		.data_uniform_model_size = uniform_data_model_size,
-		.data_uniform_material = (DataUniformMaterial*)material.uniform_data_material
+		.data_uniform_material   = (DataUniformMaterial*)material.uniform_data_material
 	});
 }
 
 void VKRenderer::TMP_force_gpu_upload_all() {
+	// =========================================================
+	// Models
+	// =========================================================
 	vkc::Drawcall::createModelBuffers(vkc::Assets::BuiltinPrimitives::IDX_DEBUG_CUBE,     m_device->get_handle(), m_render_context.get());
 	vkc::Drawcall::createModelBuffers(vkc::Assets::BuiltinPrimitives::IDX_DEBUG_RAY,      m_device->get_handle(), m_render_context.get());
 	vkc::Drawcall::createModelBuffers(vkc::Assets::BuiltinPrimitives::IDX_FULLSCREEN_TRI, m_device->get_handle(), m_render_context.get());
@@ -82,12 +87,27 @@ void VKRenderer::TMP_force_gpu_upload_all() {
 	for (int i = 0; i < vkc::Assets::get_num_mesh_assets(); ++i)
 		vkc::Drawcall::createModelBuffers(i, m_device->get_handle(), m_render_context.get());
 
+	// =========================================================
+	// Textures
+	// =========================================================
 	vkc::Drawcall::createTextureImage(vkc::Assets::BuiltinPrimitives::IDX_TEX_WHITE,     m_device->get_handle(), m_render_context.get());
 	vkc::Drawcall::createTextureImage(vkc::Assets::BuiltinPrimitives::IDX_TEX_BLACK,     m_device->get_handle(), m_render_context.get());
 	vkc::Drawcall::createTextureImage(vkc::Assets::BuiltinPrimitives::IDX_TEX_BLUE_NORM, m_device->get_handle(), m_render_context.get());
 	for (int i = 0; i < vkc::Assets::get_num_texture_assets(); ++i)
 		vkc::Drawcall::createTextureImage(i, m_device->get_handle(), m_render_context.get());
 
+	// =========================================================
+	// Pipelines (materials)
+	// =========================================================
+	// TMP only one renderpass for now
+	vkc::RenderPass* obj_renderpass = m_render_context->get_renderpass(0);
+
+	for(const vkc::PipelineConfig& config : vkc::PIPELINE_CONFIGS)
+		obj_renderpass->add_pipeline(&config);
+
+	// =========================================================
+	// Pipeline Instances (material instance)
+	// =========================================================
 	for (int i = 0; i < vkc::Assets::get_num_material_assets(); ++i) {
 		auto& material_data = vkc::Assets::get_material_data(i);
 
@@ -95,10 +115,11 @@ void VKRenderer::TMP_force_gpu_upload_all() {
 		for(int j = 0; j < image_views.size(); ++j)
 			image_views[j] = vkc::Drawcall::get_texture_image_view(material_data.image_views[j]);
 
-		vkc::PipelineConfig config = vkc::PIPELINE_CONFIGS[material_data.id_pipeline_config];
-		config.texture_image_views = image_views.data();
-		config.texture_image_views_count = image_views.size();
-		material_data.id_pipeline = m_render_context->get_renderpass(0)->add_pipeline(new vkc::PipelineConfig(config));
+		material_data.id_pipeline = obj_renderpass->add_pipeline_instance(
+			material_data.id_pipeline_config,
+			image_views.data(),
+			image_views.size()
+		);
 	}
 }
 

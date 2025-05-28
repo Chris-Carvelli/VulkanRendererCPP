@@ -141,12 +141,14 @@ namespace vkc {
 					VK_PIPELINE_BIND_POINT_GRAPHICS,
 					obj_curr_pipeline->get_handle()
 				);
-				obj_curr_pipeline->bind_descriptor_sets(
-					m_command_buffer,
-					frame_index);
 				obj_curr_pipeline->update_uniform_buffer(&ubo, frame_index);
-				obj_curr_pipeline->update_uniform_buffer_material(drawcall.data_uniform_material, frame_index);
 			}
+
+			// update pipeline instance data
+			drawcall.obj_pipeline_instance->bind_descriptor_sets(
+				m_command_buffer,
+				frame_index);
+			drawcall.obj_pipeline_instance->update_uniform_buffer_material(drawcall.data_uniform_material, frame_index);
 
 			Drawcall::ModelDataGPU model_data_gpu = Drawcall::get_model_data(drawcall.idx_data_attributes);
 			VkBuffer vertexBuffers[] = { model_data_gpu.vertex_buffer };
@@ -155,7 +157,7 @@ namespace vkc {
 			if (drawcall.data_uniform_model_size > 0)
 				vkCmdPushConstants(
 					m_command_buffer,
-					obj_curr_pipeline->get_layout(),
+					obj_curr_pipeline->get_handle_layout(),
 					VK_SHADER_STAGE_VERTEX_BIT,
 					0,
 					drawcall.data_uniform_model_size,

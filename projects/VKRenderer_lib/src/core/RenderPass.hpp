@@ -4,6 +4,7 @@
 
 #include <core/Pipeline.hpp>
 #include <core/DebugPipeline.hpp>
+#include <core/PipelineInstance.hpp>
 
 #include <vector>
 #include <memory>
@@ -26,8 +27,14 @@ namespace vkc {
 		// NOT THREAD SAFE!
 		vkc::Pipeline* get_pipeline_ptr(uint8_t i);
 		vkc::DebugPipeline* get_debug_pipeline_ptr(uint8_t i);
+		vkc::PipelineInstance* get_pipeline_instance_ptr(uint8_t i);
 
-		uint32_t add_pipeline(PipelineConfig* config);
+		uint32_t add_pipeline(const PipelineConfig* config);
+		uint32_t add_pipeline_instance(
+			uint32_t pipeline_config_idx,
+			VkImageView* image_views,
+			uint32_t image_views_count
+		);
 
 		// TODO framebuffer only cares about swaphacin recreation
 		void handle_swapchain_recreation();
@@ -50,6 +57,8 @@ namespace vkc {
 		std::vector<VkFramebuffer> m_handle_framebuffers;
 		std::vector<std::unique_ptr<Pipeline>> m_pipelines;
 		std::vector<std::unique_ptr<DebugPipeline>> m_debug_pipelines;
+
+		std::vector<std::unique_ptr<PipelineInstance>> m_pipeline_instances;
 
 		VkImage			m_depth_image;
 		VkDeviceMemory	m_depth_image_memory;
