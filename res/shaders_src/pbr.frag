@@ -50,5 +50,5 @@ void main() {
 		final_color += data_frame.light_ambient;
 
 	outColor = vec4(final_color, 1.0);
-//	outColor = vec4(N, 1.0);
+	outColor = vec4(normalize(fragNormal) / 2.0 + 0.5, 1.0);
 }

@@ -13,6 +13,8 @@ void VKRenderer::run() {
 	// TODO FIXME force upload of assets to GPU
 	TMP_force_gpu_upload_all();
 
+	m_window->register_file_watcher();
+
 	while (!m_window->should_quit())
 	{
 		auto time_start = std::chrono::high_resolution_clock::now();
@@ -43,6 +45,9 @@ void VKRenderer::run() {
 
 
 		m_window->collect_input();
+		
+		if(m_window->TMP_reload_shaders())
+			TMP_hot_reload();
 	}
 
 	// wait for queues to be done before cleanup
@@ -123,6 +128,7 @@ void VKRenderer::TMP_force_gpu_upload_all() {
 }
 
 void VKRenderer::TMP_hot_reload() {
+	CC_LOG(IMPORTANT, "TEST HOT RELOAD PIPELINES");
 	vkc::RenderPass* rp = m_render_context->get_renderpass(0);
 	
 	CC_VK_CHECK(vkDeviceWaitIdle(m_device->get_handle()));

@@ -201,7 +201,6 @@ class TestRenderer : public VKRenderer {
 
     void update() override {
         if (ImGui::IsKeyDown(ImGuiKey_R)) {
-            CC_LOG(IMPORTANT, "TEST HOT RELOAD PIPELINES");
             TMP_hot_reload();
         }
 

@@ -15,6 +15,9 @@ namespace vkc {
 		VkSurfaceKHR create_surfaceKHR(VkInstance instance);
 		VkExtent2D get_current_extent();
 
+		bool TMP_reload_shaders();
+		void register_file_watcher();
+
 		// returns appropriate handle depending on the current implementation
 		// examples (checked if implemented)
 		// - [x] win32 HWND

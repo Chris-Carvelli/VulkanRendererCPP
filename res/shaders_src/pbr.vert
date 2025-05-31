@@ -13,8 +13,8 @@ layout(location = 4) in vec2 inTexCoord;
 
 layout(location = 0) out vec3 fragPosition;
 layout(location = 1) out vec3 fragColor;
-layout(location = 2) out vec3 fragNormal;
-layout(location = 3) out vec3 fragTangent;
+layout(location = 2) out vec4 fragNormal;
+layout(location = 3) out vec4 fragTangent;
 layout(location = 4) out vec2 fragTexCoord;
 
 void main() {
