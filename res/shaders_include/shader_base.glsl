@@ -9,5 +9,5 @@ const float TAU_INV = 0.15915492;
 float clamp01(float f) { return clamp(f, 0.0, 1.0); }
 float clamped_dot(vec3 a, vec3 b) { return max(dot(a, b), 0.0); }
 
-
+vec3 clamp01(vec3 v) { return clamp(v, 0.0, 1.0); }
 #endif

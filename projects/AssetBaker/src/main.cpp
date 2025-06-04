@@ -11,10 +11,32 @@ const char* test_texture_paths[] {
 };
 
 int main() {
+
+    // skybox
+    //auto TMP_tex_idx_skybox = vkc::Assets::load_texture("res/textures/default_cubemap.png", vkc::Assets::TEX_CHANNELS_RGB_A, vkc::Assets::TEX_VIEW_TYPE_CUBE);
+    auto TMP_tex_idx_skybox = vkc::Assets::load_texture(
+        "res/models/Bistro_v5_2/san_giuseppe_bridge_4k.hdr",
+        vkc::Assets::TEX_VIEW_TYPE_2D,
+        //VK_FORMAT_R8G8B8_SRGB,
+        VK_FORMAT_R32G32B32_SFLOAT,
+        true,
+        true
+    );
+
+    auto mat = vkc::Assets::MaterialData{
+        .id_pipeline_config = TMP_PIPELINE_CONFIG_SKYBOX,
+        .id_render_pass = 0,
+        .id_pipeline = 1,
+        .uniform_data_material = nullptr,
+        .image_views = { TMP_tex_idx_skybox }
+    };
+    vkc::Assets::create_material(mat);
+
+
     //// texture viewing
     //for(auto path : test_texture_paths)
     //{
-    //    auto tex_id = vkc::Assets::load_texture(path, vkc::Assets::TEX_CHANNELS_RGB_A);
+    //    auto tex_id = vkc::Assets::load_texture(path);
     //    auto mat = vkc::Assets::MaterialData{
     //        .id_pipeline_config = TMP_PIPELINE_CONFIG_UNLIT,
     //        .id_render_pass = 0,
@@ -25,21 +47,7 @@ int main() {
     //    CC_LOG(IMPORTANT, "%d", mat_id);
     //}
 
-    // skybox
-    //auto TMP_tex_idx_skybox = vkc::Assets::load_texture("res/textures/default_cubemap.png", vkc::Assets::TEX_CHANNELS_RGB_A, vkc::Assets::TEX_VIEW_TYPE_CUBE);
-    auto TMP_tex_idx_skybox = vkc::Assets::load_texture(
-        "res/models/Bistro_v5_2/san_giuseppe_bridge_4k.hdr",
-        vkc::Assets::TEX_CHANNELS_RGB_A
-    );
 
-    auto mat = vkc::Assets::MaterialData{
-        .id_pipeline_config = 0,
-        .id_render_pass = 0,
-        .id_pipeline = 1,
-        .uniform_data_material = nullptr,
-        .image_views = { TMP_tex_idx_skybox }
-    };
-    vkc::Assets::create_material(mat);
 
     // load mesh and textures
     std::vector<vkc::Assets::IdAssetMesh> meshes; 

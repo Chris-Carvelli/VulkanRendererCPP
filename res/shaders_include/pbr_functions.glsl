@@ -38,7 +38,7 @@ vec3 BRDFDirect(vec3 L, vec3 N, vec3 V, DataMaterial mat) {
 	float cosI = clamped_dot(N, L);
 	float cosO = clamped_dot(N, V);
 	
-	vec3 specular =  vec3((D * G) / (4.0 * cosO * cosI + 0.00001));
+	vec3 specular = clamp01(vec3((D * G) / (4.0 * cosO * cosI + 0.00001)));
 	
 	// combine diffuse and specular, mantaining energy conservation
 	// Compute the Fresnel term between the half direction and the view direction
@@ -55,6 +55,7 @@ vec3 BRDFDirect(vec3 L, vec3 N, vec3 V, DataMaterial mat) {
 
 vec3 BRDFIndirect(vec3 L, vec3 N, vec3 V, DataMaterial mat, sampler2D tex_environment) {
 	// compute the indirect diffuse term
+//	vec3 diffuse = SampleEnvironment(N, 1.0, tex_environment) * mat.albedo;
 	vec3 diffuse = SampleEnvironment(N, 1.0, tex_environment) * GetAlbedo(mat);
 	
 	// compute the indirect specular term
@@ -63,11 +64,12 @@ vec3 BRDFIndirect(vec3 L, vec3 N, vec3 V, DataMaterial mat, sampler2D tex_enviro
 	
 	// Sample the environment map using the reflection vector,
 	// at a specific LOD level
-	float lodLevel = pow(mat.roughness, 0.25f);
+	float lodLevel = pow(mat.roughness, 0.25);
 	
-	vec3 specular = 
-		SampleEnvironment(reflectionDir, lodLevel, tex_environment) *
-		GeometrySmith(N, reflectionDir, V, mat.roughness);
+	vec3 specular = clamp01(
+		SampleEnvironment(reflectionDir, lodLevel, tex_environment)
+		* GeometrySmith(N, reflectionDir, V, mat.roughness)
+	);
 	
 	// combine diffuse and specular, mantaining energy conservation
 	// Compute the Fresnel term between the normal and the view direction
@@ -96,8 +98,11 @@ vec3 SampleEnvironment(vec3 direction, float lodLevel, sampler2D tex_environment
 	// Flip the Z direction, because the cubemap is left-handed
 	direction.z *= -1;
 
-//	return texture(tex_environment, direction).rgb;
+	// // cubemap
+	// return texture(tex_environment, direction).rgb;
 	vec2 uv = uv_spherical_mapping(direction);
+
+//	return texture(tex_environment, uv).rgb;
 	return textureLod(tex_environment, uv, lodLevel * MAX_LOD_LEVEL).rgb;
 }
 
@@ -108,6 +113,10 @@ float GeometrySchlickGGX(float cosAngle, float roughness)
 
 	return             (2 * cosAngle) /
 		(cosAngle + sqrt(roughness2 + (1 - roughness2) * cosAngle * cosAngle));
+//	float nom   = cosAngle;
+//    float denom = cosAngle * (1.0 - roughness) + roughness;
+//	
+//    return nom / denom;
 }
 
 // GGX equation for distribution function
@@ -138,6 +147,6 @@ float GeometrySmith(vec3 N, vec3 inDir, vec3 outDir, float roughness)
 
 // Schlick simplification of the Fresnel term
 vec3 FresnelSchlick(vec3 f0, vec3 V, vec3 H)
-{
+{	
 	return f0 + (vec3(1.0) - f0) * pow(1.0 - clamped_dot(V, H), 5.0);
 }

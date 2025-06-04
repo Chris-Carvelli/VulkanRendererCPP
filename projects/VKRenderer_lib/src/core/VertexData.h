@@ -20,9 +20,12 @@
 // =================================================================
 
 enum DebugLightComponents : uint32_t {
-    DIRECT   = 0b001,
-    INDIRECT = 0b010,
-    AMBIENT  = 0b100,
+    DIRECT            = 0b000001,
+    INDIRECT          = 0b000010,
+    AMBIENT           = 0b000100,
+    INDIRECT_DIFFUSE  = 0b001000,
+    INDIRECT_SPECULAR = 0b010000,
+    INDIRECT_FRESNEL  = 0b100000,
 };
 
 // TODO where to pit this? Together with vertexData?

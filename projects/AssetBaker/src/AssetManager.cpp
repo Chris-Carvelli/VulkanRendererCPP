@@ -9,6 +9,8 @@
 // stb_image
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
+#include <stb_image_resize2.h>
 
 #include <glm/glm.hpp>
 
@@ -20,7 +22,7 @@ namespace vkc::Assets {
     // used for built-in and debug aasets, until we have multime asset storages
     void create_mesh(const IdAssetMesh id, const MeshData& data);
     void create_material(const IdAssetMaterial id, const MaterialData& data);
-    IdAssetTexture load_texture(const IdAssetTexture id, const char* path, TexChannelTypes channels, TexViewTypes viewType = TEX_VIEW_TYPE_2D, TexFormat format = TEX_FORMAT_RGB_A, bool flip_vertical=false);
+    IdAssetTexture load_texture(const IdAssetTexture id, const char* path, TexViewTypes viewType = TEX_VIEW_TYPE_2D, VkFormat format = VK_FORMAT_R8G8B8A8_SRGB, bool flip_vertical=false, bool create_mipmaps=false);
 
     namespace BuiltinPrimitives {
         //// filled cube with triangle topology
@@ -126,9 +128,9 @@ namespace vkc::Assets {
         create_mesh(BuiltinPrimitives::IDX_FULLSCREEN_TRI, BuiltinPrimitives::BUILTIN_FULLSCREEN_TRI);
         create_mesh(BuiltinPrimitives::IDX_QUAD,           BuiltinPrimitives::BUILTIN_QUAD);
 
-        load_texture(BuiltinPrimitives::IDX_TEX_WHITE, "res/textures/tex_white.png", vkc::Assets::TEX_CHANNELS_RGB_A);
-        load_texture(BuiltinPrimitives::IDX_TEX_BLACK, "res/textures/tex_black.png", vkc::Assets::TEX_CHANNELS_RGB_A);
-        load_texture(BuiltinPrimitives::IDX_TEX_BLUE_NORM, "res/textures/tex_blue_norm.png", vkc::Assets::TEX_CHANNELS_RGB, vkc::Assets::TEX_VIEW_TYPE_2D, vkc::Assets::TexFormat::TEX_FORMAT_NORM);
+        load_texture(BuiltinPrimitives::IDX_TEX_WHITE, "res/textures/tex_white.png");
+        load_texture(BuiltinPrimitives::IDX_TEX_BLACK, "res/textures/tex_black.png");
+        load_texture(BuiltinPrimitives::IDX_TEX_BLUE_NORM, "res/textures/tex_blue_norm.png", vkc::Assets::TEX_VIEW_TYPE_2D, VK_FORMAT_R8G8B8_UNORM);
     }
 
     uint32_t get_num_mesh_assets() {
@@ -208,7 +210,7 @@ namespace vkc::Assets {
         }
     }
 
-    IdAssetTexture load_tex(const aiTextureType type, const aiMaterial& mat, const TexChannelTypes channels, const TexFormat format, IdAssetTexture tex_fallback, const std::string base_path) {
+    IdAssetTexture load_tex(const aiTextureType type, const aiMaterial& mat, const VkFormat format, IdAssetTexture tex_fallback, const std::string base_path) {
         aiString path;
         if (mat.GetTextureCount(type) == 0)
             return tex_fallback;
@@ -220,7 +222,7 @@ namespace vkc::Assets {
         std::replace(TMP.begin(), TMP.end(), '\\', '/');
 
         path = base_path + TMP;
-        return vkc::Assets::load_texture(path.C_Str(), channels, vkc::Assets::TEX_VIEW_TYPE_2D, format, true);
+        return vkc::Assets::load_texture(path.C_Str(), vkc::Assets::TEX_VIEW_TYPE_2D, format, true);
     }
 
     // load all mehses and materials from OBJ or FBX file
@@ -238,14 +240,15 @@ namespace vkc::Assets {
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(
             path,
-            aiProcess_CalcTangentSpace |
-            aiProcess_GenNormals |
-            aiProcess_Triangulate |
+            aiProcess_CalcTangentSpace      |
+            //aiProcess_GenNormals            |
+            aiProcess_Triangulate           |
             aiProcess_JoinIdenticalVertices |
-            aiProcess_SortByPType |
-            aiProcess_MakeLeftHanded |
-            aiProcess_FlipWindingOrder |
-            aiProcess_FlipUVs
+            aiProcess_SortByPType           |
+            aiProcess_MakeLeftHanded        |
+            aiProcess_FlipWindingOrder      |
+            aiProcess_FlipUVs               |
+            aiProcess_TransformUVCoords
         );
 
         CC_ASSERT(scene, "[assimp] could not load %s", path);
@@ -299,9 +302,9 @@ namespace vkc::Assets {
 
             // had-hoc semantics for bistrot model
             {
-                tex_idx_diffuse = load_tex(aiTextureType_DIFFUSE,  ai_material_data, vkc::Assets::TEX_CHANNELS_RGB_A, TEX_FORMAT_RGB_A, BuiltinPrimitives::IDX_TEX_WHITE,     base_path);
-                tex_idx_arm     = load_tex(aiTextureType_SPECULAR, ai_material_data, vkc::Assets::TEX_CHANNELS_RGB_A, TEX_FORMAT_RGB_A, BuiltinPrimitives::IDX_TEX_BLACK,     base_path);
-                tex_idx_normal  = load_tex(aiTextureType_NORMALS,  ai_material_data, vkc::Assets::TEX_CHANNELS_RGB,   TEX_FORMAT_NORM,  BuiltinPrimitives::IDX_TEX_BLUE_NORM, base_path);
+                tex_idx_diffuse = load_tex(aiTextureType_DIFFUSE,  ai_material_data, VK_FORMAT_R8G8B8A8_SRGB, BuiltinPrimitives::IDX_TEX_WHITE,     base_path);
+                tex_idx_arm     = load_tex(aiTextureType_SPECULAR, ai_material_data, VK_FORMAT_R8G8B8A8_SRGB, BuiltinPrimitives::IDX_TEX_BLACK,     base_path);
+                tex_idx_normal  = load_tex(aiTextureType_NORMALS,  ai_material_data, VK_FORMAT_R8G8B8_UNORM,  BuiltinPrimitives::IDX_TEX_BLUE_NORM, base_path);
             }
 
             auto mat = (MaterialData) {
@@ -393,10 +396,10 @@ namespace vkc::Assets {
         return model_idx;
     }
 
-    IdAssetTexture load_texture(const char* path, TexChannelTypes channels, TexViewTypes viewType, TexFormat format, bool flip_vertical) {
+    IdAssetTexture load_texture(const char* path, TexViewTypes viewType, VkFormat format, bool flip_vertical, bool generate_mipmaps) {
         IdAssetTexture tex_idx = num_texture_assets;
         
-        if(load_texture(tex_idx, path, channels, viewType, format, flip_vertical) == IDX_MISSING_TEXTURE)
+        if(load_texture(tex_idx, path, viewType, format, flip_vertical, generate_mipmaps) == IDX_MISSING_TEXTURE)
             return IDX_MISSING_TEXTURE;
 
         ++num_texture_assets;
@@ -560,9 +563,7 @@ namespace vkc::Assets {
         material_data[id] = data;
     }
 
-    IdAssetTexture load_texture(IdAssetTexture id, const char* path, TexChannelTypes channels, TexViewTypes viewType, TexFormat format, bool flip_vertical) {
-        const uint8_t requested_channels_count = tex_get_num_channels(channels);
-
+    IdAssetTexture load_texture(IdAssetTexture id, const char* path, TexViewTypes viewType, VkFormat format, bool flip_vertical, bool create_mipmaps) {
         int texWidth = 0;
         int texHeight = 0;
         int texChannels = 0;
@@ -574,8 +575,66 @@ namespace vkc::Assets {
         uint32_t size;
         if (use_stbi) {
             stbi_set_flip_vertically_on_load(flip_vertical ? 1 : 0);
-            pixels = stbi_load(path, &texWidth, &texHeight, &texChannels, requested_channels_count);
-            size = texWidth * texHeight * requested_channels_count;
+
+
+            if (stbi_is_hdr(path))
+            //if(false)
+            {
+                pixels = stbi_loadf(path, &texWidth, &texHeight, &texChannels, 0);
+                size = texWidth * texHeight * texChannels * sizeof(float);
+            }
+            else {
+                pixels = stbi_load(path, &texWidth, &texHeight, &texChannels, 0);
+                size = texWidth * texHeight * texChannels;
+            }
+
+            if (create_mipmaps) {
+                uint32_t curr_size = size;
+                int curr_width = texWidth;
+                int curr_height = texHeight;
+                int next_width = curr_width / 2;
+                int next_height = curr_height / 2;
+
+                size = size + size / 3;
+                pixels = realloc(pixels, size);
+
+                unsigned char* pixels_curr_mipmap_level = (unsigned char *)pixels;
+                unsigned char* pixels_next_mipmap_level = (unsigned char *)pixels + curr_size;
+
+
+                /*for(int i = 0; i < size; ++i)
+                    ((unsigned char *)pixels)[i] = i % 3 == 0 ? 255 : 0;*/
+
+                while (next_width > 0 && next_height > 0) {
+                    CC_ASSERT(((size_t)pixels_next_mipmap_level < (size_t)pixels + size), "buffer overrun");
+
+                    ++mips;
+                    stbir_resize_float_linear(
+                    //stbir_resize_uint8_srgb(
+                    //stbir_resize_uint8_linear(
+                        (float *)pixels_curr_mipmap_level, curr_width, curr_height, 0,
+                        (float *)pixels_next_mipmap_level, next_width, next_height, 0,
+                        STBIR_RGB
+                    );
+
+                    /*int i = 0;
+                    for(unsigned char* p = pixels_curr_mipmap_level; p < pixels_next_mipmap_level; ++p)
+                        *p = i++ % 3 == mips % 3 ? 255 : 0;*/
+
+                    curr_width = next_width;
+                    curr_height = next_height;
+
+                    next_width = curr_width / 2;
+                    next_height = curr_height / 2;
+
+                    curr_size = (curr_width) * (curr_height) * texChannels * sizeof(float);
+                    //curr_size /= 4;
+
+                    pixels_curr_mipmap_level = pixels_next_mipmap_level;
+                    pixels_next_mipmap_level += curr_size;
+
+                }
+            }
         }
         else
         {
@@ -602,7 +661,7 @@ namespace vkc::Assets {
 
 
             // overrides format since file carries it in header
-            format = static_cast<TexFormat>(file_format);
+            format = static_cast<VkFormat>(file_format);
 
             free(file_buf);
         }
@@ -618,9 +677,7 @@ namespace vkc::Assets {
         data.viewType = viewType;
         data.width = (uint16_t)texWidth;
         data.height = (uint16_t)texHeight;
-        data.channelsCount = (uint8_t)requested_channels_count;
         data.mipmaps = mips;
-        data.channels = channels;
         data.format = format;
         data.data.resize(size);
         memcpy(data.data.data(), pixels, size);

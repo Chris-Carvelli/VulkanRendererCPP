@@ -26,9 +26,10 @@ void main() {
 	vec4 params_specular = texture(tex_specular, fragTexCoord);
 
 	vec3 N = sample_normal_map(tex_normal, fragTexCoord, normalize(fragNormal), normalize(fragTangent));
-//	vec3 N = normalize(fragNormal);
-	vec3 V = normalize(data_frame.cam_pos - fragPosition);
+//	vec3 V = normalize(data_frame.cam_pos - fragPosition);
+	vec3 V = normalize(get_camera_position(data_frame.view) - fragPosition);
 	vec3 L = normalize(data_frame.light_dir);
+//	vec3 L = normalize(data_frame.light_dir - fragPosition);
 
 	vec3 H = normalize(L + V);
 
@@ -38,30 +39,14 @@ void main() {
 	mat.roughness = params_specular.y;
 	mat.metalness = params_specular.z;
 
-//	outColor = vec4(
-////		texture(tex_normal, fragTexCoord).xyz,
-////		data_frame.cam_pos,
-////		params_specular.rgb,
-////		albedo.rgb,
-////		V,
-////		N,
-////		SampleEnvironment( reflect(-V, N), 0, tex_environment),
-//		FresnelSchlick(GetReflectance(mat), V, H),
-////		GetAlbedo(mat),
-////		GetReflectance(mat),
-//		1.0
-//	);
-
 	vec3 final_color = vec3(0.0);
-
+	// debug total light
 	if((data_frame.DEBUG_light_components & DEBUG_LIGHT_COMPONENT_DIRECT) != 0)
 		final_color += BRDFDirect(L, N, V, mat);
 
 	if((data_frame.DEBUG_light_components & DEBUG_LIGHT_COMPONENT_INDIRECT) != 0)
 		final_color += BRDFIndirect(L, N, V, mat, tex_environment);
 
-	if((data_frame.DEBUG_light_components & DEBUG_LIGHT_COMPONENT_AMBIENT) != 0)
-		final_color += data_frame.light_ambient;
-
-	outColor = vec4(final_color, 1.0);
+//	outColor = vec4(final_color, 1.0);
+	outColor = vec4(N / 2.0 + 0.5, 1.0);
 }

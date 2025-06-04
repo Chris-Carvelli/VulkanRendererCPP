@@ -467,7 +467,7 @@ namespace vkc {
 		samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
 		samplerInfo.unnormalizedCoordinates = VK_FALSE;
 		// percentage-closer filtering (shadow mapping)
-		samplerInfo.compareEnable = VK_FALSE;
+		samplerInfo.compareEnable = VK_TRUE;
 		samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 
 		for(int i = 0; i < m_config->texture_image_views_count; ++i)

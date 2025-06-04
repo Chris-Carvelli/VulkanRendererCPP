@@ -50,11 +50,14 @@ namespace TMP_Update {
     std::vector<vkc::Assets::IdAssetMesh> TMP_mesh_idxs;
     std::vector<vkc::Assets::IdAssetMesh> TMP_mat_idxs;
 
-    vkc::Assets::IdAssetMaterial idMaterialSkybox;
+    vkc::Assets::IdAssetMaterial idMaterialSkybox = 0;
 
     bool pbr_use_light_direct = true;
     bool pbr_use_light_indirect = true;
     bool pbr_use_light_ambient = false;
+    bool pbr_use_light_indirect_diffuse = false;
+    bool pbr_use_light_indirect_specular = false;
+    bool pbr_use_light_indirect_fresnel = false;
 
     void set_camera_mtx(glm::vec3 local_camera_pos) {
         glm::vec3 rot = glm::radians(camera_rot);
@@ -88,6 +91,9 @@ namespace TMP_Update {
         ImGui::Checkbox("Use indirect light", &pbr_use_light_indirect);
         ImGui::Checkbox("Use ambient light", &pbr_use_light_ambient);
 
+        ImGui::Checkbox("Use direct light - diffuse", &pbr_use_light_indirect_diffuse);
+        ImGui::Checkbox("Use indirect     - specular", &pbr_use_light_indirect_specular);
+        ImGui::Checkbox("Use ambient      - fresnel", &pbr_use_light_indirect_fresnel);
 
         ImGui::SeparatorText("Material Data");
         ImGui::DragFloat("Ambient", &tmp_data_uniform_material.ambient);
@@ -178,6 +184,9 @@ namespace TMP_Update {
         ubo.DEBUG_light_components |= pbr_use_light_direct   * DebugLightComponents::DIRECT;
         ubo.DEBUG_light_components |= pbr_use_light_indirect * DebugLightComponents::INDIRECT;
         ubo.DEBUG_light_components |= pbr_use_light_ambient  * DebugLightComponents::AMBIENT;
+        ubo.DEBUG_light_components |= pbr_use_light_indirect_diffuse  * DebugLightComponents::INDIRECT_DIFFUSE;
+        ubo.DEBUG_light_components |= pbr_use_light_indirect_specular * DebugLightComponents::INDIRECT_SPECULAR;
+        ubo.DEBUG_light_components |= pbr_use_light_indirect_fresnel  * DebugLightComponents::INDIRECT_FRESNEL;
     }
 }
 
@@ -210,14 +219,14 @@ class TestRenderer : public VKRenderer {
     }
 
     void render() override {
-        // test quads
-        /*for(int i = 0; i < TMP_Update::drawcall_cout; ++i)
-            drawcall_add(
-            vkc::Assets::BuiltinPrimitives::IDX_QUAD,
-            i,
-            &TMP_Update::model_data[i],
-            sizeof(TMP_Update::model_data[i])
-        );*/
+        //// test quads
+        //for(int i = 0; i < TMP_Update::drawcall_cout; ++i)
+        //    drawcall_add(
+        //    vkc::Assets::BuiltinPrimitives::IDX_QUAD,
+        //    i,
+        //    &TMP_Update::model_data[i],
+        //    sizeof(TMP_Update::model_data[i])
+        //);
 
         // model
         auto model_data = vkc::Assets::get_model_data(0);
