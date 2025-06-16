@@ -6,6 +6,8 @@
 
 #include <core/VertexData.h>
 
+#include <vector>
+
 namespace vkc {
 	RenderPass::RenderPass(VkDevice device, RenderContext* obj_render_context)
 		: m_handle_device{ device }
@@ -125,13 +127,38 @@ namespace vkc {
 		return m_debug_pipelines[i].get();
 	}
 
-	uint32_t RenderPass::add_pipeline(PipelineConfig* config) {
+
+	vkc::PipelineInstance* RenderPass::get_pipeline_instance_ptr(uint8_t i) {
+		assert(i >= 0 && i < m_pipeline_instances.size());
+		return m_pipeline_instances[i].get();
+	}
+
+	uint32_t RenderPass::add_pipeline(const PipelineConfig* config) {
 		uint32_t ret = m_pipelines.size();
 		m_pipelines.push_back(std::make_unique<vkc::Pipeline>(
 			m_handle_device,
 			m_obj_render_context,
 			this,
 			config
+		));
+
+		return ret;
+	}
+
+	uint32_t RenderPass::add_pipeline_instance(
+		uint32_t pipeline_config_idx,
+		std::vector<VkImageView> image_views
+	) {
+		CC_ASSERT(pipeline_config_idx < m_pipelines.size(), "pipeline_config_idx out of bounds");
+
+		uint32_t ret = m_pipeline_instances.size();
+
+		m_pipeline_instances.push_back(std::make_unique<vkc::PipelineInstance>(
+			m_handle_device,
+			m_obj_render_context,
+			this,
+			m_pipelines[pipeline_config_idx].get(),
+			image_views
 		));
 
 		return ret;

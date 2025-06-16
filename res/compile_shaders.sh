@@ -1,5 +1,5 @@
 #! /bin/bash
-
+echo "compile_shaders.sh"
 # flags
 is_forcing=false
 

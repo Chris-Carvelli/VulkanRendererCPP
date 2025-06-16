@@ -98,7 +98,7 @@ inline void CC_LOG_SYS_ERROR() {
 }
 
 
-#define CC_ASSERT(x, msg, ...) { if(!x) { CC_LOG_SYS_ERROR(); CC_LOG(LogType::ERROR, msg, __VA_ARGS__); } assert(x); }
+#define CC_ASSERT(x, msg, ...) { if(!(x)) { CC_LOG_SYS_ERROR(); CC_LOG(LogType::ERROR, msg, __VA_ARGS__); } assert(x); }
 #define CC_EXIT(x, msg, ...) { CC_LOG(LogType::ERROR, msg, __VA_ARGS__); exit(x); }
 
 inline void formatSize(uint64_t size, char* buffer) {

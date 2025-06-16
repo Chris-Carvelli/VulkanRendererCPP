@@ -1,6 +1,8 @@
 .vs
 out
 
+# asset db
+res/asset_bd.bin
 
 # large assets. See README on how to downaload them manually
 res/models/Bistro_v5_2

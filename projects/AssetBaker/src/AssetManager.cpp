@@ -240,15 +240,12 @@ namespace vkc::Assets {
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(
             path,
-            aiProcess_CalcTangentSpace      |
-            //aiProcess_GenNormals            |
-            aiProcess_Triangulate           |
-            aiProcess_JoinIdenticalVertices |
-            aiProcess_SortByPType           |
-            aiProcess_MakeLeftHanded        |
-            aiProcess_FlipWindingOrder      |
-            aiProcess_FlipUVs               |
-            aiProcess_TransformUVCoords
+            aiProcess_CalcTangentSpace
+            | aiProcess_Triangulate
+            | aiProcess_SortByPType
+            | aiProcess_MakeLeftHanded
+            | aiProcess_FlipWindingOrder
+            | aiProcess_FlipUVs
         );
 
         CC_ASSERT(scene, "[assimp] could not load %s", path);

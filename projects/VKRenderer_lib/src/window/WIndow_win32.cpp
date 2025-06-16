@@ -30,6 +30,8 @@ inline void TMP_CC_LOG_SYS_ERROR() {
 // Forward declare message handler from imgui_impl_win32.cpp
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+HANDLE handle_shader_directory_changes = INVALID_HANDLE_VALUE;
+
 // win32 specific data
 namespace {
 
@@ -153,9 +155,52 @@ namespace vkc {
         GetWindowRect(hWnd, &windowRect);
 
         return (VkExtent2D) {
-            .width = (uint32_t)(windowRect.right - windowRect.left),
+            .width  = (uint32_t)(windowRect.right - windowRect.left),
             .height = (uint32_t)(windowRect.bottom - windowRect.top)
         };
+    }
+
+    // checks event queue for changes to shader files.
+    // TODO make this async
+    bool Window::TMP_reload_shaders() {
+        auto ret = WaitForSingleObject(handle_shader_directory_changes, 0);
+
+        if(ret == WAIT_OBJECT_0) {
+            // remove notification from the queue
+            FindNextChangeNotification(
+                handle_shader_directory_changes
+            );
+            CC_LOG(WARNING, "dir monitor: %d", ret);
+            return true;
+        }
+        return false;
+    }
+
+    // registers a file watcher at the OS level
+    // Current implementation is very simple and ad-hoc for shaders
+    void Window::register_file_watcher() {
+        const char SHADER_BIN_PATH_FMT[] = "%s\\res\\shaders";
+
+        if(handle_shader_directory_changes != INVALID_HANDLE_VALUE)
+        {
+            CC_LOG(WARNING, "Only monitoring shaders for now. Future implementations will allow to monitor for specific directories with optional callbacks");
+            return;
+        }
+
+        // all of this is VERY loose, add check and proper error handling
+        // (not worth doing it yet since even the shader source monitoring
+        // script is bad and will need to be rewritten
+        char buf[MAX_PATH + sizeof(SHADER_BIN_PATH_FMT)];
+        GetCurrentDirectory(MAX_PATH, buf);
+
+        sprintf_s(buf, SHADER_BIN_PATH_FMT, buf);
+
+        // register file watcher for shader binaries
+        handle_shader_directory_changes = FindFirstChangeNotificationA(
+            buf,
+            FALSE,
+            FILE_NOTIFY_CHANGE_LAST_WRITE
+        );
     }
 
     void* Window::get_native_window_handle() {

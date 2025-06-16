@@ -22,6 +22,9 @@ namespace vkc {
 		);
 		~RenderContext();
 
+
+		void wait_all_frames_idle();
+
 		uint32_t get_num_render_frames() const { return m_frames.size(); };
 		VkFormat get_swapchain_image_format() const { return m_swapchain->get_image_format(); };
 		VkExtent2D get_swapchain_extent() const { return m_swapchain->get_extent(); };

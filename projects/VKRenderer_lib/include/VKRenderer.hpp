@@ -69,6 +69,8 @@ protected:
 	// upload ALL buffers to GPU, without checking if already done
 	void TMP_force_gpu_upload_all();
 
+	void TMP_hot_reload();
+
 	// retrieve info
 	vkc::Rect2DI get_window_size() const { return m_window_size; };
 	int get_current_frame() const { return m_app_stats.curr_frame; };

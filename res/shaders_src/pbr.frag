@@ -42,11 +42,14 @@ void main() {
 	vec3 final_color = vec3(0.0);
 	// debug total light
 	if((data_frame.DEBUG_light_components & DEBUG_LIGHT_COMPONENT_DIRECT) != 0)
-		final_color += BRDFDirect(L, N, V, mat);
+		final_color = clamp01(final_color + BRDFDirect(L, N, V, mat));
 
 	if((data_frame.DEBUG_light_components & DEBUG_LIGHT_COMPONENT_INDIRECT) != 0)
-		final_color += BRDFIndirect(L, N, V, mat, tex_environment);
+		final_color = clamp01(final_color + BRDFIndirect(L, N, V, mat, tex_environment));
 
-//	outColor = vec4(final_color, 1.0);
-	outColor = vec4(N / 2.0 + 0.5, 1.0);
+	if((data_frame.DEBUG_light_components & DEBUG_LIGHT_COMPONENT_AMBIENT) != 0)
+		final_color += data_frame.light_ambient;
+
+	outColor = vec4(final_color, 1.0);
+//	outColor = vec4(normalize(fragNormal) / 2.0 + 0.5, 1.0);
 }

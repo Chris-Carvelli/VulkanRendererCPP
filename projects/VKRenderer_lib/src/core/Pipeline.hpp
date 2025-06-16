@@ -18,9 +18,8 @@ namespace vkc {
 		const char* vert_path;
 		const char* frag_path;
 
-		const VkVertexInputBindingDescription* vertex_binding_descriptors;
+		const VkVertexInputBindingDescription*   vertex_binding_descriptors;
 		const VkVertexInputAttributeDescription* vertex_attribute_descriptors;
-		VkImageView* texture_image_views;
 
 		const uint32_t size_uniform_data_frame;
 		const uint32_t size_uniform_data_material;
@@ -29,7 +28,7 @@ namespace vkc {
 		const uint32_t vertex_binding_descriptors_count;
 
 		const uint32_t vertex_attribute_descriptors_count;
-		uint32_t texture_image_views_count;
+		uint32_t texture_slots_count;
 
 		const uint8_t flags;
 		// fixed pipeline config
@@ -39,7 +38,8 @@ namespace vkc {
 	};
 
 	const uint32_t PIPELINE_CONFIG_ID_SKYBOX = 0;
-	const uint32_t PIPELINE_CONFIG_ID_PBR = 1;
+	const uint32_t PIPELINE_CONFIG_ID_PBR    = 1;
+	const uint32_t PIPELINE_CONFIG_ID_UNLIT  = 2;
 	const PipelineConfig PIPELINE_CONFIGS[] = {
 		{
 			.vert_path = "res/shaders/skybox.vert.spv",
@@ -47,6 +47,7 @@ namespace vkc {
 			.size_uniform_data_frame    = sizeof(DataUniformFrame),
 			.size_uniform_data_material = 0,
 			.size_push_constant_model   = 0,
+			.texture_slots_count        = 1,
 			.vertex_binding_descriptors         = vertexData_getBindingDescriptions_Skybox(),
 			.vertex_binding_descriptors_count   = vertexData_getBindingDescriptionsCount_Skybox(),
 			.vertex_attribute_descriptors       = vertexData_getAttributeDescriptions_Skybox(),
@@ -60,6 +61,7 @@ namespace vkc {
 			.size_uniform_data_frame    = sizeof(DataUniformFrame),
 			.size_uniform_data_material = sizeof(DataUniformMaterial),
 			.size_push_constant_model   = sizeof(DataUniformModel),
+			.texture_slots_count        = 4,
 			.vertex_binding_descriptors         = vertexData_getBindingDescriptions(),
 			.vertex_binding_descriptors_count   = vertexData_getBindingDescriptionsCount(),
 			.vertex_attribute_descriptors       = vertexData_getAttributeDescriptions(),
@@ -72,6 +74,7 @@ namespace vkc {
 			.size_uniform_data_frame    = sizeof(DataUniformFrame),
 			.size_uniform_data_material = 0,
 			.size_push_constant_model   = sizeof(DataUniformModel),
+			.texture_slots_count        = 1,
 			.vertex_binding_descriptors         = vertexData_getBindingDescriptions_Unlit(),
 			.vertex_binding_descriptors_count   = vertexData_getBindingDescriptionsCount_Unlit(),
 			.vertex_attribute_descriptors       = vertexData_getAttributeDescriptions_Unlit(),
@@ -83,26 +86,31 @@ namespace vkc {
 	class Pipeline {
 	public:
 		Pipeline(
-			VkDevice handle_device,
-			vkc::RenderContext* obj_render_context,
-			vkc::RenderPass* obj_render_pass,
-			PipelineConfig* config
+			VkDevice				handle_device,
+			vkc::RenderContext*		obj_render_context,
+			vkc::RenderPass*		obj_render_pass,
+			const PipelineConfig*	config
 		);
 		~Pipeline();
 
-		VkPipeline get_handle() const { return m_handle; };
-		VkPipelineLayout get_layout() const{ return m_handle_pipeline_layout; };
+		const PipelineConfig* get_obj_config() const { return m_config; };
+
+		VkPipeline				get_handle()							const { return m_handle; };
+		VkPipelineLayout		get_handle_layout()					const { return m_handle_pipeline_layout; };
+		VkDescriptorSetLayout	get_handle_descriptor_set_layout()	const { return m_handle_descriptor_set_layout; };
+
+		VkBuffer              get_handle_uniform_buffer(uint32_t i) const {
+			CC_ASSERT(i < m_uniform_buffers.size(), "idx out of bounds");
+			return m_uniform_buffers[i];
+		}
 
 		void update_uniform_buffer(void* ubo, uint32_t current_frame);
-		void update_uniform_buffer_material(void* ubo, uint32_t current_frame);
-		void update_material_textures(std::vector<VkImageView> image_views, uint32_t current_frame);
-		void bind_descriptor_sets(VkCommandBuffer command_buffer, uint32_t image_index);
+		void reload();
+		void cleanup();
 
 	private:
 		void create_descriptor_set_layout();
-		void create_descriptor_sets();
 		void create_uniform_buffers();
-		void create_texture_samplers();
 
 		VkShaderModule create_shader_module(
 			VkDevice device,
@@ -122,26 +130,11 @@ namespace vkc {
 		VkDescriptorSetLayout m_handle_descriptor_set_layout;
 
 		// config
-		PipelineConfig* m_config;
-		
-		VkDescriptorPool m_descriptor_pool;
-
-		// one of those per frame-in-flight
-		std::vector<VkDescriptorSet>	m_descriptor_sets;
+		const PipelineConfig* m_config;
 
 		// frame data
-		std::vector<VkBuffer>			m_uniform_buffers;
-		std::vector<VkDeviceMemory>		m_uniform_buffers_memory;
-		std::vector<void*>				m_uniform_buffers_mapped;
-
-		// material data
-		std::vector<VkBuffer>			m_uniform_buffers_material;
-		std::vector<VkDeviceMemory>		m_uniform_buffers_memory_material;
-		std::vector<void*>				m_uniform_buffers_mapped_material;
-		std::vector<VkSampler>			m_texture_samplers;
-
-		// aux
-		// first texture binding slot
-		uint32_t m_first_texture_binding_slot;
+		std::vector<VkBuffer>		m_uniform_buffers;
+		std::vector<VkDeviceMemory>	m_uniform_buffers_memory;
+		std::vector<void*>			m_uniform_buffers_mapped;
 	};
 }

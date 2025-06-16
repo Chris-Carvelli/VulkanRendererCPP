@@ -26,8 +26,9 @@ namespace vkc {
 		};
 
 		struct DrawcallData {
-			vkc::RenderPass* obj_render_pass;
-			vkc::Pipeline*   obj_pipeline;
+			vkc::RenderPass*       obj_render_pass;
+			vkc::Pipeline*         obj_pipeline;
+			vkc::PipelineInstance* obj_pipeline_instance;
 			DataUniformMaterial* data_uniform_material;
 			uint32_t data_uniform_model_size;
 			uint32_t idx_data_attributes;

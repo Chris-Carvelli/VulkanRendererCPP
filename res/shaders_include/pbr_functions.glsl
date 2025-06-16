@@ -75,6 +75,7 @@ vec3 BRDFIndirect(vec3 L, vec3 N, vec3 V, DataMaterial mat, sampler2D tex_enviro
 	// Compute the Fresnel term between the normal and the view direction
 	vec3 fresnel = FresnelSchlick(GetReflectance(mat), V, N);
 
+	return specular;
 	// Linearly interpolate between the diffuse and specular term
 	return mix(diffuse, specular, fresnel);
 }
