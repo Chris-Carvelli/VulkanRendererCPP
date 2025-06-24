@@ -96,6 +96,7 @@ target_include_directories(AssetBaker PUBLIC
                                             # (this may change when auto-generating mipmaps)
 	${LIBRARIES_SOURCE_PATH}/glm
 	${LIBRARIES_SOURCE_PATH}/stb/include
+
     ${LIBRARIES_SOURCE_PATH}/ccstructs
     ${LIBRARIES_SOURCE_PATH}/assimp
 )

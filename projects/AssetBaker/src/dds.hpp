@@ -1,9 +1,7 @@
 #include <cc_logger.h>
 
 #include <vulkan/vulkan.h>
-
-// TODO FIXME figure out why VKRenderer_lib can import this, but AssetBaker cannot
-#include "vk_enum_string_helper.h"
+#include <vulkan/vk_enum_string_helper.h>
 
 // TMP headers
 #include <map>
