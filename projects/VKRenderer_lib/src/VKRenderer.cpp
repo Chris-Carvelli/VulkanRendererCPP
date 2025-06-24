@@ -7,13 +7,29 @@
 #include <chrono>
 
 void VKRenderer::run() {
-	init_base();
-	init();
+	char buf[64];
+	format_size(KB(32), buf, 64);
+	CC_LOG(LOG, buf);
 
-	// TODO FIXME force upload of assets to GPU
-	TMP_force_gpu_upload_all();
+	m_allocator = allocator_make_bump(KB(64));
+	m_profiler  = profiler_shared_create(m_allocator);
 
-	m_window->register_file_watcher();
+	PROFILE(m_profiler, NULL_SAMPLE_HANDLE, "setup",
+
+		PROFILE(m_profiler, NULL_SAMPLE_HANDLE, "init_base()",
+			init_base();
+		)
+		PROFILE(m_profiler, NULL_SAMPLE_HANDLE, "init()",
+			init();
+		)
+		PROFILE(m_profiler, NULL_SAMPLE_HANDLE, "gpu_upload()",
+			// TODO FIXME force upload of assets to GPU
+			TMP_force_gpu_upload_all();
+		)
+		m_window->register_file_watcher();
+	)
+
+	profiler_data_print(m_profiler);
 
 	while (!m_window->should_quit())
 	{

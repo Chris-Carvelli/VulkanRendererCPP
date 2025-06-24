@@ -59,7 +59,12 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/lib)
 # =========================================================
 
 ## VKRenderer_lib
-file(GLOB_RECURSE src "projects/VKRenderer_lib/*.cpp" "projects/VKRenderer_lib/*.cpp" "projects/AssetBaker/*.cpp")
+file(
+    GLOB_RECURSE src
+    "projects/VKRenderer_lib/*.cpp"
+    "projects/VKRenderer_lib/*.cpp"
+    "projects/AssetBaker/*.cpp" # TODO this is not great, we should split the AssetBaker in "design only" and "shared" functionality
+)
 add_library(VKRenderer_lib STATIC ${src})
 
 target_include_directories(VKRenderer_lib PUBLIC "projects/VKRenderer_lib/src")
@@ -67,19 +72,20 @@ target_include_directories(VKRenderer_lib PUBLIC "projects/VKRenderer_lib/includ
 
 target_include_directories(VKRenderer_lib PUBLIC
     projects/AssetBaker/include
+    
+	${LIBRARIES_SOURCE_PATH}/stb/include    # TODO we DO NOT want to include stb here, but we need it as long as
+                                            # we need to carry along ALL of the AssetBaker
 
 	${LIBRARIES_SOURCE_PATH}/imgui/include
 	${LIBRARIES_SOURCE_PATH}/glm
-	${LIBRARIES_SOURCE_PATH}/stb/include
-    ${LIBRARIES_SOURCE_PATH}/tinyobj
     ${LIBRARIES_SOURCE_PATH}/vulkan/include
     ${LIBRARIES_SOURCE_PATH}/ccstructs
-    ${LIBRARIES_SOURCE_PATH}/assimp
 )
 
 target_link_libraries(VKRenderer_lib Vulkan::Vulkan)
 target_link_libraries(VKRenderer_lib imgui)
 target_link_libraries(VKRenderer_lib assimp)
+target_link_libraries(VKRenderer_lib CC_structs)
 
 ## Asset baker
 file(GLOB_RECURSE src "projects/AssetBaker/*.cpp")
@@ -101,7 +107,7 @@ target_include_directories(AssetBaker PUBLIC
     ${LIBRARIES_SOURCE_PATH}/assimp
 )
 
-target_link_libraries(VKRenderer_lib Vulkan::Vulkan)
+target_link_libraries(AssetBaker Vulkan::Vulkan)
 target_link_libraries(AssetBaker assimp)
 
 # =========================================================

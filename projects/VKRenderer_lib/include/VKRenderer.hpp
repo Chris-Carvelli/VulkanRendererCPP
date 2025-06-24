@@ -11,6 +11,11 @@
 #include <core/RenderPass.hpp>
 #include <window/Window.hpp>
 
+extern "C" {
+	#include <cc_allocator.h>
+	#include <cc_profiler.h>
+}
+
 #include <utils/DearImGui.hpp>
 
 #include <chrono>
@@ -102,4 +107,7 @@ private:
 
 	// internal state
 	vkc::Rect2DI m_window_size;
+
+	BumpAllocator* m_allocator;
+	Profiler*      m_profiler;
 };

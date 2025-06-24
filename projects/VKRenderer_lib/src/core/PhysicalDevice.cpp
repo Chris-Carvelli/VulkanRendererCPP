@@ -107,8 +107,9 @@ namespace vkc {
 		for (int i = 0; i < m_memory_properties.memoryHeapCount; ++i)
 		{
 			VkMemoryHeap& heap = m_memory_properties.memoryHeaps[i];
-			char buf[16] = { 0 };
-			formatSize(heap.size, buf);
+			const uint32_t BUFFER_SIZE = 16;
+			char buf[BUFFER_SIZE] = { 0 };
+			format_size(heap.size, buf, BUFFER_SIZE);
 			CC_PRINT(VERBOSE, "%2d\t%s\t%s", i, buf, string_VkMemoryHeapFlags(heap.flags).c_str());
 		}
 

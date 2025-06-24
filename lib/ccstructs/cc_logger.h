@@ -30,13 +30,14 @@
 #define TEXT_COLOR_BRIGHT_CYAN 		"\x1b[96m"
 #define TEXT_COLOR_BRIGHT_WHITE 	"\x1b[97m"
 
-enum LogType : uint8_t {
+//enum LogType : uint8_t {
+typedef enum {
     VERBOSE,
     LOG,
     IMPORTANT,
     WARNING,
     ERROR
-};
+} LogType;
 
 inline void log_formatted(const char* prefix, const char* text_color, const char* msg, va_list args) {
 
@@ -98,21 +99,35 @@ inline void CC_LOG_SYS_ERROR() {
 }
 
 
-#define CC_ASSERT(x, msg, ...) { if(!(x)) { CC_LOG_SYS_ERROR(); CC_LOG(LogType::ERROR, msg, __VA_ARGS__); } assert(x); }
-#define CC_EXIT(x, msg, ...) { CC_LOG(LogType::ERROR, msg, __VA_ARGS__); exit(x); }
+#define CC_ASSERT(x, msg, ...) { if(!(x)) { CC_LOG_SYS_ERROR(); CC_LOG(ERROR, msg, __VA_ARGS__); } assert(x); }
+#define CC_EXIT(x, msg, ...) { CC_LOG(ERROR, msg, __VA_ARGS__); exit(x); }
 
-inline void formatSize(uint64_t size, char* buffer) {
+inline void format_size(uint64_t size, char* buffer, uint32_t buffer_size) {
     const char* suffix[] = { "B", "KB", "MB", "GB", "TB" };
 
     uint64_t magnitude = 1;
     for (int i = 0; i < 5; ++i) {
-        magnitude *= 1024;
         if (size / (magnitude * 1024) == 0) {
-            sprintf_s(buffer, 10, "%3.2f%s", size / (float)magnitude, suffix[i]);
+            sprintf_s(buffer, buffer_size, "%3.2f%s", size / (float)magnitude, suffix[i]);
             return;
         }
+        magnitude *= 1024;
     }
     CC_ASSERT(0, "More than TB of GPU memory?");
+}
+
+inline void format_time(uint64_t size, char* buffer, uint32_t buffer_size) {
+    const char* suffix[] = { "ns", "nns", "ms", "s" };
+
+    uint64_t magnitude = 1;
+    for (int i = 0; i < 4; ++i) {
+        if (size / (magnitude * 1000) == 0) {
+            sprintf_s(buffer, buffer_size, "%9.3f%s", size / (float)magnitude, suffix[i]);
+            return;
+        }
+        magnitude *= 1000;
+    }
+    CC_ASSERT(0, "TODO format minutes and hours");
 }
 
 #endif // CC_LOGGER_H
