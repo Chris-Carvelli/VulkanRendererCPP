@@ -6,12 +6,7 @@
 
 #include <chrono>
 
-void VKRenderer::run() {
-	char buf[64];
-	format_size(KB(32), buf, 64);
-	CC_LOG(LOG, buf);
-
-	m_allocator = allocator_make_bump(KB(64));
+void VKRenderer::run() {m_allocator = allocator_make_bump(KB(64));
 	m_profiler  = profiler_shared_create(m_allocator);
 
 	PROFILE(m_profiler, NULL_SAMPLE_HANDLE, "setup",

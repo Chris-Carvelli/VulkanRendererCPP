@@ -60,11 +60,10 @@ inline void log_formatted(const char* prefix, const char* text_color, const char
 }
 
 inline void CC_LOG(LogType level, const char* msg, ...) {
-    va_list args;
+    va_list args = NULL;
     va_start(args, msg);
 
-    switch (level)
-    {
+    switch (level) {
         case VERBOSE:   log_formatted("Log:     ", TEXT_COLOR_WHITE,        msg, args); break;
         case LOG:       log_formatted("Log:     ", TEXT_COLOR_BRIGHT_WHITE, msg, args); break;
         case IMPORTANT: log_formatted("Log:     ", TEXT_COLOR_GREEN,        msg, args); break;
@@ -76,23 +75,22 @@ inline void CC_LOG(LogType level, const char* msg, ...) {
 }
 
 inline void CC_PRINT(LogType level, const char* msg, ...) {
-    va_list args;
+    va_list args = NULL;
     va_start(args, msg);
 
-    switch (level)
-    {
-    case VERBOSE:   log_formatted("", TEXT_COLOR_WHITE, msg, args);  break;
-    case LOG:       log_formatted("", TEXT_COLOR_WHITE, msg, args);  break;
-    case IMPORTANT: log_formatted("", TEXT_COLOR_GREEN, msg, args);  break;
-    case WARNING:   log_formatted("", TEXT_COLOR_YELLOW, msg, args); break;
-    case ERROR:     log_formatted("", TEXT_COLOR_RED, msg, args);    break;
+    switch (level) {
+        case VERBOSE:   log_formatted("", TEXT_COLOR_WHITE,  msg, args); break;
+        case LOG:       log_formatted("", TEXT_COLOR_WHITE,  msg, args); break;
+        case IMPORTANT: log_formatted("", TEXT_COLOR_GREEN,  msg, args); break;
+        case WARNING:   log_formatted("", TEXT_COLOR_YELLOW, msg, args); break;
+        case ERROR:     log_formatted("", TEXT_COLOR_RED,    msg, args); break;
     }
 
     va_end(args);
 }
 
 
-inline void CC_LOG_SYS_ERROR() {
+inline void CC_LOG_SYS_ERROR(void) {
     char buffer[MAX_LOG_CHARS];
     strerror_s(buffer, MAX_LOG_CHARS, errno);
     printf("[%d] %s\n", errno, buffer);
@@ -108,12 +106,12 @@ inline void format_size(uint64_t size, char* buffer, uint32_t buffer_size) {
     uint64_t magnitude = 1;
     for (int i = 0; i < 5; ++i) {
         if (size / (magnitude * 1024) == 0) {
-            sprintf_s(buffer, buffer_size, "%3.2f%s", size / (float)magnitude, suffix[i]);
+            sprintf_s(buffer, buffer_size, "%3.2f%s", (double)size / (double)magnitude, suffix[i]);
             return;
         }
         magnitude *= 1024;
     }
-    CC_ASSERT(0, "More than TB of GPU memory?");
+    CC_ASSERT(0, "More than TB of GPU memory?")
 }
 
 inline void format_time(uint64_t size, char* buffer, uint32_t buffer_size) {
@@ -122,12 +120,12 @@ inline void format_time(uint64_t size, char* buffer, uint32_t buffer_size) {
     uint64_t magnitude = 1;
     for (int i = 0; i < 4; ++i) {
         if (size / (magnitude * 1000) == 0) {
-            sprintf_s(buffer, buffer_size, "%9.3f%s", size / (float)magnitude, suffix[i]);
+            sprintf_s(buffer, buffer_size, "%9.3f%s", (double)size / (double)magnitude, suffix[i]);
             return;
         }
         magnitude *= 1000;
     }
-    CC_ASSERT(0, "TODO format minutes and hours");
+    CC_ASSERT(0, "TODO format minutes and hours")
 }
 
 #endif // CC_LOGGER_H

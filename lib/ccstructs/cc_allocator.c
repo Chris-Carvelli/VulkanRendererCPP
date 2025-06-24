@@ -2,6 +2,8 @@
 
 #include <cc_logger.h>
 
+
+
 typedef struct BumpAllocator {
     size_t capacity;
     size_t used;
@@ -15,7 +17,7 @@ BumpAllocator *allocator_make_bump(size_t size) {
     ba->used = 0;
     ba->memory = malloc(size);
     if(!ba->memory) {
-    CC_ASSERT(1, "Failed to allocate memory");
+    CC_ASSERT(1, "Failed to allocate memory")
         CC_LOG_SYS_ERROR();
         exit(3);
     }
@@ -30,12 +32,12 @@ void allocator_free_bump(BumpAllocator *bump_allocator) {
 
 void* allocator_alloc(BumpAllocator *bump_allocator, size_t size) {
     void *ret = NULL;
-	size_t aligned_size = (size + 7) & ~ 7; // This makes sure the first 4 bits are set to 0
+	size_t aligned_size = (size + 7) & ~ (size_t)7; // This makes sure the first 4 bits are set to 0
 	// ^^^ CHECK THIS ONE (compatibility, especially x86/x86_64) ^^^
 
-    CC_ASSERT(bump_allocator->used + aligned_size <= bump_allocator->capacity, "Bump allocator is full");
+    CC_ASSERT(bump_allocator->used + aligned_size <= bump_allocator->capacity, "Bump allocator is full")
 	
-	ret = bump_allocator->memory + bump_allocator->used;
+	ret = (char*)bump_allocator->memory + bump_allocator->used;
 	bump_allocator->used += aligned_size;
 
 	return ret;
@@ -55,7 +57,7 @@ void* allocator_put_str(BumpAllocator* bump_allocator, const char* str) {
 }
 
 void* allocator_peek(BumpAllocator* bump_allocator) {
-    return bump_allocator->memory + bump_allocator->used;
+    return (char*)bump_allocator->memory + bump_allocator->used;
 }
 
 void allocator_reset(BumpAllocator* bump_allocator) {

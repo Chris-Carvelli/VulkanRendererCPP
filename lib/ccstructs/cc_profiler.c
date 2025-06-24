@@ -5,6 +5,9 @@
 
 #include <time.h>
 
+const uint32_t             MAX_SAMPLE_HANDLES_COUNT = 1024;
+const HandleProfilerSample NULL_SAMPLE_HANDLE = (HandleProfilerSample)-1; // force this to biggest possible key
+
 // `HandleProfilerSample` is an index in the data arrays
 typedef struct Profiler {
 	BumpAllocator *allocator;
@@ -27,9 +30,14 @@ Profiler* profiler_shared_create(BumpAllocator *allocator) {
 	return handle;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
+
 void profiler_shared_destroy(Profiler* handle) {
 
 }
+
+#pragma clang diagnostic pop
 
 void profiler_owned_create(BumpAllocator *allocator, Profiler *handle) {
 	handle->allocator           = allocator;
@@ -49,10 +57,10 @@ void profiler_owned_create(BumpAllocator *allocator, Profiler *handle) {
 // call with `NULL_SAMPLE_HANDLE` to creeate a new sample
 // returns the handle of the new sample
 HandleProfilerSample profiler_sample_begin(Profiler* handle, HandleProfilerSample handle_sample) {
-	CC_ASSERT(handle->samples_stack_depth < MAX_SAMPLE_HANDLES_COUNT - 1, "sample stack max depth (%d) reached", MAX_SAMPLE_HANDLES_COUNT);
+	CC_ASSERT(handle->samples_stack_depth < MAX_SAMPLE_HANDLES_COUNT - 1, "sample stack max depth (%d) reached", MAX_SAMPLE_HANDLES_COUNT)
 
 	if (handle_sample == NULL_SAMPLE_HANDLE) {
-		CC_ASSERT(handle->num_samples < MAX_SAMPLE_HANDLES_COUNT - 1, "MAX sample handles count (%d) exceeded", MAX_SAMPLE_HANDLES_COUNT);
+		CC_ASSERT(handle->num_samples < MAX_SAMPLE_HANDLES_COUNT - 1, "MAX sample handles count (%d) exceeded", MAX_SAMPLE_HANDLES_COUNT)
 		handle_sample = handle->num_samples;
 		handle->names[handle_sample] = NULL;
 		handle->counts[handle_sample] = 0;
@@ -60,7 +68,7 @@ HandleProfilerSample profiler_sample_begin(Profiler* handle, HandleProfilerSampl
 
 		++handle->num_samples;
 	}
-	CC_ASSERT((handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0), "invalid handle");
+	CC_ASSERT((handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0), "invalid handle")
 
 	timespec_get(&handle->last_timestamps[handle_sample], TIME_UTC);
 
@@ -74,10 +82,10 @@ HandleProfilerSample profiler_sample_begin(Profiler* handle, HandleProfilerSampl
 // call with `NULL_SAMPLE_HANDLE` to creeate a new sample
 // returns the handle of the new sample
 HandleProfilerSample profiler_sample_begin_named(Profiler* handle, HandleProfilerSample handle_sample, const char* name) {
-	CC_ASSERT(handle->samples_stack_depth < MAX_SAMPLE_HANDLES_COUNT - 1, "sample stack max depth (%d) reached", MAX_SAMPLE_HANDLES_COUNT);
+	CC_ASSERT(handle->samples_stack_depth < MAX_SAMPLE_HANDLES_COUNT - 1, "sample stack max depth (%d) reached", MAX_SAMPLE_HANDLES_COUNT)
 
 	if (handle_sample == NULL_SAMPLE_HANDLE) {
-		CC_ASSERT(handle->num_samples < MAX_SAMPLE_HANDLES_COUNT - 1, "MAX sample handles count (%d) exceeded", MAX_SAMPLE_HANDLES_COUNT);
+		CC_ASSERT(handle->num_samples < MAX_SAMPLE_HANDLES_COUNT - 1, "MAX sample handles count (%d) exceeded", MAX_SAMPLE_HANDLES_COUNT)
 		handle_sample = handle->num_samples;
 		handle->names[handle_sample] = (const char*)allocator_put_str(handle->allocator, name);
 		handle->counts[handle_sample] = 0;
@@ -85,7 +93,7 @@ HandleProfilerSample profiler_sample_begin_named(Profiler* handle, HandleProfile
 
 		++handle->num_samples;
 	}
-	CC_ASSERT(handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0, "invalid handle");
+	CC_ASSERT(handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0, "invalid handle")
 
 	timespec_get(&handle->last_timestamps[handle_sample], TIME_UTC);
 
@@ -96,11 +104,11 @@ HandleProfilerSample profiler_sample_begin_named(Profiler* handle, HandleProfile
 }
 
 void profiler_sample_end(Profiler* handle) {
-	CC_ASSERT(handle->samples_stack_depth > 0, "trying to end sample when none have been started");
+	CC_ASSERT(handle->samples_stack_depth > 0, "trying to end sample when none have been started")
 	HandleProfilerSample handle_sample = handle->sample_handles_stack[handle->samples_stack_depth - 1];
 	handle->samples_stack_depth--;
 
-	CC_ASSERT(handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0, "invalid handle");
+	CC_ASSERT(handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0, "invalid handle")
 
 	struct timespec ts;
 	timespec_get(&ts, TIME_UTC);
@@ -112,7 +120,8 @@ void profiler_sample_end(Profiler* handle) {
 		ts.tv_sec--;
 	}
 
-	handle->aggregate_times[handle_sample] += ts.tv_nsec + ts.tv_sec * 1000000000;
+	// duration can't be negative, so this cast should be safe
+	handle->aggregate_times[handle_sample] += (uint64_t)(ts.tv_nsec + ts.tv_sec * 1000000000);
 	handle->last_timestamps[handle_sample] = ts;
 	handle->counts[handle_sample]++;
 }
@@ -123,7 +132,7 @@ void profiler_data_print(Profiler* handle) {
 	char buf_tot[BUFFER_SIZE];
 
 	CC_LOG(IMPORTANT, "Name\t\ttot. time\tcount\tavg. time");
-	for(int i = 0; i < handle->num_samples; ++i)
+	for(uint32_t i = 0; i < handle->num_samples; ++i)
 	{
 
 		format_time(handle->aggregate_times[i], buf_tot, BUFFER_SIZE);
@@ -141,7 +150,7 @@ void profiler_data_print(Profiler* handle) {
 }
 
 ProfilerSample profiler_data_get(Profiler* handle, HandleProfilerSample handle_sample) {
-	CC_ASSERT(handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0, "invalid handle");
+	CC_ASSERT(handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0, "invalid handle")
 	
 	return (ProfilerSample) {
 		.aggregate_time = handle->aggregate_times[handle_sample],
@@ -150,7 +159,7 @@ ProfilerSample profiler_data_get(Profiler* handle, HandleProfilerSample handle_s
 }
 
 const char *profiler_data_get_name(Profiler* handle, HandleProfilerSample handle_sample) {
-	CC_ASSERT(handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0, "invalid handle");
+	CC_ASSERT(handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0, "invalid handle")
 
 	return handle->names[handle_sample];
 }
