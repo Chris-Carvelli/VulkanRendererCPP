@@ -22,8 +22,11 @@ void* allocator_alloc_n(BumpAllocator* bump_allocator, size_t count, size_t size
 // allocates space for (string + terminator) and copies string
 void* allocator_put_str(BumpAllocator* bump_allocator, const char * str);
 
-void* allocator_peek(BumpAllocator* bump_allocator);
+void* allocator_peek (BumpAllocator* bump_allocator);
 void  allocator_reset(BumpAllocator* bump_allocator);
+
+// makes allocator behave like a stack allocator
+void  allocator_pop(BumpAllocator* bump_allocator, size_t size);
 
 void* allocator_debug_wrapper(BumpAllocator* bump_allocator, size_t size, const char* file, int line);
 

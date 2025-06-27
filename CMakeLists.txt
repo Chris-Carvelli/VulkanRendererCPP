@@ -6,6 +6,7 @@ project(VulkanRendererCPP)
 
 find_package(Vulkan REQUIRED)
 
+set(CMAKE_C_STANDARD "11")
 set(CMAKE_CXX_STANDARD "20")
 
 # no stdlib
@@ -119,4 +120,12 @@ FOREACH(test_exe ${tests})
     add_executable(${TARGETNAME} "${CMAKE_CURRENT_LIST_DIR}/tests/${test_exe}")
     target_link_libraries(${TARGETNAME} VKRenderer_lib)
     target_include_directories(${TARGETNAME} PRIVATE "lib")
+endforeach()
+
+FILELIST(tests "${CMAKE_CURRENT_LIST_DIR}/tests_c")
+FOREACH(test_exe ${tests})
+    set(TARGETNAME ${test_exe})
+    add_executable(${TARGETNAME} "${CMAKE_CURRENT_LIST_DIR}/tests_c/${test_exe}")
+    target_link_libraries(${TARGETNAME} CC_structs)
+    target_include_directories(${TARGETNAME} PRIVATE ${LIBRARIES_SOURCE_PATH}/ccstructs)
 endforeach()

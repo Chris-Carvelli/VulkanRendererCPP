@@ -37,9 +37,11 @@ void          profiler_data_print(Profiler* handle);
 ProfilerSample profiler_data_get(Profiler* handle, HandleProfilerSample handle_sample);
 const char*   profiler_data_get_name(Profiler* handle, HandleProfilerSample handle_sample);
 
-#define PROFILE(profiler, handle, name, scope)       \
-profiler_sample_begin_named(profiler, handle, name); \
-scope                                                \
-profiler_sample_end(profiler);
+#define PROFILE(profiler, handle, name, scope)           \
+{                                                        \
+    profiler_sample_begin_named(profiler, handle, name); \
+    scope                                                \
+    profiler_sample_end(profiler);                       \
+}
 
 #endif

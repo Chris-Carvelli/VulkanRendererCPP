@@ -3,6 +3,7 @@
 #include <cc_logger.h>
 
 
+#include <string.h> // for strlen and strcpy_s
 
 typedef struct BumpAllocator {
     size_t capacity;
@@ -62,6 +63,10 @@ void* allocator_peek(BumpAllocator* bump_allocator) {
 
 void allocator_reset(BumpAllocator* bump_allocator) {
     bump_allocator->used = 0;
+}
+
+void allocator_pop(BumpAllocator* bump_allocator, size_t size) {
+    bump_allocator->used -= size;
 }
 
 void* allocator_debug_wrapper(BumpAllocator* bump_allocator, size_t size, const char* file, int line) {

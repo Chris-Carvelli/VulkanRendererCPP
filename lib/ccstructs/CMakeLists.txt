@@ -5,10 +5,16 @@ SET (CMAKE_C_FLAGS_DEBUG_INIT "-g -O0")
 
 if(MSVC)
     message("424243: msvc")
-    add_compile_options("-Wall" "-Wextra" "-Werror" "$<$<CONFIG:RELEASE>:-O3>")
+    add_compile_options(
+        "-Wall"
+        "-Wextra"
+        "-Werror"
+        "$<$<CONFIG:RELEASE>:-O3>"
+    )
     add_compile_options(
         #important warnings
         "-Wno-vla" # we want ONLY CONSTANT-SIZED ARRAYS, to avoid using #defines
+        "-Wno-gnu-pointer-arith" # not sure what is the reason behind this, sounds like void* should be the size of a pointer variable
 
 
         # style warning
@@ -21,7 +27,6 @@ if(MSVC)
     )
     add_compile_options("/W4" "$<$<CONFIG:RELEASE>:/O2>")
 else()
-    message("424242: wall")
     add_compile_options("-Wall" "-Wextra" "-Werror" "$<$<CONFIG:RELEASE>:-O3>")
 endif()
 
