@@ -32,11 +32,11 @@
 
 //enum LogType : uint8_t {
 typedef enum {
-    VERBOSE,
-    LOG,
-    IMPORTANT,
-    WARNING,
-    ERROR
+    CC_VERBOSE,
+    CC_INFO,
+    CC_IMPORTANT,
+    CC_WARNING,
+    CC_ERROR
 } LogType;
 
 inline void log_formatted(const char* prefix, const char* text_color, const char* msg, va_list args) {
@@ -64,11 +64,11 @@ inline void CC_LOG(LogType level, const char* msg, ...) {
     va_start(args, msg);
 
     switch (level) {
-        case VERBOSE:   log_formatted("Log:     ", TEXT_COLOR_WHITE,        msg, args); break;
-        case LOG:       log_formatted("Log:     ", TEXT_COLOR_BRIGHT_WHITE, msg, args); break;
-        case IMPORTANT: log_formatted("Log:     ", TEXT_COLOR_GREEN,        msg, args); break;
-        case WARNING:   log_formatted("WARNING: ", TEXT_COLOR_YELLOW,       msg, args); break;
-        case ERROR:     log_formatted("ERROR:   ", TEXT_COLOR_RED,          msg, args); break;
+        case CC_VERBOSE:   log_formatted("Log:     ", TEXT_COLOR_WHITE,        msg, args); break;
+        case CC_INFO:      log_formatted("Log:     ", TEXT_COLOR_BRIGHT_WHITE, msg, args); break;
+        case CC_IMPORTANT: log_formatted("Log:     ", TEXT_COLOR_GREEN,        msg, args); break;
+        case CC_WARNING:   log_formatted("WARNING: ", TEXT_COLOR_YELLOW,       msg, args); break;
+        case CC_ERROR:     log_formatted("ERROR:   ", TEXT_COLOR_RED,          msg, args); break;
     }
 
     va_end(args);
@@ -79,11 +79,11 @@ inline void CC_PRINT(LogType level, const char* msg, ...) {
     va_start(args, msg);
 
     switch (level) {
-        case VERBOSE:   log_formatted("", TEXT_COLOR_WHITE,  msg, args); break;
-        case LOG:       log_formatted("", TEXT_COLOR_WHITE,  msg, args); break;
-        case IMPORTANT: log_formatted("", TEXT_COLOR_GREEN,  msg, args); break;
-        case WARNING:   log_formatted("", TEXT_COLOR_YELLOW, msg, args); break;
-        case ERROR:     log_formatted("", TEXT_COLOR_RED,    msg, args); break;
+        case CC_VERBOSE:   log_formatted("", TEXT_COLOR_WHITE,  msg, args); break;
+        case CC_INFO:      log_formatted("", TEXT_COLOR_WHITE,  msg, args); break;
+        case CC_IMPORTANT: log_formatted("", TEXT_COLOR_GREEN,  msg, args); break;
+        case CC_WARNING:   log_formatted("", TEXT_COLOR_YELLOW, msg, args); break;
+        case CC_ERROR:     log_formatted("", TEXT_COLOR_RED,    msg, args); break;
     }
 
     va_end(args);
@@ -97,8 +97,8 @@ inline void CC_LOG_SYS_ERROR(void) {
 }
 
 
-#define CC_ASSERT(x, msg, ...) { if(!(x)) { CC_LOG_SYS_ERROR(); CC_LOG(ERROR, msg, __VA_ARGS__); } assert(x); }
-#define CC_EXIT(x, msg, ...) { CC_LOG(ERROR, msg, __VA_ARGS__); exit(x); }
+#define CC_ASSERT(x, msg, ...) { if(!(x)) { CC_LOG_SYS_ERROR(); CC_LOG(CC_ERROR, msg, __VA_ARGS__); } assert(x); }
+#define CC_EXIT(x, msg, ...) { CC_LOG(CC_ERROR, msg, __VA_ARGS__); exit(x); }
 
 inline void format_size(uint64_t size, char* buffer, uint32_t buffer_size) {
     const char* suffix[] = { "B", "KB", "MB", "GB", "TB" };

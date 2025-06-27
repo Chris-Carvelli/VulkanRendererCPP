@@ -151,18 +151,18 @@ void map_fixed_diagnostics_print_buckets(MapFixed* handle) {
 		//if (chain_length < MAX_BUCKETS)
 		buckets[chain_length]++;
 		num_elements += chain_length;
-		//CC_LOG(LOG, "%3lld\t%3d", i, chain_length); 
+		//CC_LOG(CC_INFO, "%3lld\t%3d", i, chain_length); 
 	}
 
-	CC_LOG(IMPORTANT, "max_chain_length: %d", max_chain_length); 
-	CC_LOG(IMPORTANT, "num elements: %d", num_elements); 
-	CC_LOG(IMPORTANT, "histogram"); 
+	CC_LOG(CC_IMPORTANT, "max_chain_length: %d", max_chain_length); 
+	CC_LOG(CC_IMPORTANT, "num elements: %d", num_elements); 
+	CC_LOG(CC_IMPORTANT, "histogram"); 
 	for(int i = 0; i < MAX_BUCKETS; ++i) {
 		if(buckets[i] == 0)
 			continue;
-		CC_LOG(LOG, "%4d\t%4d", i, buckets[i]);
+		CC_LOG(CC_INFO, "%4d\t%4d", i, buckets[i]);
 	}
 
-	CC_LOG(IMPORTANT, "num keys:\t%3d\tnum hops:\t%3d\tfract:\t%f", num_elements, num_hops, (double)num_hops / (double)num_elements);
-	CC_LOG(IMPORTANT, "empty bins: %d\t%f", buckets[0], (double)buckets[0]/(double)handle->max_elements);
+	CC_LOG(CC_IMPORTANT, "num keys:\t%3d\tnum hops:\t%3d\tfract:\t%f", num_elements, num_hops, (double)num_hops / (double)num_elements);
+	CC_LOG(CC_IMPORTANT, "empty bins: %d\t%f", buckets[0], (double)buckets[0]/(double)handle->max_elements);
 }

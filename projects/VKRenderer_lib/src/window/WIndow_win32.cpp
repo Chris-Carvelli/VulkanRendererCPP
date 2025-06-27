@@ -96,27 +96,27 @@ namespace vkc {
             switch (msg.message)
             {
             /*case WM_SYSKEYDOWN:
-                CC_LOG(LOG, "WM_SYSKEYDOWN: 0x%x\n", msg.wParam);
+                CC_LOG(CC_INFO, "WM_SYSKEYDOWN: 0x%x\n", msg.wParam);
                 break;
 
             case WM_SYSCHAR:
-                CC_LOG(LOG, "WM_SYSCHAR: %c\n", (wchar_t)msg.wParam);
+                CC_LOG(CC_INFO, "WM_SYSCHAR: %c\n", (wchar_t)msg.wParam);
                 break;
 
             case WM_SYSKEYUP:
-                CC_LOG(LOG, "WM_SYSKEYUP: 0x%x\n", msg.wParam);
+                CC_LOG(CC_INFO, "WM_SYSKEYUP: 0x%x\n", msg.wParam);
                 break;
 
             case WM_KEYDOWN:
-                CC_LOG(LOG, "WM_KEYDOWN: 0x%x\n", msg.wParam);
+                CC_LOG(CC_INFO, "WM_KEYDOWN: 0x%x\n", msg.wParam);
                 break;
 
             case WM_KEYUP:
-                CC_LOG(LOG, "WM_KEYUP: 0x%x\n", msg.wParam);
+                CC_LOG(CC_INFO, "WM_KEYUP: 0x%x\n", msg.wParam);
                 break;
 
             case WM_CHAR:
-                CC_LOG(LOG, "WM_CHAR: %c\n", (wchar_t)msg.wParam);
+                CC_LOG(CC_INFO, "WM_CHAR: %c\n", (wchar_t)msg.wParam);
                 break;*/
 
             //case WM_NCMOUSEMOVE:
@@ -170,7 +170,7 @@ namespace vkc {
             FindNextChangeNotification(
                 handle_shader_directory_changes
             );
-            CC_LOG(WARNING, "dir monitor: %d", ret);
+            CC_LOG(CC_WARNING, "dir monitor: %d", ret);
             return true;
         }
         return false;
@@ -183,7 +183,7 @@ namespace vkc {
 
         if(handle_shader_directory_changes != INVALID_HANDLE_VALUE)
         {
-            CC_LOG(WARNING, "Only monitoring shaders for now. Future implementations will allow to monitor for specific directories with optional callbacks");
+            CC_LOG(CC_WARNING, "Only monitoring shaders for now. Future implementations will allow to monitor for specific directories with optional callbacks");
             return;
         }
 

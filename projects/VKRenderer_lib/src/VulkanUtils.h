@@ -14,7 +14,7 @@
 	VkResult err = y;				\
 									\
 	if(err) {						\
-		CC_LOG(ERROR,				\
+		CC_LOG(CC_ERROR,				\
 			"[Vulkan error %d] %s",	\
 			err,					\
 			string_VkResult(err)	\

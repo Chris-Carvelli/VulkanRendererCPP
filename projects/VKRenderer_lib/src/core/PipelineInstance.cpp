@@ -83,7 +83,7 @@ namespace vkc {
 		poolInfo.maxSets = num_swapchain_images;
 
 		if (vkCreateDescriptorPool(m_handle_device, &poolInfo, NULL, &m_descriptor_pool) != VK_SUCCESS) {
-			CC_LOG(ERROR, "failed to create descriptor pool!");
+			CC_LOG(CC_ERROR, "failed to create descriptor pool!");
 		}
 
 		std::vector<VkDescriptorSetLayout> layouts(num_swapchain_images);

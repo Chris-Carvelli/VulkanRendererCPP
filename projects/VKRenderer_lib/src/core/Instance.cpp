@@ -58,25 +58,25 @@ namespace vkc {
 		{
 			if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
 			{
-				//CC_LOG(ERROR, "%d - %s: %s", callback_data->messageIdNumber, callback_data->pMessageIdName, callback_data->pMessage);
-				CC_LOG(ERROR, callback_data->pMessage);
+				//CC_LOG(CC_ERROR, "%d - %s: %s", callback_data->messageIdNumber, callback_data->pMessageIdName, callback_data->pMessage);
+				CC_LOG(CC_ERROR, callback_data->pMessage);
 			}
 			else if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
 			{
-				//CC_LOG(WARNING, "%d - %s: %s", callback_data->messageIdNumber, callback_data->pMessageIdName, callback_data->pMessage);
-				CC_LOG(WARNING, callback_data->pMessage);
+				//CC_LOG(CC_WARNING, "%d - %s: %s", callback_data->messageIdNumber, callback_data->pMessageIdName, callback_data->pMessage);
+				CC_LOG(CC_WARNING, callback_data->pMessage);
 
 			}
 			else if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
 			{
-				//CC_LOG(WARNING, "%d - %s: %s", callback_data->messageIdNumber, callback_data->pMessageIdName, callback_data->pMessage);
-				CC_LOG(LOG, callback_data->pMessage);
+				//CC_LOG(CC_WARNING, "%d - %s: %s", callback_data->messageIdNumber, callback_data->pMessageIdName, callback_data->pMessage);
+				CC_LOG(CC_INFO, callback_data->pMessage);
 
 			}
 			if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
 			{
-				//CC_LOG(WARNING, "%d - %s: %s", callback_data->messageIdNumber, callback_data->pMessageIdName, callback_data->pMessage);
-				CC_LOG(VERBOSE, callback_data->pMessage);
+				//CC_LOG(CC_WARNING, "%d - %s: %s", callback_data->messageIdNumber, callback_data->pMessageIdName, callback_data->pMessage);
+				CC_LOG(CC_VERBOSE, callback_data->pMessage);
 
 			}
 			return VK_FALSE;
@@ -88,19 +88,19 @@ namespace vkc {
 		{
 			if (flags & VK_DEBUG_REPORT_ERROR_BIT_EXT)
 			{
-				CC_LOG(ERROR, "{}: {}", layer_prefix, message);
+				CC_LOG(CC_ERROR, "{}: {}", layer_prefix, message);
 			}
 			else if (flags & VK_DEBUG_REPORT_WARNING_BIT_EXT)
 			{
-				CC_LOG(WARNING, "{}: {}", layer_prefix, message);
+				CC_LOG(CC_WARNING, "{}: {}", layer_prefix, message);
 			}
 			else if (flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT)
 			{
-				CC_LOG(WARNING, "{}: {}", layer_prefix, message);
+				CC_LOG(CC_WARNING, "{}: {}", layer_prefix, message);
 			}
 			else
 			{
-				CC_LOG(LOG, "{}: {}", layer_prefix, message);
+				CC_LOG(CC_INFO, "{}: {}", layer_prefix, message);
 			}
 			return VK_FALSE;
 		}
@@ -123,7 +123,7 @@ namespace vkc {
 
 				if (!found)
 				{
-					CC_LOG(ERROR, "Validation Layer {} not found", layer);
+					CC_LOG(CC_ERROR, "Validation Layer {} not found", layer);
 					return false;
 				}
 			}
@@ -150,7 +150,7 @@ namespace vkc {
 
 			if (!is_available)
 			{
-				CC_LOG(LogType::WARNING, "Extension %s not available", requested_extension);
+				CC_LOG(LogType::CC_WARNING, "Extension %s not available", requested_extension);
 				return false;
 			}
 
@@ -163,7 +163,7 @@ namespace vkc {
 
 			if (!is_already_enabled)
 			{
-				CC_LOG(LogType::VERBOSE, "Extension %s available, enabling it", requested_extension);
+				CC_LOG(LogType::CC_VERBOSE, "Extension %s available, enabling it", requested_extension);
 				enabled_extensions.emplace_back(requested_extension);
 			}
 
@@ -184,7 +184,7 @@ namespace vkc {
 
 			if (!is_available)
 			{
-				CC_LOG(LogType::WARNING, "Extension %s not available", requested_layer);
+				CC_LOG(LogType::CC_WARNING, "Extension %s not available", requested_layer);
 				return false;
 			}
 
@@ -197,7 +197,7 @@ namespace vkc {
 
 			if (!is_already_enabled)
 			{
-				CC_LOG(LogType::VERBOSE, "Extension %s available, enabling it", requested_layer);
+				CC_LOG(LogType::CC_VERBOSE, "Extension %s available, enabling it", requested_layer);
 				enabled_layers.emplace_back(requested_layer);
 			}
 
@@ -237,7 +237,7 @@ namespace vkc {
 			has_debug_report = enable_extension(VK_EXT_DEBUG_REPORT_EXTENSION_NAME, available_instance_extensions, m_enabled_extensions);
 			if (!has_debug_report)
 			{
-				CC_LOG(WARNING, "Neither of {} or {} are available; disabling debug reporting", VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+				CC_LOG(CC_WARNING, "Neither of {} or {} are available; disabling debug reporting", VK_EXT_DEBUG_UTILS_EXTENSION_NAME, VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 			}
 		}
 #endif
@@ -258,7 +258,7 @@ namespace vkc {
 
 		for (auto requested_extension : extensions_optional)
 			if (!enable_extension(requested_extension, available_instance_extensions, m_enabled_extensions))
-				CC_LOG(LogType::WARNING, "Optional instance extension %s not available, some features may be disabled", requested_extension);
+				CC_LOG(LogType::CC_WARNING, "Optional instance extension %s not available, some features may be disabled", requested_extension);
 
 		uint32_t supported_layers_count;
 		CC_VK_CHECK(vkEnumerateInstanceLayerProperties(&supported_layers_count, nullptr))
@@ -274,7 +274,7 @@ namespace vkc {
 
 		for (auto const& requested_layer : layers_requested)
 			if (!enable_layer(requested_layer, supported_layers, enabled_layers))
-				CC_LOG(LogType::WARNING, "Optional layer {} not available, some features may be disabled", requested_layer);
+				CC_LOG(LogType::CC_WARNING, "Optional layer {} not available, some features may be disabled", requested_layer);
 
 #ifdef ENABLE_VALID_LAYERS
 		// NOTE: It's important to have the validation layer as the last one here!!!!
@@ -366,7 +366,7 @@ namespace vkc {
 	}
 
 	void Instance::print_info() const {
-		CC_PRINT(LOG, "GPUs");
+		CC_PRINT(CC_INFO, "GPUs");
 		for (auto& gpu : m_gpus)
 			gpu->print_info();
 	}

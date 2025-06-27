@@ -20,11 +20,11 @@ void validate_get(uint32_t* values, const int NUM_ELEMENTS, const char* trial) {
 	int num_errors = 0;
 	for(int i = 0; i < NUM_ELEMENTS; ++i)
 		if(values[i] != i) {
-			CC_LOG(WARNING, "%3d: expected: %3d    retrieved: %3d", i, i, values[i]);
+			CC_LOG(CC_WARNING, "%3d: expected: %3d    retrieved: %3d", i, i, values[i]);
 			++num_errors;
 		}
 	if (num_errors > 0)
-	CC_LOG(ERROR, "%s failed to retrieve correct values (%d errors)", trial, num_errors);
+	CC_LOG(CC_ERROR, "%s failed to retrieve correct values (%d errors)", trial, num_errors);
 }
 
 int main() {

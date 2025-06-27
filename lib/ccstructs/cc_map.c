@@ -133,7 +133,7 @@ uint8_t map_get(Map* handle, void* key, void* value) {
 }
 
 uint8_t map_remove(Map* handle, void* key, void* value) {
-	CC_LOG(WARNING, "key removal not implemented yet");
+	CC_LOG(CC_WARNING, "key removal not implemented yet");
 	return KEY_NOT_FOUND; // TODO
 
 	//uint32_t hash = SuperFastHash((const char *)key, handle->size_key);
@@ -232,16 +232,16 @@ void map_diagnostics_print_buckets(Map* handle) {
 		num_elements += chain_length;
 	}
 
-	CC_LOG(IMPORTANT, "max_chain_length: %d", max_chain_length); 
-	CC_LOG(IMPORTANT, "num elements: %d", num_elements); 
-	CC_LOG(IMPORTANT, "histogram"); 
-	CC_LOG(LOG, "%4d\t%4d", 0, buckets[0]);
+	CC_LOG(CC_IMPORTANT, "max_chain_length: %d", max_chain_length); 
+	CC_LOG(CC_IMPORTANT, "num elements: %d", num_elements); 
+	CC_LOG(CC_IMPORTANT, "histogram"); 
+	CC_LOG(CC_INFO, "%4d\t%4d", 0, buckets[0]);
 	for(int i = 1; i < MAX_BUCKETS; ++i) {
 		if(buckets[i] == 0)
 			continue;
-		CC_LOG(LOG, "%4d\t%4d", i, buckets[i]);
+		CC_LOG(CC_INFO, "%4d\t%4d", i, buckets[i]);
 	}
 
-	CC_LOG(IMPORTANT, "num keys:\t%3d\tnum hops:\t%3d\tfract:\t%f", num_elements, num_hops, (double)num_hops / (double)num_elements);
-	CC_LOG(IMPORTANT, "empty bins: %d\t%f", buckets[0], (double)buckets[0]/(double)handle->max_elements);
+	CC_LOG(CC_IMPORTANT, "num keys:\t%3d\tnum hops:\t%3d\tfract:\t%f", num_elements, num_hops, (double)num_hops / (double)num_elements);
+	CC_LOG(CC_IMPORTANT, "empty bins: %d\t%f", buckets[0], (double)buckets[0]/(double)handle->max_elements);
 }

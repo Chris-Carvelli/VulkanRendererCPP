@@ -35,16 +35,16 @@ int main() {
 	//for(int i = 0; i < NUM_BUCKETS; ++i) {
 	//	/*if(buckets[i] == 0)
 	//		continue;*/
-	//	//CC_LOG(LOG, "%4d\t%4d", i, buckets[i]);
+	//	//CC_LOG(CC_INFO, "%4d\t%4d", i, buckets[i]);
 	//	buckets_hist[buckets[i]]++;
 	//}
 
-	//CC_LOG(IMPORTANT, "hash distribution histogram");
-	//CC_LOG(LOG, "%4d\t%4d", 0, buckets_hist[0]);
+	//CC_LOG(CC_IMPORTANT, "hash distribution histogram");
+	//CC_LOG(CC_INFO, "%4d\t%4d", 0, buckets_hist[0]);
 	//for(int i = 1; i < NUM_BUCKETS; ++i) {
 	//	if (buckets_hist[i] == 0)
 	//		continue;
-	//	CC_LOG(LOG, "%4d\t%4d", i, buckets_hist[i]);
+	//	CC_LOG(CC_INFO, "%4d\t%4d", i, buckets_hist[i]);
 	//}
 
 	// ******************************************************

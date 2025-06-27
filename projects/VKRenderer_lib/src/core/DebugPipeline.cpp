@@ -132,7 +132,7 @@ namespace vkc {
 		pipelineLayoutInfo.pPushConstantRanges = &range;
 
 		if (vkCreatePipelineLayout(m_handle_device, &pipelineLayoutInfo, NULL, &m_handle_pipeline_layout) != VK_SUCCESS)
-			CC_LOG(ERROR, "failed to create pipeline layout!");
+			CC_LOG(CC_ERROR, "failed to create pipeline layout!");
 
 		VkGraphicsPipelineCreateInfo pipelineInfo = { VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO };
 		pipelineInfo.stageCount = 2;
@@ -154,7 +154,7 @@ namespace vkc {
 		pipelineInfo.basePipelineIndex = -1;              // Optional
 
 		if (vkCreateGraphicsPipelines(m_handle_device, VK_NULL_HANDLE, 1, &pipelineInfo, NULL, &m_handle) != VK_SUCCESS)
-			CC_LOG(ERROR, "failed to create graphics pipeline");
+			CC_LOG(CC_ERROR, "failed to create graphics pipeline");
 
 		// cleanup
 		vkDestroyShaderModule(m_handle_device, shaderModuleFrag, NULL);
@@ -216,7 +216,7 @@ namespace vkc {
 		layoutInfo.pBindings = bindings;
 
 		if (vkCreateDescriptorSetLayout(m_handle_device, &layoutInfo, NULL, &m_handle_descriptor_set_layout) != VK_SUCCESS) {
-			CC_LOG(ERROR, "failed to create descriptor set layout!");
+			CC_LOG(CC_ERROR, "failed to create descriptor set layout!");
 		}
 	}
 
@@ -239,7 +239,7 @@ namespace vkc {
 		poolInfo.maxSets = num_swapchain_images;
 
 		if (vkCreateDescriptorPool(m_handle_device, &poolInfo, NULL, &m_descriptor_pool) != VK_SUCCESS) {
-			CC_LOG(ERROR, "failed to create descriptor pool!");
+			CC_LOG(CC_ERROR, "failed to create descriptor pool!");
 		}
 
 		std::vector<VkDescriptorSetLayout> layouts(num_swapchain_images);
@@ -255,7 +255,7 @@ namespace vkc {
 		m_descriptor_sets.resize(num_swapchain_images);
 
 		if (vkAllocateDescriptorSets(m_handle_device, &allocInfo, m_descriptor_sets.data()) != VK_SUCCESS) {
-			CC_LOG(ERROR, "failed to allocate descriptor sets!");
+			CC_LOG(CC_ERROR, "failed to allocate descriptor sets!");
 		}
 
 
@@ -311,7 +311,7 @@ namespace vkc {
 
 		VkShaderModule shaderModule;
 		if (vkCreateShaderModule(device, &createInfo, NULL, &shaderModule) != VK_SUCCESS) {
-			CC_LOG(ERROR, "failed to create shader module!");
+			CC_LOG(CC_ERROR, "failed to create shader module!");
 		}
 
 		return shaderModule;

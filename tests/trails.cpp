@@ -249,7 +249,7 @@ class TestRenderer : public VKRenderer {
 
         TMP_Update::trail_mesh_id = vkc::Assets::create_mesh(TMP_Update::trail_mesh);
         TMP_Update::trail_data.offset_dir = 1;
-        CC_LOG(LOG, "%d", TMP_Update::trail_data.offset_dir);
+        CC_LOG(CC_INFO, "%d", TMP_Update::trail_data.offset_dir);
     }
 
     void update() override {

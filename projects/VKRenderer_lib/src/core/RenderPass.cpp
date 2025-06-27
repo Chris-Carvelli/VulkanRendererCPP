@@ -64,7 +64,7 @@ namespace vkc {
 		renderPassInfo.pSubpasses = &subpass;
 
 		if (vkCreateRenderPass(device, &renderPassInfo, NULL, &m_handle) != VK_SUCCESS)
-			CC_LOG(ERROR, "failed to create render pass");
+			CC_LOG(CC_ERROR, "failed to create render pass");
 
 		create_depth_resources();
 		create_framebuffers();
@@ -186,7 +186,7 @@ namespace vkc {
 			framebufferInfo.attachmentCount = attachmentsCount;
 			framebufferInfo.pAttachments = attachments;
 			if (vkCreateFramebuffer(m_handle_device, &framebufferInfo, NULL, &m_handle_framebuffers[i]) != VK_SUCCESS)
-				CC_LOG(ERROR, "failed to create framebuffer!");
+				CC_LOG(CC_ERROR, "failed to create framebuffer!");
 			++i;
 		}
 	}

@@ -43,7 +43,7 @@ namespace vkc
 			if (gpu.is_extension_available(extension_name))
 				m_enabled_extensions.emplace_back(extension_name);
 			else
-				CC_LOG(WARNING, "Desired extension %s not available on %s", extension_name, gpu.get_device_name());
+				CC_LOG(CC_WARNING, "Desired extension %s not available on %s", extension_name, gpu.get_device_name());
 		
 
 		VkDeviceCreateInfo create_info{ VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO };

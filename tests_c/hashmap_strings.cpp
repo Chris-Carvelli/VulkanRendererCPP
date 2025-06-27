@@ -36,22 +36,22 @@ void validate_get(char** values, char** retrieved, const int NUM_ELEMENTS, const
 	int num_errors = 0;
 	for(int i = 0; i < NUM_ELEMENTS; ++i)
 		if(strcmp(values[i], retrieved[i]) != 0) {
-			CC_LOG(WARNING, "%3d: expected: %s    retrieved: %s", i, values[i], retrieved[i]);
+			CC_LOG(CC_WARNING, "%3d: expected: %s    retrieved: %s", i, values[i], retrieved[i]);
 			++num_errors;
 		}
 	if (num_errors > 0)
-		CC_LOG(ERROR, "%s failed to retrieve correct values (%d errors)", trial, num_errors);
+		CC_LOG(CC_ERROR, "%s failed to retrieve correct values (%d errors)", trial, num_errors);
 }
 
 void validate_ints(uint32_t* values, uint32_t* retrieved, const int NUM_ELEMENTS, const char* trial) {
 	int num_errors = 0;
 	for(int i = 0; i < NUM_ELEMENTS; ++i)
 		if(values[i] != retrieved[i]) {
-			CC_LOG(WARNING, "%8d: expected: %8s    retrieved: %8d", i, values[i], retrieved[i]);
+			CC_LOG(CC_WARNING, "%8d: expected: %8s    retrieved: %8d", i, values[i], retrieved[i]);
 			++num_errors;
 		}
 	if (num_errors > 0)
-		CC_LOG(ERROR, "%s failed to retrieve correct values (%d errors)", trial, num_errors);
+		CC_LOG(CC_ERROR, "%s failed to retrieve correct values (%d errors)", trial, num_errors);
 }
 
 int main() {

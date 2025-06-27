@@ -131,7 +131,7 @@ void profiler_data_print(Profiler* handle) {
 	char buf_avg[BUFFER_SIZE];
 	char buf_tot[BUFFER_SIZE];
 
-	CC_LOG(IMPORTANT, "Name\t\ttot. time\tcount\tavg. time");
+	CC_LOG(CC_IMPORTANT, "Name\t\ttot. time\tcount\tavg. time");
 	for(uint32_t i = 0; i < handle->num_samples; ++i)
 	{
 
@@ -139,7 +139,7 @@ void profiler_data_print(Profiler* handle) {
 		format_time(handle->aggregate_times[i] / handle->counts[i], buf_avg, BUFFER_SIZE);
 
 		CC_LOG(
-			LOG,
+			CC_INFO,
 			"%s\t%s\t%d\t%s",
 			handle->names[i],
 			buf_tot,

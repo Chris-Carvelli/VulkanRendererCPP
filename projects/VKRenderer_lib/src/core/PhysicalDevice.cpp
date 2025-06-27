@@ -67,7 +67,7 @@ namespace vkc {
 			}
 		}
 
-		CC_LOG(ERROR, "failed to find suitable memory type!");
+		CC_LOG(CC_ERROR, "failed to find suitable memory type!");
 		return -1;
 	}
 
@@ -98,37 +98,37 @@ namespace vkc {
 	}
 
 	void PhysicalDevice::print_info() {
-		CC_PRINT(IMPORTANT, "%s", m_properties.deviceName);
-		CC_PRINT(VERBOSE,   "%s", string_VkPhysicalDeviceType(static_cast<VkPhysicalDeviceType>(m_properties.deviceType)));
+		CC_PRINT(CC_IMPORTANT, "%s", m_properties.deviceName);
+		CC_PRINT(CC_VERBOSE,   "%s", string_VkPhysicalDeviceType(static_cast<VkPhysicalDeviceType>(m_properties.deviceType)));
 		
-		CC_PRINT(LOG, "");
-		CC_PRINT(LOG, "Memory Heaps");
-		CC_PRINT(LOG, "Id\tSize\tFlags");
+		CC_PRINT(CC_INFO, "");
+		CC_PRINT(CC_INFO, "Memory Heaps");
+		CC_PRINT(CC_INFO, "Id\tSize\tFlags");
 		for (int i = 0; i < m_memory_properties.memoryHeapCount; ++i)
 		{
 			VkMemoryHeap& heap = m_memory_properties.memoryHeaps[i];
 			const uint32_t BUFFER_SIZE = 16;
 			char buf[BUFFER_SIZE] = { 0 };
 			format_size(heap.size, buf, BUFFER_SIZE);
-			CC_PRINT(VERBOSE, "%2d\t%s\t%s", i, buf, string_VkMemoryHeapFlags(heap.flags).c_str());
+			CC_PRINT(CC_VERBOSE, "%2d\t%s\t%s", i, buf, string_VkMemoryHeapFlags(heap.flags).c_str());
 		}
 
-		CC_PRINT(LOG, "");
-		CC_PRINT(LOG, "Memory Types");
-		CC_PRINT(LOG, "Heap\tFlags");
+		CC_PRINT(CC_INFO, "");
+		CC_PRINT(CC_INFO, "Memory Types");
+		CC_PRINT(CC_INFO, "Heap\tFlags");
 		for(int i = 0; i < m_memory_properties.memoryTypeCount; ++i)
 		{
 			VkMemoryType& type = m_memory_properties.memoryTypes[i];
-			CC_PRINT(VERBOSE, "%4d\t%s", type.heapIndex, string_VkMemoryPropertyFlags(type.propertyFlags).c_str());
+			CC_PRINT(CC_VERBOSE, "%4d\t%s", type.heapIndex, string_VkMemoryPropertyFlags(type.propertyFlags).c_str());
 		}
 
-		CC_PRINT(LOG, "");
-		CC_PRINT(LOG, "Queue Families");
-		CC_PRINT(LOG, "Id\tQueue Count\tFlags");
+		CC_PRINT(CC_INFO, "");
+		CC_PRINT(CC_INFO, "Queue Families");
+		CC_PRINT(CC_INFO, "Id\tQueue Count\tFlags");
 		for (int i = 0; i < m_queue_family_properties.size(); ++i)
 		{
 			VkQueueFamilyProperties queueFamilyProperty = m_queue_family_properties[i];
-			CC_PRINT(VERBOSE, "%2d\t%11d\t%s", i, queueFamilyProperty.queueCount, string_VkQueueFlags(queueFamilyProperty.queueFlags).c_str());
+			CC_PRINT(CC_VERBOSE, "%2d\t%11d\t%s", i, queueFamilyProperty.queueCount, string_VkQueueFlags(queueFamilyProperty.queueFlags).c_str());
 		}
 	}
 }

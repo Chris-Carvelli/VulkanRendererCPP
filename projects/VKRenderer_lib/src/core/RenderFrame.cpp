@@ -35,7 +35,7 @@ namespace vkc {
 			vkCreateSemaphore(device, &semaphoreInfo, NULL, &m_semaphore_render_finished) != VK_SUCCESS ||
 			vkCreateFence(device, &fenceInfo, NULL, &m_fence_in_flight) != VK_SUCCESS
 		) {
-			CC_LOG(ERROR, "failed to create sync objects");
+			CC_LOG(CC_ERROR, "failed to create sync objects");
 		}
 	}
 
@@ -65,9 +65,9 @@ namespace vkc {
 		}
 
 		else if (resultNextImage > VK_SUCCESS)
-			CC_LOG(LOG, "[VkResult %d] %s", resultNextImage, string_VkResult(resultNextImage));
+			CC_LOG(CC_INFO, "[VkResult %d] %s", resultNextImage, string_VkResult(resultNextImage));
 		else if (resultNextImage < VK_SUCCESS)
-			CC_LOG(ERROR, "[VkResult %d] failed to present swapchain: %s", resultNextImage, string_VkResult(resultNextImage));
+			CC_LOG(CC_ERROR, "[VkResult %d] failed to present swapchain: %s", resultNextImage, string_VkResult(resultNextImage));
 
 		vkResetFences(m_device, 1, &m_fence_in_flight);
 
@@ -79,7 +79,7 @@ namespace vkc {
 		beginInfo.pInheritanceInfo = NULL; // Optional
 
 		if (vkBeginCommandBuffer(m_command_buffer, &beginInfo) != VK_SUCCESS) {
-			CC_LOG(ERROR, "failed to begin recording command buffer!");
+			CC_LOG(CC_ERROR, "failed to begin recording command buffer!");
 		}
 
 		// copy dynamic meshes (trials and stuff like that)
@@ -242,7 +242,7 @@ namespace vkc {
 		vkc::Instance::TMP_get_singleton_instance()->end_cmd_buffer_util_label(m_command_buffer);
 
 		if (vkEndCommandBuffer(m_command_buffer) != VK_SUCCESS)
-			CC_LOG(ERROR, "failed to record command buffer");
+			CC_LOG(CC_ERROR, "failed to record command buffer");
 
 
 		// submit queues
@@ -263,7 +263,7 @@ namespace vkc {
 		submitInfo.pSignalSemaphores = signalSemaphores;
 
 		if (vkQueueSubmit(queue_render, 1, &submitInfo, m_fence_in_flight) != VK_SUCCESS)
-			CC_LOG(ERROR, "failed to submit draw command buffer");
+			CC_LOG(CC_ERROR, "failed to submit draw command buffer");
 
 		VkPresentInfoKHR presentInfo = { };
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -281,8 +281,8 @@ namespace vkc {
 			m_render_context->recreate_swapchain();
 
 		if (presentResult > VK_SUCCESS)
-			CC_LOG(LOG, "[VkResult %d] %s", presentResult, string_VkResult(presentResult));
+			CC_LOG(CC_INFO, "[VkResult %d] %s", presentResult, string_VkResult(presentResult));
 		else if (presentResult < VK_SUCCESS)
-			CC_LOG(ERROR, "[VkResult %d] failed to present swapchain: ", presentResult, string_VkResult(presentResult));
+			CC_LOG(CC_ERROR, "[VkResult %d] failed to present swapchain: ", presentResult, string_VkResult(presentResult));
 	}
 }

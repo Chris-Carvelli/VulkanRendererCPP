@@ -44,7 +44,7 @@ int main() {
     //        .image_views = { tex_id }
     //    };
     //    auto mat_id = vkc::Assets::create_material(mat);
-    //    CC_LOG(IMPORTANT, "%d", mat_id);
+    //    CC_LOG(CC_IMPORTANT, "%d", mat_id);
     //}
 
 

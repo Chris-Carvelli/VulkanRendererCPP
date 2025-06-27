@@ -68,7 +68,7 @@ std::map<unsigned int, VkFormat> TMP_fourcc_names {
 };
 
 void print_fourcc_count() {
-    /*CC_LOG(IMPORTANT, "FourCC counts");
+    /*CC_LOG(CC_IMPORTANT, "FourCC counts");
 
     for(auto& kp : TMP_fourcc_counts) {
         unsigned int fourcc_id = kp.first;
@@ -77,10 +77,10 @@ void print_fourcc_count() {
         if(TMP_fourcc_names.contains(fourcc_id))
         {
             VkFormat format = TMP_fourcc_names[fourcc_id];
-            CC_LOG(LOG, "%-32s %3d", string_VkFormat(format), fourcc_count);
+            CC_LOG(CC_INFO, "%-32s %3d", string_VkFormat(format), fourcc_count);
         }
         else
-            CC_LOG(LOG, "<UNKNOWN>%d\t\t%3d", fourcc_id, fourcc_count);
+            CC_LOG(CC_INFO, "<UNKNOWN>%d\t\t%3d", fourcc_id, fourcc_count);
     }*/
 }
 
@@ -91,26 +91,26 @@ void fourcc_check(dds_header* header)
         TMP_fourcc_counts[header->ddspf.fourcc] = 0;
     TMP_fourcc_counts[header->ddspf.fourcc]++;
 
-    //if      (MAKEFOURCC('D', 'X', 'T', '1') == header->ddspf.fourcc) CC_LOG(LOG, "VK_FORMAT_BC1_RGBA_UNORM_BLOCK");
-    //else if (MAKEFOURCC('D', 'X', 'T', '3') == header->ddspf.fourcc) CC_LOG(LOG, "VK_FORMAT_BC2_UNORM_BLOCK");
-    //else if (MAKEFOURCC('D', 'X', 'T', '5') == header->ddspf.fourcc) CC_LOG(LOG, "VK_FORMAT_BC3_UNORM_BLOCK");
-    //else if (MAKEFOURCC('D', 'X', 'T', '2') == header->ddspf.fourcc) CC_LOG(LOG, "VK_FORMAT_BC2_UNORM_BLOCK");     // While pre-multiplied alpha isn't directly supported by the VK formats,
-    //else if (MAKEFOURCC('D', 'X', 'T', '4') == header->ddspf.fourcc) CC_LOG(LOG, "VK_FORMAT_BC3_UNORM_BLOCK");     // they are basically the same as these BC formats so they can be mapped
-    //else if (MAKEFOURCC('A', 'T', 'I', '1') == header->ddspf.fourcc) CC_LOG(LOG, "VK_FORMAT_BC4_UNORM_BLOCK");
-    //else if (MAKEFOURCC('B', 'C', '4', 'U') == header->ddspf.fourcc) CC_LOG(LOG, "VK_FORMAT_BC4_UNORM_BLOCK");
-    //else if (MAKEFOURCC('B', 'C', '4', 'S') == header->ddspf.fourcc) CC_LOG(LOG, "VK_FORMAT_BC4_SNORM_BLOCK");
-    //else if (MAKEFOURCC('A', 'T', 'I', '2') == header->ddspf.fourcc) CC_LOG(LOG, "VK_FORMAT_BC5_UNORM_BLOCK");
-    //else if (MAKEFOURCC('B', 'C', '5', 'U') == header->ddspf.fourcc) CC_LOG(LOG, "VK_FORMAT_BC5_UNORM_BLOCK");
-    //else if (MAKEFOURCC('B', 'C', '5', 'S') == header->ddspf.fourcc) CC_LOG(LOG, "VK_FORMAT_BC5_SNORM_BLOCK");
-    //else if (MAKEFOURCC('R', 'G', 'B', 'G') == header->ddspf.fourcc) CC_LOG(LOG, "VK_FORMAT_G8B8G8R8_422_UNORM"); // BC6H and BC7 are written using the "DX10"extended header
-    //else if (MAKEFOURCC('G', 'R', 'G', 'B') == header->ddspf.fourcc) CC_LOG(LOG, "VK_FORMAT_B8G8R8G8_422_UNORM");
-    //else if (MAKEFOURCC('U', 'Y', 'V', 'Y') == header->ddspf.fourcc) CC_LOG(LOG, "VK_FORMAT_G8B8G8R8_422_UNORM"); //#if defined(VK_VERSION_1_1) && VK_VERSION_1_1
-    //else if (MAKEFOURCC('Y', 'U', 'Y', '2') == header->ddspf.fourcc) CC_LOG(LOG, "VK_FORMAT_B8G8R8G8_422_UNORM");
-    //else if (MAKEFOURCC('U', 'Y', 'V', 'Y') == header->ddspf.fourcc) CC_LOG(LOG, "VK_FORMAT_G8B8G8R8_422_UNORM_KHR"); //#elif defined(VK_KHR_sampler_ycbcr_conversion)
-    //else if (MAKEFOURCC('Y', 'U', 'Y', '2') == header->ddspf.fourcc) CC_LOG(LOG, "VK_FORMAT_G8B8G8R8_422_UNORM_KHR"); //#endif // #if defined(VK_VERSION_1_1) && VK_VERSION_1_1
-    //else                                                             CC_LOG(WARNING, "UNRECOGNIZED FOURCC %d", header->ddspf.fourcc);
+    //if      (MAKEFOURCC('D', 'X', 'T', '1') == header->ddspf.fourcc) CC_LOG(CC_INFO, "VK_FORMAT_BC1_RGBA_UNORM_BLOCK");
+    //else if (MAKEFOURCC('D', 'X', 'T', '3') == header->ddspf.fourcc) CC_LOG(CC_INFO, "VK_FORMAT_BC2_UNORM_BLOCK");
+    //else if (MAKEFOURCC('D', 'X', 'T', '5') == header->ddspf.fourcc) CC_LOG(CC_INFO, "VK_FORMAT_BC3_UNORM_BLOCK");
+    //else if (MAKEFOURCC('D', 'X', 'T', '2') == header->ddspf.fourcc) CC_LOG(CC_INFO, "VK_FORMAT_BC2_UNORM_BLOCK");     // While pre-multiplied alpha isn't directly supported by the VK formats,
+    //else if (MAKEFOURCC('D', 'X', 'T', '4') == header->ddspf.fourcc) CC_LOG(CC_INFO, "VK_FORMAT_BC3_UNORM_BLOCK");     // they are basically the same as these BC formats so they can be mapped
+    //else if (MAKEFOURCC('A', 'T', 'I', '1') == header->ddspf.fourcc) CC_LOG(CC_INFO, "VK_FORMAT_BC4_UNORM_BLOCK");
+    //else if (MAKEFOURCC('B', 'C', '4', 'U') == header->ddspf.fourcc) CC_LOG(CC_INFO, "VK_FORMAT_BC4_UNORM_BLOCK");
+    //else if (MAKEFOURCC('B', 'C', '4', 'S') == header->ddspf.fourcc) CC_LOG(CC_INFO, "VK_FORMAT_BC4_SNORM_BLOCK");
+    //else if (MAKEFOURCC('A', 'T', 'I', '2') == header->ddspf.fourcc) CC_LOG(CC_INFO, "VK_FORMAT_BC5_UNORM_BLOCK");
+    //else if (MAKEFOURCC('B', 'C', '5', 'U') == header->ddspf.fourcc) CC_LOG(CC_INFO, "VK_FORMAT_BC5_UNORM_BLOCK");
+    //else if (MAKEFOURCC('B', 'C', '5', 'S') == header->ddspf.fourcc) CC_LOG(CC_INFO, "VK_FORMAT_BC5_SNORM_BLOCK");
+    //else if (MAKEFOURCC('R', 'G', 'B', 'G') == header->ddspf.fourcc) CC_LOG(CC_INFO, "VK_FORMAT_G8B8G8R8_422_UNORM"); // BC6H and BC7 are written using the "DX10"extended header
+    //else if (MAKEFOURCC('G', 'R', 'G', 'B') == header->ddspf.fourcc) CC_LOG(CC_INFO, "VK_FORMAT_B8G8R8G8_422_UNORM");
+    //else if (MAKEFOURCC('U', 'Y', 'V', 'Y') == header->ddspf.fourcc) CC_LOG(CC_INFO, "VK_FORMAT_G8B8G8R8_422_UNORM"); //#if defined(VK_VERSION_1_1) && VK_VERSION_1_1
+    //else if (MAKEFOURCC('Y', 'U', 'Y', '2') == header->ddspf.fourcc) CC_LOG(CC_INFO, "VK_FORMAT_B8G8R8G8_422_UNORM");
+    //else if (MAKEFOURCC('U', 'Y', 'V', 'Y') == header->ddspf.fourcc) CC_LOG(CC_INFO, "VK_FORMAT_G8B8G8R8_422_UNORM_KHR"); //#elif defined(VK_KHR_sampler_ycbcr_conversion)
+    //else if (MAKEFOURCC('Y', 'U', 'Y', '2') == header->ddspf.fourcc) CC_LOG(CC_INFO, "VK_FORMAT_G8B8G8R8_422_UNORM_KHR"); //#endif // #if defined(VK_VERSION_1_1) && VK_VERSION_1_1
+    //else                                                             CC_LOG(CC_WARNING, "UNRECOGNIZED FOURCC %d", header->ddspf.fourcc);
 
-    /*CC_LOG(LOG, "%s", fourcc_name);*/
+    /*CC_LOG(CC_INFO, "%s", fourcc_name);*/
 }
 
 VkFormat get_format(dds_header* header) {
@@ -165,7 +165,7 @@ VkFormat get_format(dds_header* header) {
     else if (MAKEFOURCC('Y', 'U', 'Y', '2') == header->ddspf.fourcc) {
         return VK_FORMAT_G8B8G8R8_422_UNORM_KHR; //#endif // #if defined(VK_VERSION_1_1) && VK_VERSION_1_1
     }
-    else CC_LOG(WARNING, "UNRECOGNIZED FOURCC %d", header->ddspf.fourcc);
+    else CC_LOG(CC_WARNING, "UNRECOGNIZED FOURCC %d", header->ddspf.fourcc);
 }
 
 inline void *rl_load_dds_from_memory(const unsigned char *file_data, unsigned int file_size, int *width, int *height, int *format, int *mips, uint32_t *image_data_size)
@@ -188,7 +188,7 @@ inline void *rl_load_dds_from_memory(const unsigned char *file_data, unsigned in
 
     if ((dds_header_id[0] != 'D') || (dds_header_id[1] != 'D') || (dds_header_id[2] != 'S') || (dds_header_id[3] != ' '))
     {
-        CC_LOG(WARNING, "IMAGE: DDS file data not valid");
+        CC_LOG(CC_WARNING, "IMAGE: DDS file data not valid");
         return nullptr;
     }
 
@@ -211,7 +211,7 @@ inline void *rl_load_dds_from_memory(const unsigned char *file_data, unsigned in
 
     *format = get_format(header);
 
-    //CC_LOG(LOG, "%s", string_VkFormat((VkFormat)*format));
+    //CC_LOG(CC_INFO, "%s", string_VkFormat((VkFormat)*format));
 
     if (header->ddspf.rgb_bit_count == 16 && header->ddspf.flags == 0x40)      // 16bit mode, no compressed
         data_size = image_pixel_size*sizeof(unsigned short);

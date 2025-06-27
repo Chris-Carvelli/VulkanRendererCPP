@@ -139,7 +139,7 @@ void VKRenderer::TMP_force_gpu_upload_all() {
 }
 
 void VKRenderer::TMP_hot_reload() {
-	CC_LOG(IMPORTANT, "TEST HOT RELOAD PIPELINES");
+	CC_LOG(CC_IMPORTANT, "TEST HOT RELOAD PIPELINES");
 	vkc::RenderPass* rp = m_render_context->get_renderpass(0);
 	
 	CC_VK_CHECK(vkDeviceWaitIdle(m_device->get_handle()));

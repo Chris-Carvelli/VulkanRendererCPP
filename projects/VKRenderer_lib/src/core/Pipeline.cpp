@@ -152,7 +152,7 @@ namespace vkc {
 		pipelineLayoutInfo.pPushConstantRanges = &push_constant_range;
 
 		if (vkCreatePipelineLayout(m_handle_device, &pipelineLayoutInfo, NULL, &m_handle_pipeline_layout) != VK_SUCCESS)
-			CC_LOG(ERROR, "failed to create pipeline layout!");
+			CC_LOG(CC_ERROR, "failed to create pipeline layout!");
 
 		VkGraphicsPipelineCreateInfo pipelineInfo = { VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO };
 		pipelineInfo.stageCount = 2;
@@ -174,7 +174,7 @@ namespace vkc {
 		pipelineInfo.basePipelineIndex = -1;              // Optional
 
 		if (vkCreateGraphicsPipelines(m_handle_device, VK_NULL_HANDLE, 1, &pipelineInfo, NULL, &m_handle) != VK_SUCCESS)
-			CC_LOG(ERROR, "failed to create graphics pipeline");
+			CC_LOG(CC_ERROR, "failed to create graphics pipeline");
 
 		// cleanup
 		vkDestroyShaderModule(m_handle_device, shaderModuleFrag, NULL);
@@ -230,7 +230,7 @@ namespace vkc {
 		layoutInfo.pBindings = bindings.data();
 
 		if (vkCreateDescriptorSetLayout(m_handle_device, &layoutInfo, NULL, &m_handle_descriptor_set_layout) != VK_SUCCESS) {
-			CC_LOG(ERROR, "failed to create descriptor set layout!");
+			CC_LOG(CC_ERROR, "failed to create descriptor set layout!");
 		}
 	}
 
@@ -267,7 +267,7 @@ namespace vkc {
 
 		VkShaderModule shaderModule;
 		if (vkCreateShaderModule(device, &createInfo, NULL, &shaderModule) != VK_SUCCESS) {
-			CC_LOG(ERROR, "failed to create shader module!");
+			CC_LOG(CC_ERROR, "failed to create shader module!");
 		}
 
 		return shaderModule;

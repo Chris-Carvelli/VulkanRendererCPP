@@ -181,7 +181,7 @@ namespace vkc {
         poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily;
 
         if (vkCreateCommandPool(device, &poolInfo, NULL, &m_command_pool) != VK_SUCCESS)
-            CC_LOG(ERROR, "failed to create command pool");
+            CC_LOG(CC_ERROR, "failed to create command pool");
 
         // pre-allocate command buffer
         std::vector<VkCommandBuffer> command_buffers;
@@ -194,7 +194,7 @@ namespace vkc {
         allocInfo.commandBufferCount = num_frames_in_flight;
 
         if (vkAllocateCommandBuffers(device, &allocInfo, command_buffers.data()) != VK_SUCCESS) {
-            CC_LOG(ERROR, "failed to allocate command buffers!");
+            CC_LOG(CC_ERROR, "failed to allocate command buffers!");
         }
 
 
@@ -440,7 +440,7 @@ namespace vkc {
         bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
         if (vkCreateBuffer(m_device, &bufferInfo, NULL, pBuffer) != VK_SUCCESS) {
-            CC_LOG(ERROR, "failed to create buffer!");
+            CC_LOG(CC_ERROR, "failed to create buffer!");
         }
 
         VkMemoryRequirements memRequirements;
@@ -451,7 +451,7 @@ namespace vkc {
         allocInfo.memoryTypeIndex = m_obj_physical_device->find_memory_type(memRequirements.memoryTypeBits, properties);
 
         if (vkAllocateMemory(m_device, &allocInfo, NULL, pBufferMemory) != VK_SUCCESS) {
-            CC_LOG(ERROR, "failed to allocate buffer memory!");
+            CC_LOG(CC_ERROR, "failed to allocate buffer memory!");
         }
 
         vkBindBufferMemory(m_device, *pBuffer, *pBufferMemory, 0);
@@ -490,7 +490,7 @@ namespace vkc {
             destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
         }
         else {
-            CC_LOG(ERROR, "unsupported layout transition!");
+            CC_LOG(CC_ERROR, "unsupported layout transition!");
         }
 
         vkCmdPipelineBarrier(
@@ -526,7 +526,7 @@ namespace vkc {
         }
 
         if (vkCreateImage(m_device, &imageInfo, NULL, pImage) != VK_SUCCESS) {
-            CC_LOG(ERROR, "failed to create image!");
+            CC_LOG(CC_ERROR, "failed to create image!");
         }
 
         VkMemoryRequirements memRequirements;
@@ -537,7 +537,7 @@ namespace vkc {
         allocInfo.memoryTypeIndex = m_obj_physical_device->find_memory_type(memRequirements.memoryTypeBits, properties);
 
         if (vkAllocateMemory(m_device, &allocInfo, NULL, pImageMemory) != VK_SUCCESS) {
-            CC_LOG(ERROR, "failed to allocate image memory!");
+            CC_LOG(CC_ERROR, "failed to allocate image memory!");
         }
 
         vkBindImageMemory(m_device, *pImage, *pImageMemory, 0);
@@ -556,7 +556,7 @@ namespace vkc {
 
         VkImageView imageView;
         if (vkCreateImageView(m_device, &createInfo, NULL, &imageView) != VK_SUCCESS) {
-            CC_LOG(ERROR,"failed to create image views");
+            CC_LOG(CC_ERROR,"failed to create image views");
         }
 
         return imageView;

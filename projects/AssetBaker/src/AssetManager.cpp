@@ -163,7 +163,7 @@ namespace vkc::Assets {
 
     void debug_print_material_info(const aiMaterial& ai_material_data) {
         // TMP print material properties
-        CC_LOG(IMPORTANT, "%-28s\ttype\tsemantic\tsize\tvalue", "name");
+        CC_LOG(CC_IMPORTANT, "%-28s\ttype\tsemantic\tsize\tvalue", "name");
         for (int j = 0; j < ai_material_data.mNumProperties; ++j) {
             const aiMaterialProperty& ai_mat_prop_data = *ai_material_data.mProperties[j];
 
@@ -206,7 +206,7 @@ namespace vkc::Assets {
             else
                 sprintf(buf, "<too much data, check in debug modw>");
 
-            CC_LOG(VERBOSE, "%-28s\t%d\t%d\t\t%d\t%s", ai_mat_prop_data.mKey.C_Str(), ai_mat_prop_data.mType, ai_mat_prop_data.mSemantic, ai_mat_prop_data.mDataLength, buf);
+            CC_LOG(CC_VERBOSE, "%-28s\t%d\t%d\t\t%d\t%s", ai_mat_prop_data.mKey.C_Str(), ai_mat_prop_data.mType, ai_mat_prop_data.mSemantic, ai_mat_prop_data.mDataLength, buf);
         }
     }
 
@@ -232,7 +232,7 @@ namespace vkc::Assets {
         const char* base_path_textures,
         IdAssetTexture TMP_tex_environment_id
     ) {
-        CC_LOG(IMPORTANT, "Loading model %s...", path);
+        CC_LOG(CC_IMPORTANT, "Loading model %s...", path);
         uint32_t model_idx = num_model_assets++;
         ModelData new_model_data;
 
@@ -249,9 +249,9 @@ namespace vkc::Assets {
         );
 
         CC_ASSERT(scene, "[assimp] could not load %s", path);
-        CC_LOG(LOG, "assimp scene loaded");
-        CC_LOG(LOG, "materials: %d", scene->mNumMaterials);
-        CC_LOG(LOG, "meshes: %d", scene->mNumMeshes);
+        CC_LOG(CC_INFO, "assimp scene loaded");
+        CC_LOG(CC_INFO, "materials: %d", scene->mNumMaterials);
+        CC_LOG(CC_INFO, "meshes: %d", scene->mNumMeshes);
 
         // create material
         std::map<unsigned int, IdAssetMaterial> material_map;
@@ -271,13 +271,13 @@ namespace vkc::Assets {
             //{
             //    if(aiGetMaterialInteger(&ai_material_data, "$mat.illum", aiTextureType_NONE, 0, &illum_type_idx) != aiReturn_SUCCESS)
             //    {
-            //        CC_LOG(WARNING, "error retrieving assimp property $mat.illum from material %d, model %s", i, path);
+            //        CC_LOG(CC_WARNING, "error retrieving assimp property $mat.illum from material %d, model %s", i, path);
             //        continue;
             //    }
 
             //    if (illum_type_idx == 1)
             //    {
-            //        CC_LOG(WARNING, "unrecognized illumination model `2` for for material id %d, model %s", i, path);
+            //        CC_LOG(CC_WARNING, "unrecognized illumination model `2` for for material id %d, model %s", i, path);
             //        continue;
             //    }
             //}
@@ -318,7 +318,7 @@ namespace vkc::Assets {
             };
             // TODO hardcoded PBR material
             auto tmp = create_material(mat);
-            CC_LOG(VERBOSE, "loading materials %d/%d", i+1, scene->mNumMaterials);
+            CC_LOG(CC_VERBOSE, "loading materials %d/%d", i+1, scene->mNumMaterials);
             material_map[i] = tmp;
         }
 
@@ -386,7 +386,7 @@ namespace vkc::Assets {
            mesh_data[mesh_idx] = new_submesh_data;
            new_model_data.meshes[i] = mesh_idx;
            new_model_data.meshes_material[i] = material_map[ai_mesh_data.mMaterialIndex];
-           CC_LOG(VERBOSE, "loaded mesh %d/%d", i+1, scene->mNumMeshes);
+           CC_LOG(CC_VERBOSE, "loaded mesh %d/%d", i+1, scene->mNumMeshes);
         }
 
         model_data[model_idx] = new_model_data;
@@ -664,7 +664,7 @@ namespace vkc::Assets {
         }
 
         if (pixels == nullptr) {
-            CC_LOG(WARNING, "missing texture at path %s", path);
+            CC_LOG(CC_WARNING, "missing texture at path %s", path);
             return IDX_MISSING_TEXTURE;
         }
 

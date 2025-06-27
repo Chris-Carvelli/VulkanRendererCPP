@@ -61,7 +61,7 @@ namespace vkc {
 			if (capabilities.currentExtent.width != UINT32_MAX)
 				return (VkExtent2D) { .width = 0, .height = 0 };
 
-			CC_LOG(WARNING, "[chooseSwapExtent] Vulkan gannot get exact window resolution!");
+			CC_LOG(CC_WARNING, "[chooseSwapExtent] Vulkan gannot get exact window resolution!");
 
 			// FIXME these are the wrong min and max. Try `vkGetPhysicalDeviceImageFormatProperties`
 			request_extent.width = std::max(request_extent.width, capabilities.minImageExtent.width);
@@ -139,7 +139,7 @@ namespace vkc {
 		CC_VK_CHECK(vkGetSwapchainImagesKHR(m_device_handle, m_handle, &swapChainImagesCount, NULL))
 
 		if (TMP_imageCountCapabilities != swapChainImagesCount)
-			CC_LOG(WARNING, "[swapchain] different swapChainImagesCount. Capabilities: %d. Actual: %d", TMP_imageCountCapabilities, swapChainImagesCount);
+			CC_LOG(CC_WARNING, "[swapchain] different swapChainImagesCount. Capabilities: %d. Actual: %d", TMP_imageCountCapabilities, swapChainImagesCount);
 
 		m_images.resize(swapChainImagesCount);
 		m_image_views.resize(swapChainImagesCount);
@@ -161,7 +161,7 @@ namespace vkc {
 		{
 			image_view_createInfo.image = m_images[i];
 			if (vkCreateImageView(m_device_handle, &image_view_createInfo, NULL, &m_image_views[i]) != VK_SUCCESS)
-				CC_LOG(ERROR, "failed to create image views");
+				CC_LOG(CC_ERROR, "failed to create image views");
 		}
 	}
 
