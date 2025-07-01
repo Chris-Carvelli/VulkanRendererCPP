@@ -1,7 +1,7 @@
 project(CC_STRUCTS)
 set(CMAKE_C_STANDARD "99")
 
-SET (CMAKE_C_FLAGS_DEBUG_INIT "-g -O0")
+##SET (CMAKE_C_FLAGS_DEBUG_INIT "-g -O0")
 
 if(MSVC)
     message("424243: msvc")
@@ -9,7 +9,6 @@ if(MSVC)
         "-Wall"
         "-Wextra"
         "-Werror"
-        "$<$<CONFIG:RELEASE>:-O3>"
     )
     add_compile_options(
         #important warnings

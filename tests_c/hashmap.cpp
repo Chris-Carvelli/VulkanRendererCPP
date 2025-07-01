@@ -3,6 +3,12 @@
 #include <memory.h>
 #include <stdint.h>
 
+// #define EXCLUDE_LOOP
+
+const int NUM_ELEMENTS = 4096 * 128;
+const int HASHMAP_SIZE = 4096 * 128;
+const int N_TRIALS = 10;
+
 extern "C" {
 	#include <cc_logger.h>
 	#include <cc_map.h>
@@ -27,9 +33,9 @@ void validate_get(uint32_t* values, const int NUM_ELEMENTS, const char* trial) {
 	CC_LOG(CC_ERROR, "%s failed to retrieve correct values (%d errors)", trial, num_errors);
 }
 
+void do_trials(uint32_t* keys, uint32_t* values, uint32_t* values_retrieved);
+
 int main() {
-	const int NUM_ELEMENTS = 4096 * 128;
-	const int HASHMAP_SIZE = 4096 * 128;
 
 	srand(4243);
 
@@ -41,6 +47,13 @@ int main() {
 		values[i] = i;
 	}
 
+	for(int i = 0; i < N_TRIALS; ++i)
+		do_trials(keys, values, values_retrieved);
+
+	return 0;
+}
+
+void do_trials(uint32_t* keys, uint32_t* values, uint32_t* values_retrieved) {
 	// shuffle keys
 	for(uint32_t i = NUM_ELEMENTS - 1; i > 0; --i) {
 		uint32_t j = rand() % i;
@@ -52,51 +65,64 @@ int main() {
 
 	BumpAllocator* allocator = allocator_make_bump(MB(4));
 	Profiler* profiler = profiler_shared_create(allocator);
+	HandleProfilerSample h_put_base = profiler_create_sample_handle_named(profiler, "[put]base");
+	HandleProfilerSample h_get_base = profiler_create_sample_handle_named(profiler, "[get]base");
+	HandleProfilerSample h_put_fix = profiler_create_sample_handle_named(profiler, "[put]fixed");
+	HandleProfilerSample h_get_fix = profiler_create_sample_handle_named(profiler, "[get]fixed");
+	HandleProfilerSample h_put_std = profiler_create_sample_handle_named(profiler, "[put]std");
+	HandleProfilerSample h_get_std = profiler_create_sample_handle_named(profiler, "[get]std");
 
-	// cc map
-	memset(values_retrieved, 0, NUM_ELEMENTS * sizeof(uint32_t));
 	Map* a = map_make(HASHMAP_SIZE, sizeof(uint32_t), sizeof(uint32_t), cmp_integers, MB(512));
-	PROFILE(profiler, NULL_SAMPLE_HANDLE, "[put]base",
+	MapFixed* c = map_fixed_make(HASHMAP_SIZE, cmp_integers, MB(512));
+	std::map<uint32_t, uint32_t> b;
+
+#ifdef EXCLUDE_LOOP
+	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
+		PROFILE(profiler, h_put_base, map_put(a, &keys[i], &i); )
+	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
+		PROFILE(profiler, h_get_base, map_get(a, &keys[i], &values_retrieved[i]); )
+	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
+		PROFILE(profiler, h_put_fix, map_fixed_put(c, keys[i], i); )
+	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
+		PROFILE(profiler, h_get_fix, map_fixed_get(c, keys[i], &values_retrieved[i]); )
+	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
+		PROFILE(profiler, h_put_std, b[keys[i]] = i; )
+	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
+		PROFILE(profiler, h_get_std, values_retrieved[i] = b[keys[i]]; )
+#else
+	PROFILE(profiler, h_put_base, 
 		for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
 			map_put(a, &keys[i], &i);
 	)
-	PROFILE(profiler, NULL_SAMPLE_HANDLE, "[get]base",
-		for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-			map_get(a, &keys[i], &values_retrieved[i]);
+
+		PROFILE(profiler, h_get_base, 
+			for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
+				map_get(a, &keys[i], &values_retrieved[i]);
 	)
-	validate_get(values_retrieved, NUM_ELEMENTS, "cc base");
 
-
-	// cc map fixed
-	memset(values_retrieved, 0, NUM_ELEMENTS * sizeof(uint32_t));
-	MapFixed* c = map_fixed_make(HASHMAP_SIZE, cmp_integers, MB(512));
-	PROFILE(profiler, NULL_SAMPLE_HANDLE, "[put]fixed",
-		for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-			map_fixed_put(c, keys[i], i);
+		PROFILE(profiler, h_put_fix,
+			for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
+				map_fixed_put(c, keys[i], i);
 	)
-	PROFILE(profiler, NULL_SAMPLE_HANDLE, "[get]fixed",
-		for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-			map_fixed_get(c, keys[i], &values_retrieved[i]);
+
+		PROFILE(profiler, h_get_fix, 
+			for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
+				map_fixed_get(c, keys[i], &values_retrieved[i]);
 	)
-	validate_get(values_retrieved, NUM_ELEMENTS, "cc fixed");
 
-	// std map
-	memset(values_retrieved, 0, NUM_ELEMENTS * sizeof(uint32_t));
-	std::map<uint32_t, uint32_t> b;
-	PROFILE(profiler, NULL_SAMPLE_HANDLE, "[put]std",
-		for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-			b[keys[i]] = i;
+		PROFILE(profiler, h_put_std, 
+			for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
+				b[keys[i]] = i;
 	)
-	PROFILE(profiler, NULL_SAMPLE_HANDLE, "[get]std",
-		for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-			values_retrieved[i] = b[keys[i]];
+
+		PROFILE(profiler, h_get_std, 
+			for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
+				values_retrieved[i] = b[keys[i]];
 	)
-	validate_get(values_retrieved, NUM_ELEMENTS, "std::map");
-
-
-
+#endif
 
 	profiler_data_print(profiler);
 
-	return 0;
+	profiler_shared_destroy(profiler);
+	allocator_free_bump(allocator);
 }

@@ -37,6 +37,82 @@
           "type": "BOOL"
         }
       ]
+    },
+    {
+      "name": "x64-Release",
+      "generator": "Ninja",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "clang_cl_x64_x64" ],
+      "variables": [
+        {
+          "name": "GLFW_BUILD_EXAMPLES",
+          "value": "False",
+          "type": "BOOL"
+        },
+        {
+          "name": "ENABLE_VALID_LAYERS",
+          "value": "True",
+          "type": "BOOL"
+        },
+        {
+          "name": "GLM_TEST_ENABLE",
+          "value": "False",
+          "type": "BOOL"
+        },
+        {
+          "name": "ASSIMP_WARNINGS_AS_ERRORS",
+          "value": "False",
+          "type": "BOOL"
+        },
+        {
+          "name": "BUILD_SHARED_LIBS",
+          "value": "False",
+          "type": "BOOL"
+        }
+      ]
+    },
+    {
+      "name": "x64-ReleaseDbg",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "clang_cl_x64_x64" ],
+      "variables": [
+        {
+          "name": "GLFW_BUILD_EXAMPLES",
+          "value": "False",
+          "type": "BOOL"
+        },
+        {
+          "name": "ENABLE_VALID_LAYERS",
+          "value": "True",
+          "type": "BOOL"
+        },
+        {
+          "name": "GLM_TEST_ENABLE",
+          "value": "False",
+          "type": "BOOL"
+        },
+        {
+          "name": "ASSIMP_WARNINGS_AS_ERRORS",
+          "value": "False",
+          "type": "BOOL"
+        },
+        {
+          "name": "BUILD_SHARED_LIBS",
+          "value": "False",
+          "type": "BOOL"
+        }
+      ]
     }
   ]
 }

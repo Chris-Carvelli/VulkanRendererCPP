@@ -21,6 +21,9 @@ Profiler* profiler_shared_create(BumpAllocator *allocator);
 void      profiler_shared_destroy(Profiler* handle);
 void      profiler_owned_create(BumpAllocator *allocator, Profiler *handle);
 
+HandleProfilerSample profiler_create_sample_handle(Profiler* handle);
+HandleProfilerSample profiler_create_sample_handle_named(Profiler* handle, const char* name);
+
 // start a new sample
 // call with `NULL_SAMPLE_HANDLE` to creeate a new sample
 // returns the handle of the new sample
@@ -37,11 +40,11 @@ void          profiler_data_print(Profiler* handle);
 ProfilerSample profiler_data_get(Profiler* handle, HandleProfilerSample handle_sample);
 const char*   profiler_data_get_name(Profiler* handle, HandleProfilerSample handle_sample);
 
-#define PROFILE(profiler, handle, name, scope)           \
-{                                                        \
-    profiler_sample_begin_named(profiler, handle, name); \
-    scope                                                \
-    profiler_sample_end(profiler);                       \
+#define PROFILE(profiler, handle, scope)     \
+{                                            \
+    profiler_sample_begin(profiler, handle); \
+    scope                                    \
+    profiler_sample_end(profiler);           \
 }
 
 #endif
