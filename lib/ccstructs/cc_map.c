@@ -10,92 +10,98 @@
 #pragma clang diagnostic ignored "-Wunused-parameter"
 #pragma clang diagnostic ignored "-Wunused-variable"
 
-const uint8_t KEY_NOT_FOUND = 0;
-const uint8_t KEY_FOUND     = 1;
+const uint32_t KEY_NOT_FOUND = 0;
+const uint32_t KEY_FOUND     = 1;
 
 static void* NO_FOLLOWER = (void*)-1;
-static void* EMPTY_SPOT  = (void*) 0;
+static void* EMPTY_SPOT  = (void*) 0xfefefefefefefefe;
 
 typedef struct Map {
 	// definition
 	size_t max_elements;
-	size_t size_key;
 	size_t size_value;
-	fn_compare_t fn_comparator;
 
 	// runtime
 	BumpAllocator* allocator;
-	void* keys;
-	void* values;
-	void** nexts;
+	uint32_t* hashes;
+	void*     values;
+	void**    nexts;
 } Map;
 
-Map* map_make(size_t num_elements, size_t size_key, size_t size_value, fn_compare_t fn_comparator, size_t max_size) {
+Map* map_make(size_t num_elements, size_t size_value, size_t max_size) {
 	BumpAllocator* allocator = allocator_make_bump(max_size);
+	allocator_debug_pattern_fill(allocator, 0xcd);
 
 	Map* handle = (Map*)allocator_alloc(allocator, sizeof(Map));
 
 	handle->max_elements  = num_elements;
-	handle->size_key      = size_key;
 	handle->size_value    = size_value;
-	handle->fn_comparator = fn_comparator;
 	handle->allocator     = allocator;
 
-	handle->keys   = (void*)allocator_alloc_n(allocator, num_elements, size_key);
+	handle->hashes = (uint32_t*)allocator_alloc_n(allocator, num_elements, sizeof(uint32_t));
 	handle->values = (void*)allocator_alloc_n(allocator, num_elements, size_value);
 	handle->nexts  = (void**)allocator_alloc_n(allocator, num_elements, sizeof(void*));
 
 	// since `EMPTY_SPOT` is all 0s, this should work (but it may be not very cross-compatible, need to test)
-	memset(handle->nexts, 0, num_elements * sizeof(void*));
+	memset(handle->nexts, 0xfe, num_elements * sizeof(void*));
+
+	// DEBUG fill everything with recognizable bit pattern
+	memset(handle->hashes, 0xaa, num_elements * sizeof(uint32_t));
+	memset(handle->values, 0xbb, num_elements * size_value);
 
 	return handle;
 }
 
-uint8_t map_put(Map* handle, void* key, void* value) {
-	uint32_t hash = SuperFastHash((const char *)key, handle->size_key);
-	hash %= handle->max_elements;
+uint32_t map_put(Map* handle, void* key, size_t key_size, void* value) {
+	// TODO make hash function accet 64 bit sizes
+	uint32_t hash = (uint32_t)SuperFastHash((const char *)key, key_size);
+	uint32_t slot = hash % handle->max_elements;
 
-	size_t size_kvp     = handle->size_key + handle->size_value + sizeof(void*);
-	size_t offset_value = handle->size_key;
-	size_t offset_next  = handle->size_key + handle->size_value;
+	//CC_LOG(CC_INFO, "%d", hash);
 
-	void*  ptr_key   = handle->keys + handle->size_key * hash;
-	void*  ptr_value = handle->values + handle->size_value * hash;
-	void** ptr_next  = handle->nexts + hash;
+	size_t size_kvp     = sizeof(uint32_t) + handle->size_value + sizeof(void*);
+	size_t offset_value = sizeof(uint32_t);
+	size_t offset_next  = sizeof(uint32_t) + handle->size_value;
+
+	uint32_t* ptr_key   = &handle->hashes[slot];
+	void*     ptr_value = handle->values + handle->size_value * slot;
+	void**    ptr_next  = &handle->nexts[slot];
 
 	if (*ptr_next == EMPTY_SPOT) {
 		// no key in this bucket
-		memcpy(ptr_key, key, handle->size_key);
+		handle->hashes[slot] = hash;
 		memcpy(ptr_value, value, handle->size_value);
-		handle->nexts[hash] = NO_FOLLOWER;
+		handle->nexts[slot] = NO_FOLLOWER;
 
-		return KEY_NOT_FOUND;
+		//return KEY_NOT_FOUND;
+		return hash;
 	}
 
-	while (*ptr_next != NO_FOLLOWER && handle->fn_comparator(key, ptr_key) != 0)
+	while (*ptr_next != NO_FOLLOWER && *ptr_key != hash)
 	{
 		ptr_key   = *ptr_next;
-		ptr_value = ptr_key + offset_value;
+		ptr_value = (void*)ptr_key + offset_value;
 		ptr_next  = (void*)ptr_key + offset_next;
 	}
 
-	uint8_t ret = KEY_NOT_FOUND;
-	if(handle->fn_comparator(key, ptr_key) != 0) {
+	uint32_t ret = KEY_NOT_FOUND;
+	if(*ptr_key != hash) {
 		// connect last entry to new entry
 		*ptr_next = (void*)allocator_alloc(handle->allocator, size_kvp);
 	
 		// update poitners to new KVP entry
 		ptr_key   = *ptr_next;
-		ptr_value = ptr_key + offset_value;
-		ptr_next  = ptr_key + offset_next;
+		ptr_value = (void*)ptr_key + offset_value;
+		ptr_next  = (void*)ptr_key + offset_next;
 	
-		ret = KEY_FOUND;
+		//ret = KEY_FOUND;
+		ret = hash;
 	}
 	else {
 	}
 
 	// update new KVP values
-	memcpy(ptr_key, key, handle->size_key);
+	*ptr_key = hash;
 	memcpy(ptr_value, value, handle->size_value);
 	*ptr_next = NO_FOLLOWER;
 
@@ -104,27 +110,30 @@ uint8_t map_put(Map* handle, void* key, void* value) {
 
 
 // TODO must be fixed after figuring out what's wrong with pointer jumps
-uint8_t map_get(Map* handle, void* key, void* value) {
-	uint32_t hash = SuperFastHash((const char *)key, handle->size_key);
-	hash %= handle->max_elements;
+uint32_t map_get(Map* handle, void* key, size_t key_size, void* value) {
+	// TODO make hash function accet 64 bit sizes
+	uint32_t hash = (uint32_t)SuperFastHash((const char *)key, key_size);
+	uint32_t slot = hash % handle->max_elements;
 
-	void** ptr_next  = handle->nexts + hash;
+	//CC_LOG(CC_INFO, "%d", hash);
+
+	void** ptr_next  = &handle->nexts[slot];
 
 	if (*ptr_next == EMPTY_SPOT)
 		return KEY_NOT_FOUND;
 
-	size_t offset_value = handle->size_key;
-	size_t offset_next = handle->size_key + handle->size_value;
-	void*  ptr_key  = handle->keys + handle->size_key * hash;
-	void*  ptr_value  = handle->values + handle->size_value * hash;
-	while (*ptr_next != NO_FOLLOWER && handle->fn_comparator(key, ptr_key) != 0)
+	size_t offset_value = sizeof(uint32_t);
+	size_t offset_next = sizeof(uint32_t) + handle->size_value;
+	uint32_t* ptr_key = &handle->hashes[slot];
+	void*  ptr_value  = handle->values + handle->size_value * slot;
+	while (*ptr_next != NO_FOLLOWER && *ptr_key != hash)
 	{
 		ptr_key   = *ptr_next;
-		ptr_value = ptr_key + offset_value;
+		ptr_value = (void*)ptr_key + offset_value;
 		ptr_next  = (void*)ptr_key + offset_next;
 	}
 
-	if(handle->fn_comparator(key, ptr_key) != 0)
+	if(*ptr_key != hash)
 		return KEY_NOT_FOUND;
 	
 	memcpy(value, ptr_value, handle->size_value);
@@ -132,7 +141,7 @@ uint8_t map_get(Map* handle, void* key, void* value) {
 	return KEY_FOUND;
 }
 
-uint8_t map_remove(Map* handle, void* key, void* value) {
+uint32_t map_remove(Map* handle, void* key, size_t key_size, void* value) {
 	CC_LOG(CC_WARNING, "key removal not implemented yet");
 	return KEY_NOT_FOUND; // TODO
 
@@ -183,9 +192,9 @@ uint32_t map_diagnostics_count_kvps(Map* handle) {
 
 	void** next = handle->nexts + handle->max_elements;
 	// offset actual next "field" in the (key, value, next) "tuple"
-	next = (void*)next + handle->size_key + handle->size_value;
+	next = (void*)next + sizeof(uint32_t) + handle->size_value;
 
-	size_t size_kvp = handle->size_key + handle->size_value + sizeof(void*);
+	size_t size_kvp = sizeof(uint32_t) + handle->size_value + sizeof(void*);
 
 	while(*next != EMPTY_SPOT) {
 		next = (void*)next + size_kvp;
@@ -196,8 +205,8 @@ uint32_t map_diagnostics_count_kvps(Map* handle) {
 }
 
 void map_diagnostics_print_buckets(Map* handle) {
-	size_t size_kvp = handle->size_key + handle->size_value + sizeof(void*);
-	size_t offset_next = handle->size_key + handle->size_value; 
+	size_t size_kvp = sizeof(uint32_t) + handle->size_value + sizeof(void*);
+	size_t offset_next = sizeof(uint32_t) + handle->size_value; 
 	
 	const int MAX_BUCKETS = 100;
 	uint32_t buckets[MAX_BUCKETS];
@@ -208,7 +217,7 @@ void map_diagnostics_print_buckets(Map* handle) {
 	int num_hops = 0;
 	int max_chain_length = 0;
 	for(size_t i = 0; i < handle->max_elements; ++i) {
-		void*  kvp  = handle->keys + handle->size_key * i;
+		void*  kvp  = (void*)&handle->hashes[i];
 		void** next = &handle->nexts[i];
 
 		if(*next == EMPTY_SPOT) {

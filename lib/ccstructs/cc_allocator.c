@@ -4,6 +4,7 @@
 
 
 #include <string.h> // for strlen and strcpy_s
+#include <memory.h> // for memset
 
 typedef struct BumpAllocator {
     size_t capacity;
@@ -67,6 +68,10 @@ void allocator_reset(BumpAllocator* bump_allocator) {
 
 void allocator_pop(BumpAllocator* bump_allocator, size_t size) {
     bump_allocator->used -= size;
+}
+
+void allocator_debug_pattern_fill(BumpAllocator* bump_allocator, int pattern) {
+    memset(bump_allocator->memory, pattern, bump_allocator->capacity - bump_allocator->used);
 }
 
 void* allocator_debug_wrapper(BumpAllocator* bump_allocator, size_t size, const char* file, int line) {

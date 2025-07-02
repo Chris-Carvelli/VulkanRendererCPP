@@ -5,6 +5,9 @@ set(CMAKE_C_STANDARD "99")
 
 if(MSVC)
     message("424243: msvc")
+     add_compile_options(
+         "-maes"
+    )
     add_compile_options(
         "-Wall"
         "-Wextra"
