@@ -102,8 +102,8 @@ inline void CC_LOG_SYS_ERROR(void) {
 }
 
 
-#define CC_ASSERT(x, msg, ...) { if(!(x)) { CC_LOG_SYS_ERROR(); CC_LOG(CC_ERROR, msg, __VA_ARGS__); } assert(x); }
-#define CC_EXIT(x, msg, ...) { CC_LOG(CC_ERROR, msg, __VA_ARGS__); exit(x); }
+#define CC_ASSERT(x, msg, ...) { if(!(x)) { CC_LOG_SYS_ERROR(); CC_LOG(CC_ERROR, msg, ##__VA_ARGS__); } assert(x); }
+#define CC_EXIT(x, msg, ...) { CC_LOG(CC_ERROR, msg, ##__VA_ARGS__); exit(x); }
 
 inline void format_size(uint64_t size, char* buffer, uint32_t buffer_size) {
     const char* suffix[] = { "B", "KB", "MB", "GB", "TB" };
