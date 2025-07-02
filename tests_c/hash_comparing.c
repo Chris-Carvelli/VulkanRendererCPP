@@ -55,7 +55,7 @@ int main(void) {
 	const char buf_k[] = "KKKKKKKKKKKKKKKK";
 	for(int i = 0; i < NUM_KEYS; ++i) {
 		keys[i] = allocator_put_str(allocator, buf_k);
-		_itoa(i, buf, 10);
+		sprintf(buf, "%d", i);
 		for(int j = 0; j < 10; ++j) {
 			if(buf[j] == 0)
 				break;

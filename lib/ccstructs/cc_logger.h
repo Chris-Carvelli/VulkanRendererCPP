@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <string.h> // for strerror_s
+#include <string.h> // for strerror
 #include <assert.h>
 #include <stdint.h>
 
@@ -92,7 +92,12 @@ inline void CC_PRINT(LogType level, const char* msg, ...) {
 
 inline void CC_LOG_SYS_ERROR(void) {
     char buffer[MAX_LOG_CHARS];
+
+#ifdef WIN32
     strerror_s(buffer, MAX_LOG_CHARS, errno);
+#else
+    strerror_r(errno, buffer, MAX_LOG_CHARS);
+#endif
     printf("[%d] %s\n", errno, buffer);
 }
 
@@ -106,7 +111,7 @@ inline void format_size(uint64_t size, char* buffer, uint32_t buffer_size) {
     uint64_t magnitude = 1;
     for (int i = 0; i < 5; ++i) {
         if (size / (magnitude * 1024) == 0) {
-            sprintf_s(buffer, buffer_size, "%3.2f%s", (double)size / (double)magnitude, suffix[i]);
+            snprintf(buffer, buffer_size, "%3.2f%s", (double)size / (double)magnitude, suffix[i]);
             return;
         }
         magnitude *= 1024;
@@ -120,7 +125,7 @@ inline void format_time(uint64_t size, char* buffer, uint32_t buffer_size) {
     uint64_t magnitude = 1;
     for (int i = 0; i < 4; ++i) {
         if (size / (magnitude * 1000) == 0) {
-            sprintf_s(buffer, buffer_size, "%9.3f%s", (double)size / (double)magnitude, suffix[i]);
+            snprintf(buffer, buffer_size, "%9.3f%s", (double)size / (double)magnitude, suffix[i]);
             return;
         }
         magnitude *= 1000;

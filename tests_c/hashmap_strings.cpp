@@ -11,8 +11,6 @@ extern "C" {
 	#include <cc_map.h>
 	#include <cc_allocator.h>
 	#include <cc_profiler.h>
-
-	#include <TMP_map_fixed.h>
 }
 
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -73,7 +71,7 @@ int main() {
 	char buf[10];
 	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i) {
 		values[i] = i;
-		_itoa(i, buf, 10);
+		sprintf(buf, "%d", i);
 
 		//// normal key
 		//keys[i] = (char*)allocator_put_str(allocator_str, buf);
