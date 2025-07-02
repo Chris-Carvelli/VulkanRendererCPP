@@ -1,6 +1,7 @@
 #ifndef CC_HASH_H
 #define CC_HASH_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 uint64_t SuperFastHash(const char * data, size_t len);

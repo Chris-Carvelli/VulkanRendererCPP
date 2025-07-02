@@ -1,6 +1,7 @@
 #ifndef CC_MAP_H
 #define CC_MAP_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 // foward declarations
