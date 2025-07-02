@@ -54,7 +54,10 @@ void* allocator_put_str(BumpAllocator* bump_allocator, const char* str) {
     size_t size = strlen(str) + 1; // +1 for string terminator
     void* pointer = allocator_alloc(bump_allocator, size);
 
-    strcpy_s((char *)pointer, size, str);
+    // TODO either find a portable safe strcpy or make one
+    char* dst = (char*)pointer;
+    while(size--)
+        *dst++ = *str++;
     return pointer;
 }
 
