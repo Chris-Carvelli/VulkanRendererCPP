@@ -68,8 +68,8 @@ void profiler_owned_create(BumpAllocator *allocator, Profiler *handle) {
 }
 
 HandleProfilerSample profiler_create_sample_handle(Profiler* handle) {
-	CC_ASSERT(handle->samples_stack_depth < MAX_SAMPLE_HANDLES_COUNT - 1, "sample stack max depth (%d) reached", MAX_SAMPLE_HANDLES_COUNT)
-	CC_ASSERT(handle->num_samples < MAX_SAMPLE_HANDLES_COUNT - 1, "MAX sample handles count (%d) exceeded", MAX_SAMPLE_HANDLES_COUNT)
+	CC_ASSERT(handle->samples_stack_depth < MAX_SAMPLE_HANDLES_COUNT - 1, "sample stack max depth (%d) reached", MAX_SAMPLE_HANDLES_COUNT);
+	CC_ASSERT(handle->num_samples < MAX_SAMPLE_HANDLES_COUNT - 1, "MAX sample handles count (%d) exceeded", MAX_SAMPLE_HANDLES_COUNT);
 
 	HandleProfilerSample handle_sample = handle->num_samples;
 	handle->names[handle_sample] = NULL;
@@ -95,7 +95,7 @@ HandleProfilerSample profiler_sample_begin(Profiler* handle, HandleProfilerSampl
 	if (handle_sample == NULL_SAMPLE_HANDLE)
 		handle_sample = profiler_create_sample_handle(handle);
 
-	CC_ASSERT((handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0), "invalid handle")
+	CC_ASSERT((handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0), "invalid handle");
 	
 	handle->sample_handles_stack[handle->samples_stack_depth] = handle_sample;
 	handle->samples_stack_depth++;
@@ -110,7 +110,7 @@ HandleProfilerSample profiler_sample_begin(Profiler* handle, HandleProfilerSampl
 HandleProfilerSample profiler_sample_begin_named(Profiler* handle, HandleProfilerSample handle_sample, const char* name) {
 	if (handle_sample == NULL_SAMPLE_HANDLE)
 		handle_sample = profiler_create_sample_handle_named(handle, name);
-	CC_ASSERT(handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0, "invalid handle")
+	CC_ASSERT(handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0, "invalid handle");
 
 
 	handle->sample_handles_stack[handle->samples_stack_depth] = handle_sample;
@@ -124,11 +124,11 @@ void profiler_sample_end(Profiler* handle) {
 	LARGE_INTEGER end;
 	QueryPerformanceCounter(&end);
 
-	CC_ASSERT(handle->samples_stack_depth > 0, "trying to end sample when none have been started")
+	CC_ASSERT(handle->samples_stack_depth > 0, "trying to end sample when none have been started");
 	HandleProfilerSample handle_sample = handle->sample_handles_stack[handle->samples_stack_depth - 1];
 	handle->samples_stack_depth--;
 
-	CC_ASSERT(handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0, "invalid handle")
+	CC_ASSERT(handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0, "invalid handle");
 
 
 	// duration can't be negative, so this cast should be safe
@@ -157,7 +157,7 @@ void profiler_data_print(Profiler* handle) {
 }
 
 ProfilerSample profiler_data_get(Profiler* handle, HandleProfilerSample handle_sample) {
-	CC_ASSERT(handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0, "invalid handle")
+	CC_ASSERT(handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0, "invalid handle");
 
 		return (ProfilerSample) {
 			.aggregate_time = (uint64_t)handle->aggregate_times[handle_sample].QuadPart,
@@ -166,7 +166,7 @@ ProfilerSample profiler_data_get(Profiler* handle, HandleProfilerSample handle_s
 }
 
 const char *profiler_data_get_name(Profiler* handle, HandleProfilerSample handle_sample) {
-	CC_ASSERT(handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0, "invalid handle")
+	CC_ASSERT(handle_sample < MAX_SAMPLE_HANDLES_COUNT && handle_sample >= 0, "invalid handle");
 
 		return handle->names[handle_sample];
 }

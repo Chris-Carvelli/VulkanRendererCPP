@@ -19,7 +19,7 @@ BumpAllocator *allocator_make_bump(size_t size) {
     ba->used = 0;
     ba->memory = malloc(size);
 
-    CC_ASSERT(ba->memory, "Failed to allocate memory")
+    CC_ASSERT(ba->memory, "Failed to allocate memory");
 
     memset(ba->memory, 0, size);
     return ba;
@@ -35,7 +35,7 @@ void* allocator_alloc(BumpAllocator *bump_allocator, size_t size) {
 	size_t aligned_size = (size + 7) & ~ (size_t)7; // This makes sure the first 4 bits are set to 0
 	// ^^^ CHECK THIS ONE (compatibility, especially x86/x86_64) ^^^
 
-    CC_ASSERT(bump_allocator->used + aligned_size <= bump_allocator->capacity, "Bump allocator is full")
+    CC_ASSERT(bump_allocator->used + aligned_size <= bump_allocator->capacity, "Bump allocator is full");
 	
 	ret = (char*)bump_allocator->memory + bump_allocator->used;
 	bump_allocator->used += aligned_size;
