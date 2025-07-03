@@ -10,15 +10,15 @@
 void VKRenderer::run() {m_allocator = allocator_make_bump(KB(64));
 	m_profiler  = profiler_shared_create(m_allocator);
 
-	PROFILE(m_profiler, NULL_SAMPLE_HANDLE,
+	PROFILE(m_profiler, "setup",
 
-		PROFILE(m_profiler, NULL_SAMPLE_HANDLE,
+		PROFILE(m_profiler, "init_base()",
 			init_base();
 		);
-		PROFILE(m_profiler, NULL_SAMPLE_HANDLE,
+		PROFILE(m_profiler, "init()",
 			init();
 		);
-		PROFILE(m_profiler, NULL_SAMPLE_HANDLE,
+		PROFILE(m_profiler, "gpu_upload()",
 			// TODO FIXME force upload of assets to GPU
 			TMP_force_gpu_upload_all();
 		);

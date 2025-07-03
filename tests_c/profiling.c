@@ -15,16 +15,14 @@ int main(void) {
 	BumpAllocator* allocator = allocator_make_bump(KB(64));
 	Profiler*      profiler  = profiler_shared_create(allocator);
 	Map* map = map_make(1024, sizeof(uint32_t), MB(128));
-	HandleProfilerSample h_put = profiler_create_sample_handle_named(profiler, "put");
-	HandleProfilerSample h_get = profiler_create_sample_handle_named(profiler, "get");
 
 	for(int i = 0; i < NUM_ELEMENTS; ++i)
-		PROFILE(profiler, h_put, map_put(map, &i, sizeof(uint32_t), &i);)
+		PROFILE(profiler, "put", map_put(map, &i, sizeof(uint32_t), &i);)
 
 	for(int i = 0; i < NUM_ELEMENTS; ++i)
 	{
 		uint32_t ret;
-		PROFILE(profiler, h_get, map_get(map, &i, sizeof(uint32_t), &ret);)
+		PROFILE(profiler, "get", map_get(map, &i, sizeof(uint32_t), &ret);)
 		CC_ASSERT(ret == i, "different values");
 
 	}

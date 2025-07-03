@@ -72,8 +72,7 @@ uint64_t map_put(Map* handle, void* key, size_t key_size, void* value) {
 		memcpy(ptr_value, value, handle->size_value);
 		handle->nexts[slot] = NO_FOLLOWER;
 
-		//return KEY_NOT_FOUND;
-		return hash;
+		return KEY_NOT_FOUND;
 	}
 
 	while (*ptr_next != NO_FOLLOWER && *ptr_key != hash)
@@ -93,8 +92,7 @@ uint64_t map_put(Map* handle, void* key, size_t key_size, void* value) {
 		ptr_value = (void*)ptr_key + offset_value;
 		ptr_next  = (void*)ptr_key + offset_next;
 	
-		//ret = KEY_FOUND;
-		ret = hash;
+		ret = KEY_FOUND;
 	}
 	else {
 	}
@@ -118,8 +116,7 @@ uint64_t map_get(Map* handle, void* key, size_t key_size, void* value) {
 	void** ptr_next  = &handle->nexts[slot];
 
 	if (*ptr_next == EMPTY_SPOT)
-		//return KEY_NOT_FOUND;
-		return hash;
+		return KEY_NOT_FOUND;
 
 	size_t offset_value = sizeof(uint64_t);
 	size_t offset_next = sizeof(uint64_t) + handle->size_value;
@@ -133,13 +130,11 @@ uint64_t map_get(Map* handle, void* key, size_t key_size, void* value) {
 	}
 
 	if(*ptr_key != hash)
-		//return KEY_NOT_FOUND;
-		return hash;
+		return KEY_NOT_FOUND;
 	
 	memcpy(value, ptr_value, handle->size_value);
 
-	//return KEY_FOUND;
-	return hash;
+	return KEY_FOUND;
 }
 
 uint64_t map_remove(Map* handle, void* key, size_t key_size, void* value) {

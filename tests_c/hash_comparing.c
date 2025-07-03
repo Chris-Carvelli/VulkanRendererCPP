@@ -71,11 +71,10 @@ int main(void) {
 
 	CC_LOG(CC_IMPORTANT, "%16s %6s %8s", "Function", "Key", "Hash");
 	for(int i = 0; i < NUM_ALGO; ++i) {
-		HandleProfilerSample h = profiler_create_sample_handle_named(profiler, hash_names[i]);
 		errors[i] = 0;
 		for(int j = 0; j < NUM_KEYS; ++j) {
 			uint64_t hash, hash1;
-			PROFILE(profiler, h, hash = fn_hash[i](keys[j], strlen(keys[j]));)
+			PROFILE(profiler, hash_names[i], hash = fn_hash[i](keys[j], strlen(keys[j]));)
 			
 			// validate
 			hash1 = fn_hash[i](keys[j], strlen(keys[j]));

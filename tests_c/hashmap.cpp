@@ -63,43 +63,39 @@ void do_trials(uint32_t* keys, uint32_t* values, uint32_t* values_retrieved) {
 
 	BumpAllocator* allocator = allocator_make_bump(MB(4));
 	Profiler* profiler = profiler_shared_create(allocator);
-	HandleProfilerSample h_put_base = profiler_create_sample_handle_named(profiler, "[put]base");
-	HandleProfilerSample h_get_base = profiler_create_sample_handle_named(profiler, "[get]base");
-	HandleProfilerSample h_put_std = profiler_create_sample_handle_named(profiler, "[put]std");
-	HandleProfilerSample h_get_std = profiler_create_sample_handle_named(profiler, "[get]std");
 
 	Map* a = map_make(HASHMAP_SIZE, sizeof(uint32_t), MB(512));
 	std::map<uint32_t, uint32_t> b;
 
 #ifdef EXCLUDE_LOOP
 	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-		PROFILE(profiler, h_put_base, map_put(a, &keys[i], &i); )
+		PROFILE(profiler, "[put]base", map_put(a, &keys[i], &i); )
 	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-		PROFILE(profiler, h_get_base, map_get(a, &keys[i], &values_retrieved[i]); )
+		PROFILE(profiler, "[get]base", map_get(a, &keys[i], &values_retrieved[i]); )
 	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-		PROFILE(profiler, h_put_std, b[keys[i]] = i; )
+		PROFILE(profiler, "[put]std", b[keys[i]] = i; )
 	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-		PROFILE(profiler, h_get_std, values_retrieved[i] = b[keys[i]]; )
+		PROFILE(profiler,  "[get]std", values_retrieved[i] = b[keys[i]]; )
 #else
-	PROFILE(profiler, h_put_base, 
+	PROFILE(profiler, "[put]base", 
 		for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
 			map_put(a, &keys[i], sizeof(uint32_t), &i);
 	)
 
 	memset(values_retrieved, 0, NUM_ELEMENTS * sizeof(uint32_t));
-	PROFILE(profiler, h_get_base, 
+	PROFILE(profiler, "[get]base", 
 		for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
 			map_get(a, &keys[i], sizeof(uint32_t), &values_retrieved[i]);
 	)
 	validate_get(values_retrieved, NUM_ELEMENTS, "cc base");
 
-	PROFILE(profiler, h_put_std, 
+	PROFILE(profiler, "[put]std", 
 		for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
 			b[keys[i]] = i;
 	)
 
 	memset(values_retrieved, 0, NUM_ELEMENTS * sizeof(uint32_t));
-	PROFILE(profiler, h_get_std, 
+	PROFILE(profiler,  "[get]std", 
 		for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
 			values_retrieved[i] = b[keys[i]];
 	)
