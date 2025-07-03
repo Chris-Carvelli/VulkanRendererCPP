@@ -2,10 +2,9 @@
 
 #include <lookup3.c>
 
-#include <intrin.h>
-#include <emmintrin.h>
-#include <wmmintrin.h>  //for intrinsics for AES-NI
 
+#include <intrin.h>
+#include <wmmintrin.h>  //for intrinsics for AES-NI
 
 // chris: this is a hashing library, we expect to do weird tricks with bits and ugly casting
 //        let's assume we know what we are doing
@@ -99,6 +98,31 @@ static char unsigned DefaultSeed[16] =
     178, 201,  95, 240,  40,  41, 143, 216,
       2, 209, 178, 114, 232,   4, 176, 188
 };
+
+
+//#if defined(__x86_64__) || defined(_M_X64)
+//#include <intrin.h>
+//#include <wmmintrin.h>  //for intrinsics for AES-NI
+//
+//#define MM128i_T        __m128i
+//#define MM128i_load    _mm_loadu_si128
+//#define MM128i_xor     _mm_xor_si128
+//#define MM128i_aesdec  _mm_aesdec_si128
+//#define MM128i_setzero _mm_setzero_si128
+//#define MM128i_and     _mm_and_si128
+//#define MOV_SB         __movsb
+//#elif defined(__aarch64__) || defined(_M_ARM64)
+//
+//#define MM128i_T         int8x16_t
+//#define MM128i_load      vldrq_p128
+//#define MM128i_xor       vaddq_p128
+//#define MM128i_aesdec    vaesdq_u8
+//#define MM128i_setzero() = 0
+//#define MM128i_and     
+//#define MOV_SB         
+//#else
+//#error TODO no-intrinsic version
+//#endif
 
 uint64_t CaseyHash(const char *At, size_t Count)
 {

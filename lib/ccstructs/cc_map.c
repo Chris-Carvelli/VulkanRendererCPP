@@ -10,8 +10,8 @@
 #pragma clang diagnostic ignored "-Wunused-parameter"
 #pragma clang diagnostic ignored "-Wunused-variable"
 
-const uint32_t KEY_NOT_FOUND = 0;
-const uint32_t KEY_FOUND     = 1;
+const uint64_t KEY_NOT_FOUND = 0;
+const uint64_t KEY_FOUND     = 1;
 
 static void* NO_FOLLOWER = (void*)-1;
 static void* EMPTY_SPOT  = (void*) 0xfefefefefefefefe;
@@ -23,7 +23,7 @@ typedef struct Map {
 
 	// runtime
 	BumpAllocator* allocator;
-	uint32_t* hashes;
+	uint64_t* hashes;
 	void*     values;
 	void**    nexts;
 } Map;
@@ -38,7 +38,7 @@ Map* map_make(size_t num_elements, size_t size_value, size_t max_size) {
 	handle->size_value    = size_value;
 	handle->allocator     = allocator;
 
-	handle->hashes = (uint32_t*)allocator_alloc_n(allocator, num_elements, sizeof(uint32_t));
+	handle->hashes = (uint64_t*)allocator_alloc_n(allocator, num_elements, sizeof(uint64_t));
 	handle->values = (void*)allocator_alloc_n(allocator, num_elements, size_value);
 	handle->nexts  = (void**)allocator_alloc_n(allocator, num_elements, sizeof(void*));
 
@@ -46,24 +46,23 @@ Map* map_make(size_t num_elements, size_t size_value, size_t max_size) {
 	memset(handle->nexts, 0xfe, num_elements * sizeof(void*));
 
 	// DEBUG fill everything with recognizable bit pattern
-	memset(handle->hashes, 0xaa, num_elements * sizeof(uint32_t));
+	memset(handle->hashes, 0xaa, num_elements * sizeof(uint64_t));
 	memset(handle->values, 0xbb, num_elements * size_value);
 
 	return handle;
 }
 
-uint32_t map_put(Map* handle, void* key, size_t key_size, void* value) {
-	// TODO make hash function accet 64 bit sizes
-	uint32_t hash = (uint32_t)SuperFastHash((const char *)key, key_size);
-	uint32_t slot = hash % handle->max_elements;
+uint64_t map_put(Map* handle, void* key, size_t key_size, void* value) {
+	uint64_t hash = CaseyHash((const char *)key, key_size);
+	uint64_t slot = hash % handle->max_elements;
 
 	//CC_LOG(CC_INFO, "%d", hash);
 
-	size_t size_kvp     = sizeof(uint32_t) + handle->size_value + sizeof(void*);
-	size_t offset_value = sizeof(uint32_t);
-	size_t offset_next  = sizeof(uint32_t) + handle->size_value;
+	size_t size_kvp     = sizeof(uint64_t) + handle->size_value + sizeof(void*);
+	size_t offset_value = sizeof(uint64_t);
+	size_t offset_next  = sizeof(uint64_t) + handle->size_value;
 
-	uint32_t* ptr_key   = &handle->hashes[slot];
+	uint64_t* ptr_key   = &handle->hashes[slot];
 	void*     ptr_value = handle->values + handle->size_value * slot;
 	void**    ptr_next  = &handle->nexts[slot];
 
@@ -84,7 +83,7 @@ uint32_t map_put(Map* handle, void* key, size_t key_size, void* value) {
 		ptr_next  = (void*)ptr_key + offset_next;
 	}
 
-	uint32_t ret = KEY_NOT_FOUND;
+	uint64_t ret = KEY_NOT_FOUND;
 	if(*ptr_key != hash) {
 		// connect last entry to new entry
 		*ptr_next = (void*)allocator_alloc(handle->allocator, size_kvp);
@@ -110,21 +109,21 @@ uint32_t map_put(Map* handle, void* key, size_t key_size, void* value) {
 
 
 // TODO must be fixed after figuring out what's wrong with pointer jumps
-uint32_t map_get(Map* handle, void* key, size_t key_size, void* value) {
-	// TODO make hash function accet 64 bit sizes
-	uint32_t hash = (uint32_t)SuperFastHash((const char *)key, key_size);
-	uint32_t slot = hash % handle->max_elements;
+uint64_t map_get(Map* handle, void* key, size_t key_size, void* value) {
+	uint64_t hash = CaseyHash((const char *)key, key_size);
+	uint64_t slot = hash % handle->max_elements;
 
 	//CC_LOG(CC_INFO, "%d", hash);
 
 	void** ptr_next  = &handle->nexts[slot];
 
 	if (*ptr_next == EMPTY_SPOT)
-		return KEY_NOT_FOUND;
+		//return KEY_NOT_FOUND;
+		return hash;
 
-	size_t offset_value = sizeof(uint32_t);
-	size_t offset_next = sizeof(uint32_t) + handle->size_value;
-	uint32_t* ptr_key = &handle->hashes[slot];
+	size_t offset_value = sizeof(uint64_t);
+	size_t offset_next = sizeof(uint64_t) + handle->size_value;
+	uint64_t* ptr_key = &handle->hashes[slot];
 	void*  ptr_value  = handle->values + handle->size_value * slot;
 	while (*ptr_next != NO_FOLLOWER && *ptr_key != hash)
 	{
@@ -134,18 +133,20 @@ uint32_t map_get(Map* handle, void* key, size_t key_size, void* value) {
 	}
 
 	if(*ptr_key != hash)
-		return KEY_NOT_FOUND;
+		//return KEY_NOT_FOUND;
+		return hash;
 	
 	memcpy(value, ptr_value, handle->size_value);
 
-	return KEY_FOUND;
+	//return KEY_FOUND;
+	return hash;
 }
 
-uint32_t map_remove(Map* handle, void* key, size_t key_size, void* value) {
+uint64_t map_remove(Map* handle, void* key, size_t key_size, void* value) {
 	CC_LOG(CC_WARNING, "key removal not implemented yet");
 	return KEY_NOT_FOUND; // TODO
 
-	//uint32_t hash = SuperFastHash((const char *)key, handle->size_key);
+	//uint64_t hash = SuperFastHash((const char *)key, handle->size_key);
 	//hash %= handle->max_elements;
 
 	//void** ptr_next  = handle->nexts + hash;
@@ -183,8 +184,8 @@ void map_destroy(Map* handle) {
 	allocator_free_bump(handle->allocator);
 }
 
-uint32_t map_diagnostics_count_kvps(Map* handle) {
-	uint32_t ret = 0;
+uint64_t map_diagnostics_count_kvps(Map* handle) {
+	uint64_t ret = 0;
 
 	for(size_t i = 0; i < handle->max_elements; ++i)
 		if(handle->nexts[i] != EMPTY_SPOT)
@@ -192,9 +193,9 @@ uint32_t map_diagnostics_count_kvps(Map* handle) {
 
 	void** next = handle->nexts + handle->max_elements;
 	// offset actual next "field" in the (key, value, next) "tuple"
-	next = (void*)next + sizeof(uint32_t) + handle->size_value;
+	next = (void*)next + sizeof(uint64_t) + handle->size_value;
 
-	size_t size_kvp = sizeof(uint32_t) + handle->size_value + sizeof(void*);
+	size_t size_kvp = sizeof(uint64_t) + handle->size_value + sizeof(void*);
 
 	while(*next != EMPTY_SPOT) {
 		next = (void*)next + size_kvp;
@@ -205,13 +206,13 @@ uint32_t map_diagnostics_count_kvps(Map* handle) {
 }
 
 void map_diagnostics_print_buckets(Map* handle) {
-	size_t size_kvp = sizeof(uint32_t) + handle->size_value + sizeof(void*);
-	size_t offset_next = sizeof(uint32_t) + handle->size_value; 
+	size_t size_kvp = sizeof(uint64_t) + handle->size_value + sizeof(void*);
+	size_t offset_next = sizeof(uint64_t) + handle->size_value; 
 	
 	const int MAX_BUCKETS = 100;
-	uint32_t buckets[MAX_BUCKETS];
+	uint64_t buckets[MAX_BUCKETS];
 
-	memset(buckets, 0, sizeof(uint32_t) * MAX_BUCKETS);
+	memset(buckets, 0, sizeof(uint64_t) * MAX_BUCKETS);
 
 	int num_elements = 0;
 	int num_hops = 0;

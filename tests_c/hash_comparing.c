@@ -10,14 +10,16 @@ int hash_comparator(const void* a, const void* b) {
 	return *(const uint32_t*)a - *(const uint32_t*)b;
 };
 
-const int NUM_KEYS = 4096 * 4096;
-const int NUM_ALGO = 2;
+const int NUM_KEYS = 4096;
+const int NUM_ALGO = 3;
 
 uint64_t (*fn_hash[])(const char * data, size_t len) = {
+	Lookup2,
 	Lookup3,
 	CaseyHash
 };
 const char* hash_names[] = {
+	"Lookup2",
 	"Lookup3",
 	"CaseyHash"
 };
@@ -25,10 +27,12 @@ const char* hash_names[] = {
 int main(void) {
 	BumpAllocator* allocator = allocator_make_bump(GB(1));
 
-	char** keys = allocator_alloc_n(allocator, sizeof(char**), NUM_KEYS);
-	uint64_t** results = allocator_alloc_n(allocator, sizeof(uint64_t*), NUM_ALGO);
-	for(int i = 0; i < NUM_ALGO; ++i)
-		results[i] = allocator_alloc_n(allocator, sizeof(uint32_t), NUM_KEYS);
+	char** keys = (char**)allocator_alloc_n(allocator, sizeof(char**), NUM_KEYS);
+	uint64_t** results = (uint64_t**)allocator_alloc_n(allocator, sizeof(uint64_t*), NUM_ALGO);
+	uint64_t* errors  = (uint64_t*)allocator_alloc_n(allocator, sizeof(uint64_t), NUM_ALGO);
+	for(int i = 0; i < NUM_ALGO; ++i) {
+		results[i] = (uint64_t*)allocator_alloc_n(allocator, sizeof(uint32_t), NUM_KEYS);
+	}
 
 
 	//// trial 0: sequenatial keys
@@ -68,24 +72,29 @@ int main(void) {
 	CC_LOG(CC_IMPORTANT, "%16s %6s %8s", "Function", "Key", "Hash");
 	for(int i = 0; i < NUM_ALGO; ++i) {
 		HandleProfilerSample h = profiler_create_sample_handle_named(profiler, hash_names[i]);
-
+		errors[i] = 0;
 		for(int j = 0; j < NUM_KEYS; ++j) {
-			uint64_t hash;
+			uint64_t hash, hash1;
 			PROFILE(profiler, h, hash = fn_hash[i](keys[j], strlen(keys[j]));)
 			
+			// validate
+			hash1 = fn_hash[i](keys[j], strlen(keys[j]));
+			/*CC_ASSERT(hash == hash1, "hash mismatch");*/
+			if(hash != hash1)
+				errors[i]++;
 			results[i][j] = hash;
 		}
 	}
 
 	// check collisions
-	CC_LOG(CC_IMPORTANT, "%16s  %6s", "Function", "Collisions");
+	CC_LOG(CC_IMPORTANT, "%16s  %10s  %6s", "Function", "Errors", "Collisions");
 	for(int i = 0; i < NUM_ALGO; ++i) {
 		int collisions = 0;
 		qsort(results[i], NUM_KEYS, sizeof(uint32_t), hash_comparator);
 		for(int j = 0; j < NUM_KEYS - 1; ++j)
 			if (results[i][j] == results[i][j + 1])
 				++collisions;
-		CC_LOG(CC_INFO, "%16s: %10d %3.12f", hash_names[i], collisions, (double)collisions / NUM_KEYS);
+		CC_LOG(CC_INFO, "%16s: %10d  %6d  %3.12f", hash_names[i], errors[i], collisions, (double)collisions / NUM_KEYS);
 
 	}
 
