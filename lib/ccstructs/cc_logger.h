@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <errno.h>
 #include <string.h> // for strerror
 #include <assert.h>
 #include <stdint.h>
@@ -39,7 +40,7 @@ typedef enum {
     CC_ERROR
 } LogType;
 
-inline void log_formatted(const char* prefix, const char* text_color, const char* msg, va_list args) {
+static inline void log_formatted(const char* prefix, const char* text_color, const char* msg, va_list args) {
 
     char buffer_format[MAX_LOG_CHARS] = { 0 };
     int ret0 = snprintf(buffer_format, MAX_LOG_CHARS, "%s %s %s \033[0m", text_color, prefix, msg);
@@ -59,7 +60,7 @@ inline void log_formatted(const char* prefix, const char* text_color, const char
     fflush(stdout);
 }
 
-inline void CC_LOG(LogType level, const char* msg, ...) {
+static inline void CC_LOG(LogType level, const char* msg, ...) {
     va_list args = NULL;
     va_start(args, msg);
 
@@ -74,7 +75,7 @@ inline void CC_LOG(LogType level, const char* msg, ...) {
     va_end(args);
 }
 
-inline void CC_PRINT(LogType level, const char* msg, ...) {
+static inline void CC_PRINT(LogType level, const char* msg, ...) {
     va_list args = NULL;
     va_start(args, msg);
 
@@ -90,7 +91,7 @@ inline void CC_PRINT(LogType level, const char* msg, ...) {
 }
 
 
-inline void CC_LOG_SYS_ERROR(void) {
+static inline void CC_LOG_SYS_ERROR(void) {
     char buffer[MAX_LOG_CHARS];
 
 #ifdef WIN32
@@ -105,7 +106,7 @@ inline void CC_LOG_SYS_ERROR(void) {
 #define CC_ASSERT(x, msg, ...) { if(!(x)) { CC_LOG_SYS_ERROR(); CC_LOG(CC_ERROR, msg, ##__VA_ARGS__); } assert(x); }
 #define CC_EXIT(x, msg, ...) { CC_LOG(CC_ERROR, msg, ##__VA_ARGS__); exit(x); }
 
-inline void format_size(uint64_t size, char* buffer, uint32_t buffer_size) {
+static inline void format_size(uint64_t size, char* buffer, uint32_t buffer_size) {
     const char* suffix[] = { "B", "KB", "MB", "GB", "TB" };
 
     uint64_t magnitude = 1;
@@ -119,7 +120,7 @@ inline void format_size(uint64_t size, char* buffer, uint32_t buffer_size) {
     CC_ASSERT(0, "More than TB of GPU memory?")
 }
 
-inline void format_time(uint64_t size, char* buffer, uint32_t buffer_size) {
+static inline void format_time(uint64_t size, char* buffer, uint32_t buffer_size) {
     const char* suffix[] = { "ns", "nns", "ms", "s" };
 
     uint64_t magnitude = 1;

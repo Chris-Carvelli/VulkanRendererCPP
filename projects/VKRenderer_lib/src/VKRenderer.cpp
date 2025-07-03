@@ -1,5 +1,6 @@
 #include <VKRenderer.hpp>
 
+#include <cc_logger.h>
 #include <core/DrawCall.hpp>
 
 #include <imgui.h>
@@ -9,20 +10,20 @@
 void VKRenderer::run() {m_allocator = allocator_make_bump(KB(64));
 	m_profiler  = profiler_shared_create(m_allocator);
 
-	PROFILE(m_profiler, NULL_SAMPLE_HANDLE, "setup",
+	PROFILE(m_profiler, NULL_SAMPLE_HANDLE,
 
-		PROFILE(m_profiler, NULL_SAMPLE_HANDLE, "init_base()",
+		PROFILE(m_profiler, NULL_SAMPLE_HANDLE,
 			init_base();
-		)
-		PROFILE(m_profiler, NULL_SAMPLE_HANDLE, "init()",
+		);
+		PROFILE(m_profiler, NULL_SAMPLE_HANDLE,
 			init();
-		)
-		PROFILE(m_profiler, NULL_SAMPLE_HANDLE, "gpu_upload()",
+		);
+		PROFILE(m_profiler, NULL_SAMPLE_HANDLE,
 			// TODO FIXME force upload of assets to GPU
 			TMP_force_gpu_upload_all();
-		)
-		m_window->register_file_watcher();
-	)
+		);
+	);
+	m_window->register_file_watcher();
 
 	profiler_data_print(m_profiler);
 
