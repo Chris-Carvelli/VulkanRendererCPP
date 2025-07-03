@@ -3,7 +3,7 @@
 // (probably through the build system, skip files not relevant for current target/configuration)
 #pragma clang diagnostic ignored "-Wempty-translation-unit"
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <cc_profiler.h>
 
 #include <cc_logger.h>

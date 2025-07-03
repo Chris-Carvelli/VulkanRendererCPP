@@ -14,8 +14,6 @@ extern "C" {
 	#include <cc_map.h>
 	#include <cc_allocator.h>
 	#include <cc_profiler.h>
-
-	#include <TMP_map_fixed.h>
 }
 
 int cmp_integers(const void* a, const void* b) {
@@ -67,13 +65,10 @@ void do_trials(uint32_t* keys, uint32_t* values, uint32_t* values_retrieved) {
 	Profiler* profiler = profiler_shared_create(allocator);
 	HandleProfilerSample h_put_base = profiler_create_sample_handle_named(profiler, "[put]base");
 	HandleProfilerSample h_get_base = profiler_create_sample_handle_named(profiler, "[get]base");
-	HandleProfilerSample h_put_fix = profiler_create_sample_handle_named(profiler, "[put]fixed");
-	HandleProfilerSample h_get_fix = profiler_create_sample_handle_named(profiler, "[get]fixed");
 	HandleProfilerSample h_put_std = profiler_create_sample_handle_named(profiler, "[put]std");
 	HandleProfilerSample h_get_std = profiler_create_sample_handle_named(profiler, "[get]std");
 
 	Map* a = map_make(HASHMAP_SIZE, sizeof(uint32_t), MB(512));
-	MapFixed* c = map_fixed_make(HASHMAP_SIZE, cmp_integers, MB(512));
 	std::map<uint32_t, uint32_t> b;
 
 #ifdef EXCLUDE_LOOP
@@ -81,10 +76,6 @@ void do_trials(uint32_t* keys, uint32_t* values, uint32_t* values_retrieved) {
 		PROFILE(profiler, h_put_base, map_put(a, &keys[i], &i); )
 	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
 		PROFILE(profiler, h_get_base, map_get(a, &keys[i], &values_retrieved[i]); )
-	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-		PROFILE(profiler, h_put_fix, map_fixed_put(c, keys[i], i); )
-	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-		PROFILE(profiler, h_get_fix, map_fixed_get(c, keys[i], &values_retrieved[i]); )
 	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
 		PROFILE(profiler, h_put_std, b[keys[i]] = i; )
 	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
@@ -101,18 +92,6 @@ void do_trials(uint32_t* keys, uint32_t* values, uint32_t* values_retrieved) {
 			map_get(a, &keys[i], sizeof(uint32_t), &values_retrieved[i]);
 	)
 	validate_get(values_retrieved, NUM_ELEMENTS, "cc base");
-
-	PROFILE(profiler, h_put_fix,
-		for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-			map_fixed_put(c, keys[i], i);
-	)
-
-	memset(values_retrieved, 0, NUM_ELEMENTS * sizeof(uint32_t));
-	PROFILE(profiler, h_get_fix, 
-		for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-			map_fixed_get(c, keys[i], &values_retrieved[i]);
-	)
-	validate_get(values_retrieved, NUM_ELEMENTS, "cc fixed");
 
 	PROFILE(profiler, h_put_std, 
 		for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)

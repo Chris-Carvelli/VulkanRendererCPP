@@ -18,11 +18,9 @@ BumpAllocator *allocator_make_bump(size_t size) {
     ba->capacity = size;
     ba->used = 0;
     ba->memory = malloc(size);
-    if(!ba->memory) {
-    CC_ASSERT(1, "Failed to allocate memory")
-        CC_LOG_SYS_ERROR();
-        exit(3);
-    }
+
+    CC_ASSERT(ba->memory, "Failed to allocate memory")
+
     memset(ba->memory, 0, size);
     return ba;
 }
@@ -70,11 +68,19 @@ void allocator_pop(BumpAllocator* bump_allocator, size_t size) {
     bump_allocator->used -= size;
 }
 
-void allocator_debug_pattern_fill(BumpAllocator* bump_allocator, int pattern) {
-    memset(bump_allocator->memory, pattern, bump_allocator->capacity - bump_allocator->used);
+void allocator_debug_status(BumpAllocator* bump_allocator) {
+    const size_t size = 32;
+    char buf_capacity[size];
+    char buf_used[size];
+    char buf_left[size];
+    double perc_used = (double)bump_allocator->used / (double)bump_allocator->capacity;
+
+    format_size(bump_allocator->capacity, buf_capacity, size);
+    format_size(bump_allocator->used, buf_used, size);
+    format_size(bump_allocator->capacity - bump_allocator->used, buf_left, size);
+    CC_LOG(CC_INFO, "capacity: %s    used: %s (%3.2f)    left: %s", buf_capacity, buf_used, perc_used, buf_left);
 }
 
-void* allocator_debug_wrapper(BumpAllocator* bump_allocator, size_t size, const char* file, int line) {
-    printf("[%d] %s\n", line, file);
-    return allocator_alloc(bump_allocator, size);
+void allocator_debug_pattern_fill(BumpAllocator* bump_allocator, int pattern) {
+    memset(bump_allocator->memory, pattern, bump_allocator->capacity - bump_allocator->used);
 }

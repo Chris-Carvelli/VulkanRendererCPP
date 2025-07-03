@@ -1,4 +1,4 @@
-#ifdef WIN32 // TODO keep one log and change timing functions only
+#ifdef _WIN32 // TODO keep one log and change timing functions only
 
 #include <Windows.h> // for QueryPerfCounter
 
