@@ -20,9 +20,11 @@ if(MSVC)
 
 
         # style warning
+        "-Wno-extra-semi-stmt"                   # would be nice to have this one enabled, but if we don't put the
+                                                 # extra ; after macros VS screwes up indentation in subsequent lines
+        "-Wno-gnu-zero-variadic-macro-arguments" # for assert log msg, could just be a string without extra params
+        "-Wno-declaration-after-statement"       # ooooold C style
         "-Wno-newline-eof"
-        "-Wno-gnu-zero-variadic-macro-arguments"
-        "-Wno-declaration-after-statement"
 
         # warning not possible to be ridden of
         "-Wno-unsafe-buffer-usage"

@@ -29,8 +29,8 @@ void  allocator_reset(BumpAllocator* bump_allocator);
 void  allocator_pop(BumpAllocator* bump_allocator, size_t size);
 
 // fill allocator memory with recognizeable bit pattern
+void  allocator_debug_status(BumpAllocator* bump_allocator);
 void  allocator_debug_pattern_fill(BumpAllocator* bump_allocator, int pattern);
-void* allocator_debug_wrapper(BumpAllocator* bump_allocator, size_t size, const char* file, int line);
 
 
 #endif

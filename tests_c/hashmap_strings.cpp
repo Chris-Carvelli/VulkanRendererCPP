@@ -37,14 +37,14 @@ void validate_get(char** values, char** retrieved, const int NUM_ELEMENTS, const
 		CC_LOG(CC_ERROR, "%s failed to retrieve correct values (%d errors)", trial, num_errors);
 }
 
-void validate_ints(uint32_t* values, uint32_t* retrieved, uint32_t* hashes, char** keys, const int NUM_ELEMENTS, const char* trial) {
+void validate_ints(uint32_t* values, uint32_t* retrieved, uint64_t* hashes, char** keys, const int NUM_ELEMENTS, const char* trial) {
 	int num_errors = 0;
 	for(int i = 0; i < NUM_ELEMENTS; ++i)
 		if(values[i] != retrieved[i]) {
 			CC_LOG(CC_WARNING, "%8d: expected: %8d    retrieved: %8d", i, values[i], retrieved[i]);
-			if(hashes[values[i]] == hashes[i]) {
-				CC_LOG(CC_ERROR, "SAME HASH DETECTED: %16u\t%16u", hashes[values[i]], hashes[i]);
-				CC_LOG(CC_ERROR, "                    %s\t%s\n", keys[values[i]], keys[i]);
+			if(hashes[retrieved[i]] == hashes[i]) {
+				CC_LOG(CC_ERROR, "SAME HASH DETECTED: %16u\t%16u", hashes[retrieved[i]], hashes[i]);
+				CC_LOG(CC_ERROR, "                    %s\t%s\n", keys[retrieved[i]], keys[i]);
 			}
 
 			++num_errors;
@@ -53,9 +53,11 @@ void validate_ints(uint32_t* values, uint32_t* retrieved, uint32_t* hashes, char
 		CC_LOG(CC_ERROR, "%s failed to retrieve correct values (%d errors)", trial, num_errors);
 }
 
+//void validate_hashes(char** keys, uint64)
+
 int main() {
-	const int NUM_ELEMENTS = 4096*22;
-	const int HASHMAP_SIZE = 4096*22;
+	const uint32_t NUM_ELEMENTS = 4096*22;
+	const uint32_t HASHMAP_SIZE = 4096*22;
 
 	srand(4242);
 
@@ -63,8 +65,8 @@ int main() {
 
 	char** keys = (char**)allocator_alloc_n(allocator_str, NUM_ELEMENTS,sizeof(const char*));
 	uint32_t* values = (uint32_t*)allocator_alloc_n(allocator_str, NUM_ELEMENTS,sizeof(uint32_t));
-	uint32_t* hashes = (uint32_t*)allocator_alloc_n(allocator_str, NUM_ELEMENTS,sizeof(uint32_t));
 	uint32_t* values_retrieved = (uint32_t*)allocator_alloc_n(allocator_str, NUM_ELEMENTS,sizeof(uint32_t));
+	uint64_t* hashes = (uint64_t*)allocator_alloc_n(allocator_str, NUM_ELEMENTS,sizeof(uint64_t));
 
 	const char buf_k[] = "KKKKKKKKKKKKKKKK";
 	const char buf_r[] = "RRRRRRRRRRRRRRRR";
@@ -109,8 +111,11 @@ int main() {
 	//uint32_t TMP_num_kvps = map_diagnostics_count_kvps(a);
 	{
 		profiler_sample_begin(profiler, h_get_base);
-		for (uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-			map_get(a, keys[i], strlen(keys[i]), &values_retrieved[i]);
+		for (uint32_t i = 0; i < NUM_ELEMENTS; ++i) {
+			uint64_t h = map_get(a, keys[i], strlen(keys[i]), &values_retrieved[i]);
+			if(h != hashes[i])
+				CC_LOG(CC_ERROR, "mismatching hash");
+		}
 		profiler_sample_end(profiler);
 	}
 	//validate_get(values, values_retrieved, NUM_ELEMENTS, "cc base");
