@@ -14,25 +14,22 @@ typedef struct {
 	uint32_t count;
 } ProfilerSample;
 
-Profiler* profiler_shared_create(BumpAllocator *allocator);
-void      profiler_shared_destroy(Profiler* handle);
-void      profiler_owned_create(BumpAllocator *allocator, Profiler *handle);
+void     profiler_init(void);
 
-// start a new sample
-void profiler_sample_begin(Profiler* handle, char* id);
-void profiler_sample_end(Profiler* handle);
+void     profiler_sample_begin(char* id);
+void     profiler_sample_end(void);
 
-void profiler_highperf_begin(Profiler* handle);
-uint64_t profiler_highperf_end(Profiler* handle);
+void     profiler_highperf_begin(void);
+uint64_t profiler_highperf_end(void);
 uint64_t profiler_highperf_sample(void);
 
-void profiler_data_print(Profiler* handle);
+void     profiler_data_print(void);
 
-#define PROFILE(profiler, id, scope)     \
-{                                        \
-    profiler_sample_begin(profiler, id); \
-    scope                                \
-    profiler_sample_end(profiler);       \
-}
+#define PROFILE(id, scope)     \
+{                              \
+    profiler_sample_begin(id); \
+    scope                      \
+    profiler_sample_end();     \
+}                              \
 
 #endif

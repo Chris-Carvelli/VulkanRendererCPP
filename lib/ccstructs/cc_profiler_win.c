@@ -13,7 +13,7 @@
 const uint32_t  MAX_SAMPLE_HANDLES_COUNT = 1024;
 
 // local functions
-static uint32_t create_sample_handle(Profiler* handle, char* id, size_t size);
+static uint32_t create_sample_handle(char* id, size_t size);
 
 // `HandleProfilerSample` is an index in the data arrays
 typedef struct Profiler {
@@ -31,38 +31,21 @@ typedef struct Profiler {
 
 	uint32_t* sample_handles_stack;
 
-	uint64_t highperf_timestamp;
 } Profiler;
 
-Profiler* profiler_shared_create(BumpAllocator *allocator) {
-	Profiler *handle = (Profiler*)allocator_alloc(allocator, sizeof(Profiler));
+static Profiler* handle = NULL;
+static uint64_t highperf_timestamp;
 
-	profiler_owned_create(allocator, handle);
-	return handle;
-}
+void profiler_init(void) {
+	BumpAllocator* allocator = allocator_make_bump(MB(8));;
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-
-void profiler_shared_destroy(Profiler* handle) {
-
-}
-
-#pragma clang diagnostic pop
-
-void profiler_owned_create(BumpAllocator *allocator, Profiler *handle) {
-	// TODO warn about minimum memory requirements for profiler
-	// also, evaluate if profiler should be allowed to manage its own memory (seems reasonable)
-	/*char buf[32];
-	format_size(MAX_SAMPLE_HANDLES_COUNT * (sizeof(const char*) + sizeof(uint32_t) + sizeof(LARGE_INTEGER) * 2), buf, 32);
-	CC_LOG(CC_INFO, "necessary space: %s", buf);*/
-
+	handle = (Profiler*)allocator_alloc(allocator, sizeof(Profiler));
 	handle->allocator           = allocator;
 	handle->num_samples         = 0;
 	handle->samples_stack_depth = 0;
 
 	QueryPerformanceFrequency(&handle->system_frequency);
-	handle->map = map_make(allocator, MAX_SAMPLE_HANDLES_COUNT, sizeof(uint32_t));
+	handle->map = map_make(handle->allocator, MAX_SAMPLE_HANDLES_COUNT, sizeof(uint32_t));
 
 	handle->names               = (const char**)   allocator_alloc_n(allocator, MAX_SAMPLE_HANDLES_COUNT, sizeof(const char*));
 	handle->counts              = (uint32_t*)      allocator_alloc_n(allocator, MAX_SAMPLE_HANDLES_COUNT, sizeof(uint32_t));
@@ -78,11 +61,11 @@ void profiler_owned_create(BumpAllocator *allocator, Profiler *handle) {
 }
 
 // start a new sample
-void profiler_sample_begin(Profiler* handle, char* id) {
+void profiler_sample_begin(char* id) {
 	uint32_t idx;
 	size_t len = strlen(id);
 	if (map_get(handle->map, id, len, &idx) == KEY_NOT_FOUND)
-		idx = create_sample_handle(handle, id, len);
+		idx = create_sample_handle(id, len);
 
 	CC_ASSERT((idx < MAX_SAMPLE_HANDLES_COUNT && idx >= 0), "invalid handle");
 	
@@ -92,7 +75,7 @@ void profiler_sample_begin(Profiler* handle, char* id) {
 }
 
 
-void profiler_sample_end(Profiler* handle) {
+void profiler_sample_end(void) {
 	LARGE_INTEGER end;
 	QueryPerformanceCounter(&end);
 
@@ -109,14 +92,14 @@ void profiler_sample_end(Profiler* handle) {
 	handle->counts[idx]++;
 }
 
-void profiler_highperf_begin(Profiler* handle) {
+void profiler_highperf_begin(void) {
 	unsigned int core; // not doing anything with this for now
-	handle->highperf_timestamp = __rdtscp(&core);
+	highperf_timestamp = __rdtscp(&core);
 }
 
-uint64_t profiler_highperf_end(Profiler* handle) {
+uint64_t profiler_highperf_end(void) {
 	unsigned int core; // not doing anything with this for now
-	return __rdtscp(&core) - handle->highperf_timestamp;
+	return __rdtscp(&core) - highperf_timestamp;
 }
 
 uint64_t profiler_highperf_sample(void) {
@@ -124,7 +107,7 @@ uint64_t profiler_highperf_sample(void) {
 	return __rdtscp(&core);
 }
 
-void profiler_data_print(Profiler* handle) {
+void profiler_data_print(void) {
 	CC_LOG(CC_IMPORTANT, "%12s   %12s   %6s   %12s", "Name", "tot. time", "count", "avg. time");
 	for(uint32_t i = 0; i < handle->num_samples; ++i)
 	{
@@ -143,7 +126,7 @@ void profiler_data_print(Profiler* handle) {
 	}
 }
 
-static uint32_t create_sample_handle(Profiler* handle, char* id, size_t size) {
+static uint32_t create_sample_handle(char* id, size_t size) {
 	CC_ASSERT(handle->samples_stack_depth < MAX_SAMPLE_HANDLES_COUNT - 1, "sample stack max depth (%d) reached", MAX_SAMPLE_HANDLES_COUNT);
 	CC_ASSERT(handle->num_samples < MAX_SAMPLE_HANDLES_COUNT - 1, "MAX sample handles count (%d) exceeded", MAX_SAMPLE_HANDLES_COUNT);
 
