@@ -15,9 +15,9 @@ typedef int (*fn_compare_t)(const void* a, const void* b);
 typedef struct Map Map;
 
 Map*     map_make(BumpAllocator* allocator, size_t num_elements, size_t size_value);
-uint64_t map_put(Map* handle, void* key, size_t key_size, void* value);
-uint64_t map_get(Map* handle, void* key, size_t key_size, void* value);
-uint64_t map_remove(Map* handle, void* key, size_t key_size, void* value);
+uint64_t map_put(Map* handle, const void* key, size_t key_size, const void* value);
+uint64_t map_get(Map* handle, const void* key, size_t key_size, void* value);
+uint64_t map_del(Map* handle, const void* key, size_t key_size, void* value);
 void     map_destroy(Map* handle);
 
 uint64_t map_diagnostics_count_kvps(Map* handle);

@@ -49,7 +49,7 @@ Map* map_make(BumpAllocator* allocator, size_t num_elements, size_t size_value) 
 	return handle;
 }
 
-uint64_t map_put(Map* handle, void* key, size_t key_size, void* value) {
+uint64_t map_put(Map* handle, const void* key, size_t key_size, const void* value) {
 	uint64_t hash = CaseyHash((const char *)key, key_size);
 	uint64_t slot = hash % handle->max_elements;
 
@@ -104,7 +104,7 @@ uint64_t map_put(Map* handle, void* key, size_t key_size, void* value) {
 
 
 // TODO must be fixed after figuring out what's wrong with pointer jumps
-uint64_t map_get(Map* handle, void* key, size_t key_size, void* value) {
+uint64_t map_get(Map* handle, const void* key, size_t key_size, void* value) {
 	uint64_t hash = CaseyHash((const char *)key, key_size);
 	uint64_t slot = hash % handle->max_elements;
 
@@ -134,7 +134,7 @@ uint64_t map_get(Map* handle, void* key, size_t key_size, void* value) {
 	return KEY_FOUND;
 }
 
-uint64_t map_remove(Map* handle, void* key, size_t key_size, void* value) {
+uint64_t map_del(Map* handle, const void* key, size_t key_size, void* value) {
 	CC_LOG(CC_WARNING, "key removal not implemented yet");
 	return KEY_NOT_FOUND; // TODO
 

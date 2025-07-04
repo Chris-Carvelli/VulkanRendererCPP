@@ -13,7 +13,7 @@
 const uint32_t  MAX_SAMPLE_HANDLES_COUNT = 1024;
 
 // local functions
-static uint32_t create_sample_handle(char* id, size_t size);
+static uint32_t create_sample_handle(const char* id, size_t size);
 
 // `HandleProfilerSample` is an index in the data arrays
 typedef struct Profiler {
@@ -61,7 +61,7 @@ void profiler_init(void) {
 }
 
 // start a new sample
-void profiler_sample_begin(char* id) {
+void profiler_sample_begin(const char* id) {
 	uint32_t idx;
 	size_t len = strlen(id);
 	if (map_get(handle->map, id, len, &idx) == KEY_NOT_FOUND)
@@ -126,7 +126,7 @@ void profiler_data_print(void) {
 	}
 }
 
-static uint32_t create_sample_handle(char* id, size_t size) {
+static uint32_t create_sample_handle(const char* id, size_t size) {
 	CC_ASSERT(handle->samples_stack_depth < MAX_SAMPLE_HANDLES_COUNT - 1, "sample stack max depth (%d) reached", MAX_SAMPLE_HANDLES_COUNT);
 	CC_ASSERT(handle->num_samples < MAX_SAMPLE_HANDLES_COUNT - 1, "MAX sample handles count (%d) exceeded", MAX_SAMPLE_HANDLES_COUNT);
 

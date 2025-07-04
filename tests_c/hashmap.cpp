@@ -34,12 +34,13 @@ void validate_get(uint32_t* values, const int NUM_ELEMENTS, const char* trial) {
 void do_trials(uint32_t* keys, uint32_t* values, uint32_t* values_retrieved);
 
 int main() {
-
 	srand(4243);
+	profiler_init();
 
 	uint32_t* keys = (uint32_t*)calloc(NUM_ELEMENTS,sizeof(uint32_t));
 	uint32_t* values = (uint32_t*)calloc(NUM_ELEMENTS,sizeof(uint32_t));
 	uint32_t* values_retrieved = (uint32_t*)calloc(NUM_ELEMENTS,sizeof(uint32_t));
+
 	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i) {
 		keys[i] = i;
 		values[i] = i;
@@ -62,48 +63,21 @@ void do_trials(uint32_t* keys, uint32_t* values, uint32_t* values_retrieved) {
 	}
 
 	BumpAllocator* allocator = allocator_make_bump(MB(512));
-	Profiler* profiler = profiler_shared_create(allocator);
 
 	Map* a = map_make(allocator, HASHMAP_SIZE, sizeof(uint32_t));
 	std::map<uint32_t, uint32_t> b;
-
-#ifdef EXCLUDE_LOOP
+	uint32_t val;
 	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-		PROFILE(profiler, "[put]base", map_put(a, &keys[i], &i); )
+		PROFILE("[put]base", map_put(a, &keys[i], sizeof(uint32_t), &val); );
 	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-		PROFILE(profiler, "[get]base", map_get(a, &keys[i], &values_retrieved[i]); )
+		PROFILE("[get]base", map_get(a, &keys[i], sizeof(uint32_t), &values_retrieved[i]); );
 	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-		PROFILE(profiler, "[put]std", b[keys[i]] = i; )
+		PROFILE("[put]std", b[keys[i]] = i; );
 	for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-		PROFILE(profiler,  "[get]std", values_retrieved[i] = b[keys[i]]; )
-#else
-	PROFILE(profiler, "[put]base", 
-		for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-			map_put(a, &keys[i], sizeof(uint32_t), &i);
-	)
+		PROFILE("[get]std", values_retrieved[i] = b[keys[i]]; );
 
-	memset(values_retrieved, 0, NUM_ELEMENTS * sizeof(uint32_t));
-	PROFILE(profiler, "[get]base", 
-		for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-			map_get(a, &keys[i], sizeof(uint32_t), &values_retrieved[i]);
-	)
-	validate_get(values_retrieved, NUM_ELEMENTS, "cc base");
 
-	PROFILE(profiler, "[put]std", 
-		for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-			b[keys[i]] = i;
-	)
+	profiler_data_print();
 
-	memset(values_retrieved, 0, NUM_ELEMENTS * sizeof(uint32_t));
-	PROFILE(profiler,  "[get]std", 
-		for(uint32_t i = 0; i < NUM_ELEMENTS; ++i)
-			values_retrieved[i] = b[keys[i]];
-	)
-	validate_get(values_retrieved, NUM_ELEMENTS, "std");
-#endif
-
-	profiler_data_print(profiler);
-
-	profiler_shared_destroy(profiler);
 	allocator_free_bump(allocator);
 }

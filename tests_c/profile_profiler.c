@@ -6,8 +6,18 @@
 int main(void) {
 	profiler_init();
 
-	for(int i = 0; i < 4096; ++i)
+	char* buf_outer = (char*)malloc(32);
+	char* buf_inner = (char*)malloc(32);
+	for(int i = 0; i < 4; ++i)
 	{
+		{
+			sprintf(buf_outer, "[var]outer %d", i);
+			sprintf(buf_inner, "[var]inner %d", i);
+			PROFILE(buf_outer,
+				PROFILE(buf_inner, {} );
+			);
+		}
+
 		{
 			PROFILE("[macro]outer",
 				PROFILE("[macro]inner", {} );
@@ -22,7 +32,6 @@ int main(void) {
 		}
 	}
 	profiler_data_print();
-
 	{
 		// sampling mode
 		uint64_t res_printf_beg, res_printf_end, res_profiler_beg, res_profiler_end;

@@ -16,7 +16,7 @@ typedef struct {
 
 void     profiler_init(void);
 
-void     profiler_sample_begin(char* id);
+void     profiler_sample_begin(const char* id);
 void     profiler_sample_end(void);
 
 void     profiler_highperf_begin(void);
