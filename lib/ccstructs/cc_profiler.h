@@ -7,7 +7,7 @@ typedef struct BumpAllocator BumpAllocator;
 
 typedef struct Profiler Profiler;
 
-extern const uint32_t             MAX_SAMPLE_HANDLES_COUNT;
+extern const uint32_t MAX_SAMPLE_HANDLES_COUNT;
 
 typedef struct {
 	uint64_t aggregate_time;

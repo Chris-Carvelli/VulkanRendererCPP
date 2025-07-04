@@ -87,6 +87,7 @@ int main() {
 			intrinsics_src[i] = intrinsics_src[i] * delta;
 		time_end = __rdtscp(&core_end);
 		unsigned long long ticks = time_end - time_beg;
+
 		printf("intrinsics: %f\t%I64d ticks elapsed\n", (double)ticks / (double)freq.QuadPart, ticks);
 	}
 

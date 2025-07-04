@@ -8,6 +8,7 @@
 #include <cc_logger.h>
 #include <cc_allocator.h>
 
+#include <intrin.h>
 
 const uint32_t  MAX_SAMPLE_HANDLES_COUNT = 1024;
 
@@ -107,7 +108,7 @@ void profiler_sample_end(Profiler* handle) {
 }
 
 void profiler_data_print(Profiler* handle) {
-	CC_LOG(CC_IMPORTANT, "Name\t\ttot. time\tcount\tavg. time");
+	CC_LOG(CC_IMPORTANT, "%12s   %12s   %6s   %12s", "Name", "tot. time", "count", "avg. time");
 	for(uint32_t i = 0; i < handle->num_samples; ++i)
 	{
 
@@ -116,7 +117,7 @@ void profiler_data_print(Profiler* handle) {
 
 		CC_LOG(
 			CC_INFO,
-			"%s\t%.6f\t%d\t%.6f",
+			"%12s   %12.7f   %6d   %12.7f",
 			handle->names[i],
 			time_tot,
 			handle->counts[i],
