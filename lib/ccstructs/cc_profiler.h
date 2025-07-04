@@ -22,6 +22,10 @@ void      profiler_owned_create(BumpAllocator *allocator, Profiler *handle);
 void profiler_sample_begin(Profiler* handle, char* id);
 void profiler_sample_end(Profiler* handle);
 
+void profiler_highperf_begin(Profiler* handle);
+uint64_t profiler_highperf_end(Profiler* handle);
+uint64_t profiler_highperf_sample(void);
+
 void profiler_data_print(Profiler* handle);
 
 #define PROFILE(profiler, id, scope)     \

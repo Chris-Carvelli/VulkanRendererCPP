@@ -1,6 +1,5 @@
 #ifdef _WIN32 // TODO keep one log and change timing functions only
 
-#include <Windows.h> // for QueryPerfCounter
 
 #include <cc_profiler.h>
 
@@ -8,7 +7,8 @@
 #include <cc_logger.h>
 #include <cc_allocator.h>
 
-#include <intrin.h>
+#include <Windows.h> // for QueryPerfCounter
+#include <intrin.h>  // for __rdtscp
 
 const uint32_t  MAX_SAMPLE_HANDLES_COUNT = 1024;
 
@@ -30,6 +30,8 @@ typedef struct Profiler {
 	LARGE_INTEGER* last_timestamps;
 
 	uint32_t* sample_handles_stack;
+
+	uint64_t highperf_timestamp;
 } Profiler;
 
 Profiler* profiler_shared_create(BumpAllocator *allocator) {
@@ -105,6 +107,21 @@ void profiler_sample_end(Profiler* handle) {
 	handle->aggregate_times[idx].QuadPart += end.QuadPart - handle->last_timestamps[idx].QuadPart;
 	handle->last_timestamps[idx] = end;
 	handle->counts[idx]++;
+}
+
+void profiler_highperf_begin(Profiler* handle) {
+	unsigned int core; // not doing anything with this for now
+	handle->highperf_timestamp = __rdtscp(&core);
+}
+
+uint64_t profiler_highperf_end(Profiler* handle) {
+	unsigned int core; // not doing anything with this for now
+	return __rdtscp(&core) - handle->highperf_timestamp;
+}
+
+uint64_t profiler_highperf_sample(void) {
+	unsigned int core; // not doing anything with this for now
+	return __rdtscp(&core);
 }
 
 void profiler_data_print(Profiler* handle) {
