@@ -3,8 +3,6 @@
 #include <cc_map.h>
 #include <cc_logger.h>
 
-#include <stdint.h>
-
 const uint32_t NUM_ELEMENTS = 4096;
 
 int cmp_ints(const void* a, const void* b) {
@@ -12,9 +10,9 @@ int cmp_ints(const void* a, const void* b) {
 }
 
 int main(void) {
-	BumpAllocator* allocator = allocator_make_bump(KB(64));
+	BumpAllocator* allocator = allocator_make_bump(KB(256));
 	Profiler*      profiler  = profiler_shared_create(allocator);
-	Map* map = map_make(1024, sizeof(uint32_t), MB(128));
+	Map*           map       = map_make(allocator, NUM_ELEMENTS, sizeof(uint32_t));
 
 	for(int i = 0; i < NUM_ELEMENTS; ++i)
 		PROFILE(profiler, "put", map_put(map, &i, sizeof(uint32_t), &i);)

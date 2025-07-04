@@ -28,10 +28,7 @@ typedef struct Map {
 	void**    nexts;
 } Map;
 
-Map* map_make(size_t num_elements, size_t size_value, size_t max_size) {
-	BumpAllocator* allocator = allocator_make_bump(max_size);
-	allocator_debug_pattern_fill(allocator, 0xcd);
-
+Map* map_make(BumpAllocator* allocator, size_t num_elements, size_t size_value) {
 	Map* handle = (Map*)allocator_alloc(allocator, sizeof(Map));
 
 	handle->max_elements  = num_elements;

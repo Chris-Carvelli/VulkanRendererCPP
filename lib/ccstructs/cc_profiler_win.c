@@ -57,8 +57,10 @@ void profiler_owned_create(BumpAllocator *allocator, Profiler *handle) {
 	handle->allocator           = allocator;
 	handle->num_samples         = 0;
 	handle->samples_stack_depth = 0;
+
 	QueryPerformanceFrequency(&handle->system_frequency);
-	handle->map = map_make(MAX_SAMPLE_HANDLES_COUNT, sizeof(uint32_t), KB(64));
+	handle->map = map_make(allocator, MAX_SAMPLE_HANDLES_COUNT, sizeof(uint32_t));
+
 	handle->names               = (const char**)   allocator_alloc_n(allocator, MAX_SAMPLE_HANDLES_COUNT, sizeof(const char*));
 	handle->counts              = (uint32_t*)      allocator_alloc_n(allocator, MAX_SAMPLE_HANDLES_COUNT, sizeof(uint32_t));
 	handle->aggregate_times     = (LARGE_INTEGER*) allocator_alloc_n(allocator, MAX_SAMPLE_HANDLES_COUNT, sizeof(LARGE_INTEGER));

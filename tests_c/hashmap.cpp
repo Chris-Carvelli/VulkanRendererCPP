@@ -61,10 +61,10 @@ void do_trials(uint32_t* keys, uint32_t* values, uint32_t* values_retrieved) {
 		keys[j] = swap;
 	}
 
-	BumpAllocator* allocator = allocator_make_bump(MB(4));
+	BumpAllocator* allocator = allocator_make_bump(MB(512));
 	Profiler* profiler = profiler_shared_create(allocator);
 
-	Map* a = map_make(HASHMAP_SIZE, sizeof(uint32_t), MB(512));
+	Map* a = map_make(allocator, HASHMAP_SIZE, sizeof(uint32_t));
 	std::map<uint32_t, uint32_t> b;
 
 #ifdef EXCLUDE_LOOP
